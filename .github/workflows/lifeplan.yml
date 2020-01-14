@@ -5,10 +5,10 @@ on:
     branches-ignore:
       - master
       - develop
-  pull_request:
-    branches:
-      - master
-      - develop
+  # pull_request:
+  #   branches:
+  #     - master
+  #     - develop
 
 jobs:
   backend:
@@ -49,7 +49,7 @@ jobs:
           mysql root password: 'ndisFP2019'
       - name: Wait for MySQL to be ready
         run: |
-          until nc -z localhost 3306; do sleep 1; echo "Waiting for MySQL to be ready..."; done
+          until nc -z 127.0.0.1 3306; do sleep 1; echo "Waiting for MySQL to be ready..."; done
       - name: Prepare for tests
         run: |
           cd backend/ndis_calculator
@@ -58,7 +58,7 @@ jobs:
           python manage.py collectstatic --no-input
           python manage.py loaddata budgeting/fixtures/*
         env:
-          DATABASE_HOST: localhost
+          DATABASE_HOST: 127.0.0.1
       - name: Run tests
         run: |
           manage.py test budgeting
