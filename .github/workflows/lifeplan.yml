@@ -28,6 +28,8 @@ jobs:
           MYSQL_USER: ndis
           MYSQL_PASSWORD: ndisFP2019
           MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: ndisFP2019
+          MYSQL_ROOT_HOST: 127.0.0.1
         ports:
           - 3306/tcp
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -59,7 +61,7 @@ jobs:
           python manage.py collectstatic --no-input
           python manage.py loaddata budgeting/fixtures/*
         env:
-          DATABASE_USER: ndis
+          DATABASE_USER: root
           DATABASE_HOST: 127.0.0.1
           DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Run tests
@@ -67,7 +69,7 @@ jobs:
         run: |
           python manage.py test budgeting
         env:
-          DATABASE_USER: ndis
+          DATABASE_USER: root
           DATABASE_HOST: 127.0.0.1
           DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
 
