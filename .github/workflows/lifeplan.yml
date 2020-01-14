@@ -25,8 +25,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install build dependencies
         run: |
-          apt-get update && \
-          apt-get install -y --no-install-recommends \
+          sudo apt update && \
+          sudo apt install -y --no-install-recommends \
             default-libmysqlclient-dev \
             gcc \
             python3-dev \
@@ -68,12 +68,9 @@ jobs:
       - name: Install dependencies
         run: |
           yarn --cwd frontend/
-      - name: List global packages
-        run: |
-          yarn list -g
       - name: Build production assets
         run: |
-          yarn build
+          yarn --cwd frontend/ build
       - name: Run tests
         run: |
           yarn --cwd frontend/ test --exit
