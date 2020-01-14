@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04]
         python-version: [3.7]
-        mysql-version: [8.0]
+        mysql-version: ["8.0"]
 
     services:
       mysql:
