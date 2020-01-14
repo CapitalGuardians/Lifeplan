@@ -43,7 +43,7 @@ jobs:
       - name: Verify MySQL connection from host
         run: |
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -undis -pndisFP2019 -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -pndisFP2019 -e "SHOW DATABASES"
       - name: Install build dependencies
         run: |
           sudo apt-get install -y --no-install-recommends \

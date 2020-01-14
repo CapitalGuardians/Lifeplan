@@ -154,6 +154,7 @@ class PlanContainsItemsTest:
         hours_weekend=10.50,
         hours_holiday=0.00,
         hours_holiday_after_hours=2.50,
+        frequency_per_year=2,
     ):
         return PlanItem.objects.create(
             plan_category=plan_category,
