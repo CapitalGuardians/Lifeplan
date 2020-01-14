@@ -2,7 +2,7 @@ FROM node:alpine
 
 # Npm install
 COPY ./package.json /app/frontend/package.json
-COPY ./package-lock.json /app/frontend/package-lock.json
+COPY ./yarn.lock /app/frontend/yarn.lock
 WORKDIR /app/frontend
 RUN yarn install --verbose
 
