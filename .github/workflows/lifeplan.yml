@@ -47,6 +47,9 @@ jobs:
           mysql version: ${{ matrix.mysql-version }}
           mysql database: 'ndis'
           mysql root password: 'ndisFP2019'
+      - name: Wait for MySQL to be ready
+        run: |
+          until nc -z localhost 3306; do sleep 1; echo "Waiting for MySQL to be ready..."; done
       - name: Prepare for tests
         run: |
           cd backend/ndis_calculator
