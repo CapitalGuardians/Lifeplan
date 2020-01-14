@@ -1,6 +1,14 @@
 name: Lifeplan
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   backend:
@@ -46,6 +54,8 @@ jobs:
           python manage.py migrate --no-input
           python manage.py collectstatic --no-input
           python manage.py loaddata budgeting/fixtures/*
+        env:
+          DATABASE_HOST: localhost
       - name: Run tests
         run: |
           manage.py test budgeting
