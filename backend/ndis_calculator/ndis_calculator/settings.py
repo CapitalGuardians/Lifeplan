@@ -91,6 +91,7 @@ APPEND_SLASH = False
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
+DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
 
 print("DATABASE_HOST: ", DATABASE_HOST)
 
@@ -101,7 +102,7 @@ DATABASES = {
         "USER": "ndis",
         "PASSWORD": "ndisFP2019",
         "HOST": DATABASE_HOST,
-        "PORT": "3306",
+        "PORT": DATABASE_PORT,
         "OPTIONS": {"init_command": "SET foreign_key_checks = 0;"},
     }
 }
