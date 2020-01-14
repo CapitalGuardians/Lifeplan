@@ -25,8 +25,10 @@ jobs:
         image: mysql/mysql-server:${{ matrix.mysql-version }}
         env:
           MYSQL_DATABASE: ndis
+          MYSQL_USER: ndis
+          MYSQL_PASSWORD: ndisFP2019
           MYSQL_ROOT_PASSWORD: ndisFP2019
-          MYSQL_ROOT_HOST: "%"
+          MYSQL_ROOT_HOST: %
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -70,7 +72,7 @@ jobs:
           python manage.py collectstatic --no-input
           python manage.py loaddata budgeting/fixtures/*
         env:
-          DATABASE_HOST: "127.0.0.1"
+          DATABASE_HOST: 127.0.0.1
       - name: Run tests
         run: |
           manage.py test budgeting
