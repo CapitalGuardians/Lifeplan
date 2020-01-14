@@ -10,8 +10,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04]
         python-version: [3.7]
-        mysql-database: [ndis]
-        mysql-rootpassword: [ndisFP2019]
+        mysql-version: [8.0]
 
     steps:
       - uses: actions/checkout@v2
@@ -37,12 +36,9 @@ jobs:
       - name: Set up MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
-          mysql version: '8.0'
-          mysql database: ${{ matrix.mysql-database }}
-          mysql root password: ${{ matrix.mysql-rootpassword }}
-      - name: Wait for MySQL to be ready
-        run: |
-          timeout 120 /bin/bash -c 'until echo > /dev/tcp/mysql/3306; do sleep 2; done' > /dev/null 2>&1
+          mysql version: ${{ matrix.mysql-version }}
+          mysql database: 'ndis'
+          mysql root password: 'ndisFP2019'
       - name: Prepare for tests
         run: |
           cd backend/ndis_calculator
@@ -79,4 +75,4 @@ jobs:
           yarn --cwd frontend/ build
       - name: Run tests
         run: |
-          yarn --cwd frontend/ test --forceExit
+          CI=true yarn --cwd frontend/ test
