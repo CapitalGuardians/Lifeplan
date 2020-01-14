@@ -90,9 +90,7 @@ APPEND_SLASH = False
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASE_HOST = (
-    os.environ["DATABASE_HOST"] if "DATABASE_HOST" in os.environ else "db"
-)
+DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
 
 DATABASES = {
     "default": {
