@@ -47,13 +47,13 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             default-libmysqlclient-dev \
       - name: Install dependencies
+        working-directory: ./backend/ndis_calculator
         run: |
           python -m pip install --upgrade pip
-          cd backend/ndis_calculator
           pip install -r requirements.txt
       - name: Prepare for tests
+        working-directory: ./backend/ndis_calculator
         run: |
-          cd backend/ndis_calculator
           python manage.py makemigrations --no-input
           python manage.py migrate --no-input
           python manage.py collectstatic --no-input
@@ -66,6 +66,10 @@ jobs:
         working-directory: ./backend/ndis_calculator
         run: |
           python manage.py test budgeting
+        env:
+          DATABASE_USER: ndis
+          DATABASE_HOST: 127.0.0.1
+          DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
 
   frontend:
     runs-on: ${{ matrix.os }}

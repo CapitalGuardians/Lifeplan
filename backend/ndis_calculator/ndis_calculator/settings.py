@@ -94,8 +94,6 @@ DATABASE_USER = os.environ.get("DATABASE_USER", "root")
 DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
 DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
 
-print("DATABASE_HOST: ", DATABASE_HOST)
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -107,8 +105,6 @@ DATABASES = {
         "OPTIONS": {"init_command": "SET foreign_key_checks = 0;"},
     }
 }
-
-print("DATABASE_CONFIG: ", DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
