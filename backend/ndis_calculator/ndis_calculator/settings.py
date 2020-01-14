@@ -90,6 +90,7 @@ APPEND_SLASH = False
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+DATABASE_USER = os.environ.get("DATABASE_USER", "root")
 DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
 DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
 
@@ -99,7 +100,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "ndis",
-        "USER": "ndis",
+        "USER": DATABASE_USER,
         "PASSWORD": "ndisFP2019",
         "HOST": DATABASE_HOST,
         "PORT": DATABASE_PORT,

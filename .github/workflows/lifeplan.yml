@@ -28,8 +28,6 @@ jobs:
           MYSQL_USER: ndis
           MYSQL_PASSWORD: ndisFP2019
           MYSQL_HOST: 127.0.0.1
-          # MYSQL_ROOT_PASSWORD: ndisFP2019
-          # MYSQL_ROOT_HOST: "%"
         ports:
           - 3306/tcp
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -46,7 +44,6 @@ jobs:
           mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -undis -pndisFP2019 -e "SHOW DATABASES"
       - name: Install build dependencies
         run: |
-          sudo apt-get update && \
           sudo apt-get install -y --no-install-recommends \
             default-libmysqlclient-dev \
       - name: Install dependencies
@@ -54,17 +51,6 @@ jobs:
           python -m pip install --upgrade pip
           cd backend/ndis_calculator
           pip install -r requirements.txt
-      # - name: Shutdown Ubuntu MySQL (SUDO)
-      #   run: sudo service mysql stop
-      # - name: Set up MySQL
-      #   uses: mirromutth/mysql-action@v1.1
-      #   with:
-      #     mysql version: ${{ matrix.mysql-version }}
-      #     mysql database: 'ndis'
-      #     mysql root password: 'ndisFP2019'
-      # - name: Wait for MySQL to be ready
-      #   run: |
-      #     until nc -z 127.0.0.1 3306; do sleep 1; echo "Waiting for MySQL to be ready..."; done
       - name: Prepare for tests
         run: |
           cd backend/ndis_calculator
@@ -73,11 +59,13 @@ jobs:
           python manage.py collectstatic --no-input
           python manage.py loaddata budgeting/fixtures/*
         env:
+          DATABASE_USER: ndis
           DATABASE_HOST: 127.0.0.1
           DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Run tests
+        working-directory: ./backend/ndis_calculator
         run: |
-          manage.py test budgeting
+          python manage.py test budgeting
 
   frontend:
     runs-on: ${{ matrix.os }}
