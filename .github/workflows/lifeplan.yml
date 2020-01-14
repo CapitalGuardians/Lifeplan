@@ -70,7 +70,7 @@ jobs:
           python manage.py collectstatic --no-input
           python manage.py loaddata budgeting/fixtures/*
         env:
-          DATABASE_HOST: 127.0.0.1
+          DATABASE_HOST: "127.0.0.1"
       - name: Run tests
         run: |
           manage.py test budgeting
