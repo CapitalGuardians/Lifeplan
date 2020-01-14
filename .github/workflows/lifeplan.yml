@@ -14,8 +14,8 @@ jobs:
     services:
       mysql:
         image: mysql:8
-        ports:
-          - 3306:3306
+        # ports:
+        #   - 3306:3306
 
     steps:
       - uses: actions/checkout@v2
@@ -67,7 +67,7 @@ jobs:
           cat frontend/package.json
       - name: Install dependencies
         run: |
-          yarn --prefix frontend/
+          yarn --cwd frontend/
       - name: List global packages
         run: |
           yarn list -g
@@ -76,4 +76,4 @@ jobs:
           yarn build
       - name: Run tests
         run: |
-          yarn --prefix frontend/ test --exit
+          yarn --cwd frontend/ test --exit
