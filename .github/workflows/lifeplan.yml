@@ -79,4 +79,4 @@ jobs:
           yarn --cwd frontend/ build
       - name: Run tests
         run: |
-          yarn --cwd frontend/ test
+          yarn --cwd frontend/ test --forceExit
