@@ -10,8 +10,8 @@ jobs:
       matrix:
         os: [ubuntu-18.04]
         python-version: [3.7]
-        mysql-database: ndis
-        mysql-rootpassword: ndisFP2019
+        mysql-database: [ndis]
+        mysql-rootpassword: [ndisFP2019]
 
     steps:
       - uses: actions/checkout@v2
