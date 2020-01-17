@@ -306,23 +306,6 @@ export default function PlanAddEditor(props) {
             </Grid>
             <Grid item xs={12}>
               <Typography cvariant={"body1"} align={"left"}>
-                How many {unitTime} do you use this per {frequencyUsage}?
-              </Typography>
-              <FormControl margin={"normal"} required>
-                <InputLabel htmlFor={itemQuantity}>{unitTime}</InputLabel>
-                <Input
-                  id={itemQuantity}
-                  name={itemQuantity}
-                  autoComplete={itemQuantity}
-                  autoFocus
-                  defaultValue={values.quantity}
-                  onChange={e => handleChange(e)}
-                  //endAdornment={<InputAdornment position="end">per {frequencyUsage}</InputAdornment>}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography cvariant={"body1"} align={"left"}>
                 How much does each {unit} cost?
               </Typography>
               <FormControl margin={"normal"} required>
