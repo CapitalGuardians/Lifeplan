@@ -22,6 +22,16 @@ import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
+export const DAY_UNITS = ["H", "D", "EA"];
+const DAY_DAILY = "Every day";
+const DAY_WEEKLY = "Once or more per week recurringly";
+const DAY_MONTHLY = "Once or more per month recurringly";
+const DAY_YEARLY = "Specific times in the year";
+const WEEK_WEEKLY = "Weekly";
+const WEEK_FORTNIGHTLY = "Fortnightly";
+const WEEK_MONTHLY = "Monthly";
+
+
 const useStyles = makeStyles(theme => ({
   form: {
     width: "100%",
@@ -227,6 +237,47 @@ export default function PlanAddEditor(props) {
 
   const totalCost = calculateTotalCost(values);
 
+  const renderFrequencySelector = () => {
+    return (
+      DAY_UNITS.concat("WK").includes(supportItem.unit) &&
+      <div>
+        <Typography variant={"body1"} align={"left"}>
+          How often do you use this support item?
+        </Typography>
+        <FormControl margin={"normal"} required>
+          <InputLabel htmlFor={usageFrequency}>
+            Usage Frequency
+          </InputLabel>
+          <Select
+            value={values.frequencyPerYear}
+            autoWidth
+            onChange={e => handleChange(e)}
+            inputProps={{
+              name: usageFrequency,
+              id: usageFrequency
+            }}
+          >
+            {
+              DAY_UNITS.includes(supportItem.unit) &&
+                [
+                  <MenuItem value={DAY_DAILY} key={DAY_DAILY}>{DAY_DAILY}</MenuItem>,
+                  <MenuItem value={DAY_WEEKLY} key={DAY_WEEKLY}>{DAY_WEEKLY}</MenuItem>,
+                  <MenuItem value={DAY_MONTHLY} key={DAY_MONTHLY}>{DAY_MONTHLY}</MenuItem>,
+                  <MenuItem value={DAY_YEARLY} key={DAY_YEARLY}>{DAY_YEARLY}</MenuItem>
+                ]
+
+
+            }
+
+          </Select>
+          <FormHelperText>
+            Please select the frequency from the dropdown box
+          </FormHelperText>
+        </FormControl>
+      </div>
+    )
+  };
+
   return (
     <main>
       <DialogContent>
@@ -251,31 +302,7 @@ export default function PlanAddEditor(props) {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant={"body1"} align={"left"}>
-                How often do you use this support item?
-              </Typography>
-              <FormControl margin={"normal"} required>
-                <InputLabel htmlFor={usageFrequency}>
-                  Usage Frequency
-                </InputLabel>
-                <Select
-                  value={values.frequencyPerYear}
-                  autoWidth
-                  onChange={e => handleChange(e)}
-                  inputProps={{
-                    name: usageFrequency,
-                    id: usageFrequency
-                  }}
-                >
-                  {unitEnum >= 5 && <MenuItem value={365}>daily</MenuItem>}
-                  {unitEnum >= 4 && <MenuItem value={52}>weekly</MenuItem>}
-                  {unitEnum >= 3 && <MenuItem value={12}>monthly</MenuItem>}
-                  {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
-                </Select>
-                <FormHelperText>
-                  Please select the frequency from the dropdown box
-                </FormHelperText>
-              </FormControl>
+              {renderFrequencySelector()}
             </Grid>
             <Grid item xs={12}>
               <Typography cvariant={"body1"} align={"left"}>
@@ -291,7 +318,7 @@ export default function PlanAddEditor(props) {
                   defaultValue={values.quantity}
                   onChange={e => handleChange(e)}
                   //endAdornment={<InputAdornment position="end">per {frequencyUsage}</InputAdornment>}
-                ></Input>
+                />
               </FormControl>
             </Grid>
             <Grid item xs={12}>
@@ -310,7 +337,7 @@ export default function PlanAddEditor(props) {
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>
                   }
-                ></Input>
+                />
               </FormControl>
             </Grid>
             <Grid item xs={12}>
