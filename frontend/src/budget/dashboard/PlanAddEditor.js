@@ -25,7 +25,6 @@ import CustomDatePicker from "./CustomDatePicker";
 import _ from "lodash";
 import isSameDay from "date-fns/isSameDay";
 
-
 export const DAY_UNITS = ["H", "D", "EA"];
 const DAY_DAILY = "Every day";
 const DAY_WEEKLY = "Once or more per week recurringly";
@@ -37,13 +36,11 @@ const DAY_YEARLY = "Specific times in the year";
 // const WEEK_MONTHLY = "Monthly";
 // const WEEK_YEARLY = "Specific weeks of the year";
 
-
 export const DAILY = "DAILY";
 export const WEEKLY = "WEEKLY";
 //export const FORTNIGHTLY = "FORTNIGHTLY";
 export const MONTHLY = "MONTHLY";
 export const YEARLY = "YEARLY";
-
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -239,12 +236,11 @@ export default function PlanAddEditor(props) {
     name: name,
     priceActual: price,
     quantity: quantity,
-    frequencyPerYear: frequency,
+    frequencyPerYear: frequency
   });
   const [itemStartDates, setItemStartDates] = useState([]);
 
-  const handleDayYearlyDateChange = (date) => {
-
+  const handleDayYearlyDateChange = date => {
     const newItemStartDates = _.unionWith([date], itemStartDates, isSameDay);
 
     setItemStartDates(newItemStartDates);
@@ -258,51 +254,51 @@ export default function PlanAddEditor(props) {
 
   const renderFrequencySelector = () => {
     return (
-      DAY_UNITS.concat("WK").includes(supportItem.unit) &&
-      <>
-        <Typography variant={"body1"} align={"left"}>
-          How often do you use this support item?
-        </Typography>
-        <FormControl margin={"normal"} required>
-          <InputLabel htmlFor={usageFrequency}>
-            Usage Frequency
-          </InputLabel>
-          <Select
-            value={values.frequencyPerYear}
-            autoWidth
-            onChange={e => handleChange(e)}
-            inputProps={{
-              name: usageFrequency,
-              id: usageFrequency
-            }}
-          >
-            {
-              DAY_UNITS.includes(supportItem.unit) &&
-                [
-                  <MenuItem value={YEARLY} key={DAY_YEARLY}>{DAY_YEARLY}</MenuItem>,
-                  <MenuItem value={MONTHLY} key={DAY_MONTHLY}>{DAY_MONTHLY}</MenuItem>,
-                  <MenuItem value={WEEKLY} key={DAY_WEEKLY}>{DAY_WEEKLY}</MenuItem>,
-                  <MenuItem value={DAILY} key={DAY_DAILY}>{DAY_DAILY}</MenuItem>
-                ]
-
-
-            }
-
-          </Select>
-          <FormHelperText>
-            Please select the frequency from the dropdown box
-          </FormHelperText>
-        </FormControl>
-      </>
-    )
+      DAY_UNITS.concat("WK").includes(supportItem.unit) && (
+        <>
+          <Typography variant={"body1"} align={"left"}>
+            How often do you use this support item?
+          </Typography>
+          <FormControl margin={"normal"} required>
+            <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
+            <Select
+              value={values.frequencyPerYear}
+              autoWidth
+              onChange={e => handleChange(e)}
+              inputProps={{
+                name: usageFrequency,
+                id: usageFrequency
+              }}
+            >
+              {DAY_UNITS.includes(supportItem.unit) && [
+                <MenuItem value={YEARLY} key={DAY_YEARLY}>
+                  {DAY_YEARLY}
+                </MenuItem>,
+                <MenuItem value={MONTHLY} key={DAY_MONTHLY}>
+                  {DAY_MONTHLY}
+                </MenuItem>,
+                <MenuItem value={WEEKLY} key={DAY_WEEKLY}>
+                  {DAY_WEEKLY}
+                </MenuItem>,
+                <MenuItem value={DAILY} key={DAY_DAILY}>
+                  {DAY_DAILY}
+                </MenuItem>
+              ]}
+            </Select>
+            <FormHelperText>
+              Please select the frequency from the dropdown box
+            </FormHelperText>
+          </FormControl>
+        </>
+      )
+    );
   };
 
   const renderStartDatePicker = () => {
-    if (DAY_UNITS.concat("WK").includes(supportItem.unit))
-    {return(
-      <>
-        {
-          [YEARLY, MONTHLY].includes(values.frequencyPerYear) &&
+    if (DAY_UNITS.concat("WK").includes(supportItem.unit)) {
+      return (
+        <>
+          {[YEARLY, MONTHLY].includes(values.frequencyPerYear) && (
             <>
               <Typography variant={"body1"} align={"left"}>
                 Please select the starting date/s
@@ -314,9 +310,10 @@ export default function PlanAddEditor(props) {
                 itemStartDates={itemStartDates}
               />
             </>
-        }
-      </>
-    )}
+          )}
+        </>
+      );
+    }
   };
 
   return (
