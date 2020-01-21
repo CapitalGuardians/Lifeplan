@@ -44,7 +44,7 @@ const styles = {
 };
 
 
-
+//test
 function mapStateToProps(state) {
   return {
     currentUser: state.auth.currentUser
