@@ -231,7 +231,6 @@ export default function PlanAddEditor(props) {
     );
   }
 
-// test
   const usageFrequency = "frequencyPerYear";
   const supportItemName = "name";
   const itemPrice = "priceActual";
