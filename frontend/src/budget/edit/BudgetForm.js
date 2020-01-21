@@ -16,10 +16,10 @@ import api from "../../api";
 import Button from "@material-ui/core/Button/index";
 import _ from "lodash";
 import connect from "react-redux/es/connect/connect";
-import {LocalStorageKeys} from "../../common/constants";
+import { LocalStorageKeys } from "../../common/constants";
 
 function dateToString(date) {
-  return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
 const styles = {
@@ -42,6 +42,8 @@ const styles = {
     color: "grey"
   }
 };
+
+//test
 
 function mapStateToProps(state) {
   return {
@@ -84,11 +86,10 @@ class FormPersonalDetails extends React.Component {
     planCategories: {},
     showErrors: false,
     errors: {},
-    planId:null
+    planId: null
   };
 
   componentDidMount() {
-
     api.SupportGroups.all()
       .then(response => {
         this.loadState(response.data);
@@ -107,7 +108,6 @@ class FormPersonalDetails extends React.Component {
   }
 
   loadState = async supportGroups => {
-
     this.setState({ supportGroups: [...supportGroups] });
     let planCategories = {};
     let birthYear;
@@ -132,19 +132,17 @@ class FormPersonalDetails extends React.Component {
           });
           startDate = today;
           endDate = getYearFromToday();
-        }
-        else {
+        } else {
           const plan = response.data[0];
-          this.setState({planId: plan.id});
+          this.setState({ planId: plan.id });
           startDate = new Date(plan.startDate);
           endDate = new Date(plan.endDate);
           _.map(plan.planCategories, planCategory => {
             planCategories[planCategory.supportCategory] = {
               ...planCategory
-            }
+            };
           });
         }
-
       });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -170,15 +168,13 @@ class FormPersonalDetails extends React.Component {
       endDate = cachedEndDate ? new Date(cachedEndDate) : getYearFromToday();
     }
 
-    this.setState(
-      {
-        planCategories,
-        birthYear,
-        postcode,
-        startDate,
-        endDate
-      }
-    );
+    this.setState({
+      planCategories,
+      birthYear,
+      postcode,
+      startDate,
+      endDate
+    });
   };
 
   // handle money input
@@ -202,11 +198,8 @@ class FormPersonalDetails extends React.Component {
           }
         }
       });
-
     }
   };
-
-
 
   // handle postcode input by limiting it to 4 digits (also works for year)
   handlePostCodeChange = input => e => {
@@ -228,28 +221,28 @@ class FormPersonalDetails extends React.Component {
           startDate: dateToString(this.state.startDate),
           endDate: dateToString(this.state.endDate)
         };
-        const categories =
-        _.map(this.state.planCategories, (planCategory, supportCategory) => {
-          return {
-            ...planCategory,
-            supportCategory: supportCategory,
-            budget: planCategory.budget
+        const categories = _.map(
+          this.state.planCategories,
+          (planCategory, supportCategory) => {
+            return {
+              ...planCategory,
+              supportCategory: supportCategory,
+              budget: planCategory.budget
+            };
           }
-        });
+        );
         if (this.state.planId == null) {
           body.supportCategories = categories;
           api.Plans.create(body).then(() => {
             this.props.history.push("/budget/dashboard");
           });
-        }
-        else {
+        } else {
           body.planCategories = categories;
           api.Plans.update(this.state.planId, body).then(() => {
             this.props.history.push("/budget/dashboard");
           });
         }
-      }
-      else {
+      } else {
         localStorage.setItem("postcode", this.state.postcode);
         localStorage.setItem("birthYear", this.state.birthYear);
         localStorage.setItem("startDate", this.state.startDate);
@@ -270,7 +263,10 @@ class FormPersonalDetails extends React.Component {
   validate = () => {
     let errors = {};
 
-    if (this.state.postcode == null || this.state.postcode.toString().length !== 4) {
+    if (
+      this.state.postcode == null ||
+      this.state.postcode.toString().length !== 4
+    ) {
       //this.log.console("postcode is not filled");
       errors.postcode = "Invalid Postcode";
     }
