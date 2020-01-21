@@ -34,7 +34,8 @@
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-dockerless": "react-scripts start"
+    "start-dockerless": "react-scripts start",
+    "precommit": "yarn pretty-quick --staged"
   },
   "eslintConfig": {
     "extends": "react-app"
