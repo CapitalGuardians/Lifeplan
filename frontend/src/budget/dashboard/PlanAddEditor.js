@@ -99,7 +99,7 @@ export default function PlanAddEditor(props) {
   }
 
   function createNewPlanItem(values, supportItemGroup) {
-    console.log(supportItemGroup);
+    // console.log(supportItemGroup);
     const planItem = {
       supportItemGroup: supportItemGroup,
       ...values
@@ -241,12 +241,18 @@ export default function PlanAddEditor(props) {
   });
   const [itemStartDates, setItemStartDates] = useState([]);
 
-  const events = _.map(itemStartDates, startDate => {
-    return { title: values.name, date: startDate, allDay: true };
-  });
+  const newEvents = () => {
+    if (["D", "EA"].includes(supportItem.unit)) {
+      if (values.frequencyPerYear === YEARLY) {
+        return _.map(itemStartDates, startDate => {
+          return { title: values.name, date: startDate, allDay: true };
+        });
+      }
+    }
+  };
 
   const handleDayYearlyDateChange = date => {
-    const newItemStartDates = _.unionWith([date], itemStartDates, isSameDay);
+    const newItemStartDates = _.xorWith([date], itemStartDates, isSameDay);
 
     setItemStartDates(newItemStartDates);
   };
@@ -371,7 +377,7 @@ export default function PlanAddEditor(props) {
             </Grid>
           </Grid>
         </form>
-        <CustomCalendar dayEvents={events} />
+        <CustomCalendar newEvents={newEvents()} />
       </DialogContent>
       <DialogActions>
         <Button variant={"text"} onClick={onClickBack}>

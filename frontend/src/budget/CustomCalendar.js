@@ -6,13 +6,13 @@ import "@fullcalendar/daygrid/main.css";
 import _ from "lodash";
 
 export default function CustomCalendar(props) {
-  const { dayEvents } = props;
+  const { newEvents } = props;
 
   return (
     <FullCalendar
       defaultView="dayGridMonth"
       plugins={[dayGridPlugin]}
-      events={dayEvents}
+      events={newEvents}
     />
   );
 }
