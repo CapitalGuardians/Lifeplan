@@ -5,7 +5,6 @@ import BudgetEdit from "./budget/edit/BudgetEdit.js";
 import "./App.css";
 import NavBar from "./common/NavBar";
 import BudgetDashboard from "./budget/dashboard/BudgetDashboard";
-import DoughnutChartPage from "./DoughnutChart/Body/DoughnutChartPage";
 import SignIn from "./authentication/SignIn";
 import SignUp from "./authentication/SignUp";
 import { LocalStorageKeys } from "./common/constants";
@@ -34,9 +33,8 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-
 async function fetchUser(loadUser) {
-  const response =  await api.Participants.currentUser();
+  const response = await api.Participants.currentUser();
   loadUser(response.data);
 }
 
@@ -75,10 +73,6 @@ function App(props) {
           <Route exact path="/" component={Home} />
           <Route path="/budget/edit" component={BudgetEdit} />
           <Route path="/budget/dashboard" component={BudgetDashboard} />
-          <Route
-            path="/DoughnutChart/Body/DoughnutChart"
-            component={DoughnutChartPage}
-          />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
         </Switch>
@@ -87,7 +81,4 @@ function App(props) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -2,7 +2,7 @@ import React from "react";
 import BudgetCategorySection from "./BudgetCategorySection";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
-import {Button, CardActions, CardContent} from "@material-ui/core";
+import { Button, CardActions, CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -14,16 +14,15 @@ import connect from "react-redux/es/connect/connect";
 import { LocalStorageKeys } from "../../common/constants";
 import EditIcon from "@material-ui/icons/Edit";
 import PrintIcon from "@material-ui/icons/Print";
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer from "react-dom/server";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
 
-
-
 const PLAN_CATEGORIES = "planCategories";
+export const OPEN_ADD_SUPPORTS = 1;
 
 function printPage(planCategories) {
   let w = window.open();
@@ -40,48 +39,34 @@ function printPage(planCategories) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {
-          _.map(planCategories, planCategory => {
+        {_.map(planCategories, planCategory => {
+          return _.map(planCategory.planItems, planItem => {
+            let frequency = "Yearly";
+            if (planItem.frequencyPerYear === 365) {
+              frequency = "Daily";
+            } else if (planItem.frequencyPerYear === 52) {
+              frequency = "Weekly";
+            } else if (planItem.frequencyPerYear === 12) {
+              frequency = "Monthly";
+            }
+            const total =
+              planItem.priceActual *
+              planItem.quantity *
+              planItem.frequencyPerYear;
             return (
-              _.map(planCategory.planItems, planItem => {
-                let frequency = "Yearly";
-                if (planItem.frequencyPerYear === 365) {
-                  frequency = "Daily"
-                }
-                else if (planItem.frequencyPerYear === 52) {
-                  frequency = "Weekly"
-                }
-                else if (planItem.frequencyPerYear === 12) {
-                  frequency = "Monthly"
-                }
-                const total = planItem.priceActual * planItem.quantity * planItem.frequencyPerYear;
-                return (
-                  <TableRow key={planItem.id}>
-                    <TableCell>
-                      {planItem.name}
-                    </TableCell>
-                    <TableCell>
-                      ${planItem.priceActual}
-                    </TableCell>
-                    <TableCell>
-                      {planItem.quantity}
-                    </TableCell>
-                    <TableCell>
-                      {frequency}
-                    </TableCell>
-                    <TableCell>
-                      ${total}
-                    </TableCell>
-                  </TableRow>
-                )
-              })
-            )
-          })
-        }
+              <TableRow key={planItem.id}>
+                <TableCell>{planItem.name}</TableCell>
+                <TableCell>${planItem.priceActual}</TableCell>
+                <TableCell>{planItem.quantity}</TableCell>
+                <TableCell>{frequency}</TableCell>
+                <TableCell>${total}</TableCell>
+              </TableRow>
+            );
+          });
+        })}
       </TableBody>
     </Table>
   );
-
 
   w.document.write(html);
   w.window.print();
@@ -114,7 +99,8 @@ class BudgetDashBoard extends React.Component {
     activeCategory: null,
     birthYear: 1990,
     postcode: 3000,
-    planId: null
+    planId: null,
+    openAddSupports: 0
   };
 
   async componentDidMount() {
@@ -126,9 +112,6 @@ class BudgetDashBoard extends React.Component {
       .catch(error => {
         console.log(error);
       });
-
-
-
   }
 
   componentDidUpdate(prevProps, prevState, snapShot) {
@@ -156,21 +139,18 @@ class BudgetDashBoard extends React.Component {
       await api.Plans.list().then(async response => {
         if (response.data.length === 0) {
           window.location.href = "/budget/edit";
-
-        }
-        else {
+        } else {
           const plan = response.data[0];
-          this.setState({planId: plan.id});
+          this.setState({ planId: plan.id });
           await Promise.all(
             _.map(plan.planCategories, async planCategory => {
               const response = await api.PlanItems.list(planCategory.id);
               planCategories[planCategory.supportCategory] = {
                 ...planCategory,
-                planItems:response.data
-              }
+                planItems: response.data
+              };
             })
-          )
-
+          );
         }
       });
       this.setState({
@@ -213,9 +193,13 @@ class BudgetDashBoard extends React.Component {
     return result;
   };
 
-  handleOpenSupports = supportCategoryId => {
+  handleOpenSupports = (supportCategoryId, openAddSupports) => {
     this.setState({ activeCategory: supportCategoryId }, () => {
-      this.setState({ openSupports: true });
+      this.setState({ openAddSupports: OPEN_ADD_SUPPORTS }, () => {
+        this.setState({ openSupports: true }, () => {
+          this.setState({ openAddSupports: 0 });
+        });
+      });
     });
   };
 
@@ -263,15 +247,15 @@ class BudgetDashBoard extends React.Component {
     const available = total - allocated;
     return (
       <Card>
-        <CardHeader
-          title="Budget Summary"
-
-        />
+        <CardHeader title="Budget Summary" />
         <CardContent>
           <Grid container>
             <Grid item xs={12} sm={8} md={6} lg={4}>
-              {total === 0 ?
-                <div>No budgets allocated to any category! Please edit your plan.</div> :
+              {total === 0 ? (
+                <div>
+                  No budgets allocated to any category! Please edit your plan.
+                </div>
+              ) : (
                 <Doughnut
                   legend={{
                     // display:false,
@@ -286,27 +270,36 @@ class BudgetDashBoard extends React.Component {
                     datasets: [
                       {
                         data: available >= 0 ? [allocated, available] : [1, 0],
-                        backgroundColor: available >=0 ? [DARK_BLUE, LIGHT_BLUE] : ["red", LIGHT_BLUE]
+                        backgroundColor:
+                          available >= 0
+                            ? [DARK_BLUE, LIGHT_BLUE]
+                            : ["red", LIGHT_BLUE]
                       }
                     ]
                   }}
                   options={{
                     tooltips: { enabled: false }
                   }}
-                />}
-
+                />
+              )}
             </Grid>
           </Grid>
         </CardContent>
-        <CardActions disableSpacing >
+        <CardActions disableSpacing>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button  onClick={() => (window.location.href = "/budget/edit")} size="small">
-                <EditIcon/>
+              <Button
+                onClick={() => (window.location.href = "/budget/edit")}
+                size="small"
+              >
+                <EditIcon />
                 Edit Plan
               </Button>
-              <Button  onClick={() => printPage(this.state.planCategories)} size="small">
-                <PrintIcon/>
+              <Button
+                onClick={() => printPage(this.state.planCategories)}
+                size="small"
+              >
+                <PrintIcon />
                 Print Plan
               </Button>
             </Grid>
@@ -340,16 +333,16 @@ class BudgetDashBoard extends React.Component {
                     totalColor: LIGHT_BLUE,
                     allocatedColor: DARK_BLUE
                   }}
-                  openSupports={() => this.handleOpenSupports(3)}
+                  openSupports={openAddSupports =>
+                    this.handleOpenSupports(3, openAddSupports)
+                  }
                 />
               </Grid>
             </BudgetCategorySection>
           );
+        } else {
+          return;
         }
-        else {
-          return
-        }
-
       }
 
       let renderedPlanCategories = [];
@@ -387,8 +380,11 @@ class BudgetDashBoard extends React.Component {
                         totalColor: LIGHT_BLUE,
                         allocatedColor: DARK_BLUE
                       }}
-                      openSupports={() =>
-                        this.handleOpenSupports(supportCategory.id)
+                      openSupports={openAddSupports =>
+                        this.handleOpenSupports(
+                          supportCategory.id,
+                          openAddSupports
+                        )
                       }
                     />
                   </Grid>
@@ -398,7 +394,6 @@ class BudgetDashBoard extends React.Component {
           </BudgetCategorySection>
         );
       }
-
     });
   };
 
@@ -425,6 +420,7 @@ class BudgetDashBoard extends React.Component {
             onClose={this.handleCloseSupports}
             planCategory={this.state.planCategories[this.state.activeCategory]}
             setPlanItems={this.handleSetPlanItems}
+            openAddSupports={this.state.openAddSupports}
           />
         )}
       </div>

@@ -10,6 +10,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import CardHeader from "@material-ui/core/CardHeader";
 import { Doughnut } from "react-chartjs-2";
 import classNames from "classnames";
+import { OPEN_ADD_SUPPORTS } from "../../budget/dashboard/BudgetDashboard";
 
 const styles = {
   cardHeader: { height: 80 },
@@ -46,7 +47,10 @@ class BudgetCategoryCard extends Component {
               datasets: [
                 {
                   data: available >= 0 ? [allocated, available] : [1, 0],
-                  backgroundColor: available >= 0 ? [allocatedColor, totalColor] : ["red", totalColor]
+                  backgroundColor:
+                    available >= 0
+                      ? [allocatedColor, totalColor]
+                      : ["red", totalColor]
                 }
               ]
             }}
@@ -58,7 +62,15 @@ class BudgetCategoryCard extends Component {
         <CardActions disableSpacing className={classes.noVerticalPadding}>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button onClick={this.props.openSupports} size="small">
+              <Button
+                onClick={() => this.props.openSupports(OPEN_ADD_SUPPORTS)}
+                size="small"
+              >
+                Add
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button onClick={() => this.props.openSupports(0)} size="small">
                 View
               </Button>
             </Grid>

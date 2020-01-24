@@ -22,7 +22,6 @@ import PlanItemEditor from "./PlanItemEditor";
 import PlanAddEditor from "./PlanAddEditor";
 import { useSelector } from "react-redux";
 
-
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
     backgroundColor: DARK_BLUE,
@@ -75,7 +74,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
+const SUPPORTS_LIST = 0;
+const SUPPORTS_SELECTION = 1;
+const EDIT_SUPPORT = 2;
+const ADD_SUPPORT = 3;
 
 export default function SupportItemSelector(props) {
   const {
@@ -83,7 +85,8 @@ export default function SupportItemSelector(props) {
     postcode,
     planCategory,
     supportCategory,
-    setPlanItems
+    setPlanItems,
+    openAddSupports
   } = props;
 
   const theme = useTheme();
@@ -97,7 +100,9 @@ export default function SupportItemSelector(props) {
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   // number representing current page
   // 0: supports list; 1: supports selection; 2: edit support; 3: add support
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(
+    openAddSupports === 0 ? SUPPORTS_LIST : SUPPORTS_SELECTION
+  );
   // set of support returned from search
   const [searchResults, setSearchResults] = useState([]);
   // text typed into search bar
@@ -109,7 +114,6 @@ export default function SupportItemSelector(props) {
   const currentUser = useSelector(state => state.auth.currentUser);
 
   const classes = useStyles();
-
 
   // api call to load support items
   useEffect(() => {
@@ -123,25 +127,21 @@ export default function SupportItemSelector(props) {
         registrationGroupId
       };
       Promise.all([
-        api.SupportItemGroups.get({...body, supportCategoryID:3}),
-        api.SupportItemGroups.get({...body, supportCategoryID:4}),
-        api.SupportItemGroups.get({...body, supportCategoryID:5}),
-        api.SupportItemGroups.get({...body, supportCategoryID:6})
-        ]
-      ).then(responses => {
+        api.SupportItemGroups.get({ ...body, supportCategoryID: 3 }),
+        api.SupportItemGroups.get({ ...body, supportCategoryID: 4 }),
+        api.SupportItemGroups.get({ ...body, supportCategoryID: 5 }),
+        api.SupportItemGroups.get({ ...body, supportCategoryID: 6 })
+      ]).then(responses => {
         _.map(responses, response => {
-
           const newItems = response.data.map(supportItem => {
-                  supportItem.label = supportItem.name;
-                  return supportItem;
-                });
+            supportItem.label = supportItem.name;
+            return supportItem;
+          });
           items = [...items, ...newItems];
         });
         setSupportItems(items);
         setSearchResults(items);
-
-      })
-
+      });
     } else {
       // load single category
       api.SupportItemGroups.get({
@@ -161,22 +161,20 @@ export default function SupportItemSelector(props) {
     }
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
-
-
   function goToSupportsList() {
-    setPage(0);
+    setPage(SUPPORTS_LIST);
   }
 
   function goToSupportSelection() {
-    setPage(1);
+    setPage(SUPPORTS_SELECTION);
   }
 
   function goToEditSupport() {
-    setPage(2);
+    setPage(EDIT_SUPPORT);
   }
 
   function goToAddSupport() {
-    setPage(3);
+    setPage(ADD_SUPPORT);
   }
 
   function handleClose() {
@@ -188,10 +186,8 @@ export default function SupportItemSelector(props) {
     if (currentUser) {
       api.PlanItems.create(planCategory.id, planItem).then(() => {
         setPlanItems([planItem, ...planItems]);
-
-      })
-    }
-    else {
+      });
+    } else {
       setPlanItems([planItem, ...planItems]);
     }
   }
@@ -234,19 +230,15 @@ export default function SupportItemSelector(props) {
     if (currentUser) {
       api.PlanItems.delete(planItem.id).then(() => {
         setPlanItems(_.difference(planCategory.planItems, [planItem]));
-
-      })
-    }
-    else {
+      });
+    } else {
       setPlanItems(_.difference(planCategory.planItems, [planItem]));
-
     }
 
     //saveToLocalStorage(planCategory.planItems);
   }
 
   function handleItemUpdate(planItem, values) {
-
     if (currentUser) {
       api.PlanItems.update(planItem.id, values).then(() => {
         setPlanItems(
@@ -260,9 +252,8 @@ export default function SupportItemSelector(props) {
             return item;
           })
         );
-      })
-    }
-    else {
+      });
+    } else {
       setPlanItems(
         planCategory.planItems.map((item, index) => {
           if (planItem === item) {
@@ -275,7 +266,6 @@ export default function SupportItemSelector(props) {
         })
       );
     }
-
   }
 
   // unused for now
@@ -401,8 +391,8 @@ export default function SupportItemSelector(props) {
   function renderPlanActions() {
     return (
       <DialogActions>
-        <Button onClick={handleClose}>Save & Close</Button>
-        {!matchesMd && <Button onClick={goToSupportSelection}>Add New</Button>}
+        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={goToSupportSelection}>Add New</Button>
       </DialogActions>
     );
   }
@@ -489,24 +479,13 @@ export default function SupportItemSelector(props) {
       <Dialog
         fullScreen={!matchesMd}
         fullWidth
-        maxWidth="md"
+        maxWidth={false}
         open={props.open}
         onClose={handleClose}
       >
         <DialogTitle className={classes.dialogTitle}>
           <Grid container justify="space-between">
-
             <div>{supportCategory.name} supports </div>
-            {page !== 1 && page !== 2 && page !== 3 && matchesMd && (
-
-              <Button
-                variant="contained"
-                onClick={goToSupportSelection}
-                className={classes.blackButton}
-              >
-                Add New Item
-              </Button>
-            )}
           </Grid>
         </DialogTitle>
         {content}
