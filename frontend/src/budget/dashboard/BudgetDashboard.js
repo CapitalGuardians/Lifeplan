@@ -194,13 +194,14 @@ class BudgetDashBoard extends React.Component {
   };
 
   handleOpenSupports = (supportCategoryId, openAddSupports) => {
-    this.setState({ activeCategory: supportCategoryId }, () => {
-      this.setState({ openAddSupports: OPEN_ADD_SUPPORTS }, () => {
+    this.setState(
+      { activeCategory: supportCategoryId, openAddSupports: openAddSupports },
+      () => {
         this.setState({ openSupports: true }, () => {
           this.setState({ openAddSupports: 0 });
         });
-      });
-    });
+      }
+    );
   };
 
   handleCloseSupports = () => {
