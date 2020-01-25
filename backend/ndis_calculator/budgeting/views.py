@@ -327,6 +327,8 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
         serializer = self.serializer_class(queryset, many=True)
 
+        print(serializer.data[0])
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

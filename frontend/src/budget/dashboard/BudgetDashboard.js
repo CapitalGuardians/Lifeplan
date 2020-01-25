@@ -100,7 +100,8 @@ class BudgetDashBoard extends React.Component {
     birthYear: 1990,
     postcode: 3000,
     planId: null,
-    openAddSupports: 0
+    openAddSupports: 0,
+    registrationGroups: []
   };
 
   async componentDidMount() {
@@ -112,6 +113,9 @@ class BudgetDashBoard extends React.Component {
       .catch(error => {
         console.log(error);
       });
+    api.RegistrationGroups.list().then(response => {
+      this.setState({ registrationGroups: response.data });
+    });
   }
 
   componentDidUpdate(prevProps, prevState, snapShot) {
@@ -422,6 +426,7 @@ class BudgetDashBoard extends React.Component {
             planCategory={this.state.planCategories[this.state.activeCategory]}
             setPlanItems={this.handleSetPlanItems}
             openAddSupports={this.state.openAddSupports}
+            registrationGroups={this.state.registrationGroups}
           />
         )}
       </div>

@@ -125,7 +125,14 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SupportItemGroup
-        fields = ["id", "name", "unit", "price", "description"]
+        fields = [
+            "id",
+            "name",
+            "unit",
+            "price",
+            "description",
+            "registration_group_id",
+        ]
 
 
 class SupportItemSerializer(serializers.ModelSerializer):
