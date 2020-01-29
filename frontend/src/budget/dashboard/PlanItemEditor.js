@@ -23,14 +23,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { DAY_UNITS } from "./PlanAddEditor";
 
-
-
-
-
-
-
-
-
 const useStyles = makeStyles(theme => ({
   form: {
     width: "100%",
@@ -245,38 +237,36 @@ export default function PlanItemEditor(props) {
     values.quantity
   ).toFixed(2);
 
-
   const renderFrequencySelector = () => {
     return (
-      DAY_UNITS.concat("WK").includes(editedItem.unit) &&
-      <div>
-        <Typography variant={"body1"} align={"left"}>
-          How often do you use this support item?
-        </Typography>
-        <FormControl margin={"normal"} required>
-          <InputLabel htmlFor={usageFrequency}>
-            Usage Frequency
-          </InputLabel>
-          <Select
-            value={values.frequencyPerYear}
-            autoWidth
-            onChange={e => handleChange(e)}
-            inputProps={{
-              name: usageFrequency,
-              id: usageFrequency
-            }}
-          >
-            {unitEnum >= 5 && <MenuItem value={365}>daily</MenuItem>}
-            {unitEnum >= 4 && <MenuItem value={52}>weekly</MenuItem>}
-            {unitEnum >= 3 && <MenuItem value={12}>monthly</MenuItem>}
-            {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
-          </Select>
-          <FormHelperText>
-            Please select the frequency from the dropdown box
-          </FormHelperText>
-        </FormControl>
-      </div>
-    )
+      DAY_UNITS.concat("WK").includes(editedItem.unit) && (
+        <div>
+          <Typography variant={"body1"} align={"left"}>
+            How often do you use this support item?
+          </Typography>
+          <FormControl margin={"normal"} required>
+            <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
+            <Select
+              value={values.frequencyPerYear}
+              autoWidth
+              onChange={e => handleChange(e)}
+              inputProps={{
+                name: usageFrequency,
+                id: usageFrequency
+              }}
+            >
+              {unitEnum >= 5 && <MenuItem value={365}>daily</MenuItem>}
+              {unitEnum >= 4 && <MenuItem value={52}>weekly</MenuItem>}
+              {unitEnum >= 3 && <MenuItem value={12}>monthly</MenuItem>}
+              {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
+            </Select>
+            <FormHelperText>
+              Please select the frequency from the dropdown box
+            </FormHelperText>
+          </FormControl>
+        </div>
+      )
+    );
   };
 
   return (

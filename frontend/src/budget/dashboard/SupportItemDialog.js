@@ -6,7 +6,7 @@ import Fab from "@material-ui/core/Fab";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import api from "../../api";
-import { DialogContent, Popover } from "@material-ui/core";
+import { DialogContent } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -22,13 +22,24 @@ import PlanItemEditor from "./PlanItemEditor";
 import PlanAddEditor from "./PlanAddEditor";
 import { useSelector } from "react-redux";
 import Divider from "@material-ui/core/Divider";
-import Chip from "@material-ui/core/Chip";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
+import classNames from "classnames";
+import {
+  ADD_SUPPORT,
+  EDIT_SUPPORT,
+  SUPPORTS_LIST,
+  SUPPORTS_SELECTION
+} from "./BudgetDashboard";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import Toolbar from "@material-ui/core/Toolbar";
+import AppBar from "@material-ui/core/AppBar";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -79,23 +90,29 @@ const useStyles = makeStyles(theme => ({
       marginLeft: "auto",
       marginRight: "auto"
     }
+  },
+  planItemText: {
+    textAlign: "left"
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1
+  },
+  appBar: {
+    position: "relative"
   }
 }));
 
-const SUPPORTS_LIST = 0;
-const SUPPORTS_SELECTION = 1;
-const EDIT_SUPPORT = 2;
-const ADD_SUPPORT = 3;
-
-export default function SupportItemSelector(props) {
+export default function SupportItemDialog(props) {
   const {
     birthYear,
     postcode,
     planCategory,
     supportCategory,
     setPlanItems,
-    openAddSupports,
-    registrationGroups
+    registrationGroups,
+    page,
+    setPage
   } = props;
 
   const theme = useTheme();
@@ -109,9 +126,9 @@ export default function SupportItemSelector(props) {
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   // number representing current page
   // 0: supports list; 1: supports selection; 2: edit support; 3: add support
-  const [page, setPage] = useState(
-    openAddSupports === 0 ? SUPPORTS_LIST : SUPPORTS_SELECTION
-  );
+  // const [page, setPage] = useState(
+  //   openAddSupports === 0 ? SUPPORTS_LIST : SUPPORTS_SELECTION
+  // );
   // set of support returned from search
   const [searchResults, setSearchResults] = useState([]);
   // text typed into search bar
@@ -146,7 +163,7 @@ export default function SupportItemSelector(props) {
         api.SupportItemGroups.get({ ...body, supportCategoryID: 6 })
       ]).then(responses => {
         _.map(responses, response => {
-          console.log(response.data);
+          // console.log(response.data);
 
           const newItems = response.data.map(supportItem => {
             return {
@@ -167,7 +184,7 @@ export default function SupportItemSelector(props) {
         supportCategoryID: supportCategory.id,
         registrationGroupId
       }).then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         const items = response.data.map(supportItem => {
           return {
             ...supportItem,
@@ -182,7 +199,7 @@ export default function SupportItemSelector(props) {
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
   useEffect(() => {
-    if (registrationGroupIdFilter !== -1) {
+    if (registrationGroupIdFilter !== "") {
       setSearchResults(
         _.filter(supportItems, {
           registrationGroupId: registrationGroupIdFilter
@@ -191,7 +208,7 @@ export default function SupportItemSelector(props) {
     } else {
       setSearchResults(supportItems);
     }
-  }, [registrationGroupIdFilter]);
+  }, [registrationGroupIdFilter, supportItems]);
 
   useEffect(() => {
     setSearchResults(
@@ -199,7 +216,12 @@ export default function SupportItemSelector(props) {
         s.name.toLowerCase().includes(searchText.toLowerCase())
       )
     );
-  }, [searchText]);
+  }, [searchText, supportItems]);
+
+  const supportItemsGroupedByRegistrationGroup = _.groupBy(
+    supportItems,
+    "registrationGroupId"
+  );
 
   function goToSupportsList() {
     setPage(SUPPORTS_LIST);
@@ -219,6 +241,11 @@ export default function SupportItemSelector(props) {
 
   function handleClose() {
     props.onClose();
+  }
+
+  function handleSelectRegistrationGroup(registrationGroupId) {
+    setRegistrationGroupIdFilter(registrationGroupId);
+    goToSupportSelection();
   }
 
   function handleAddSupportItem(planItem) {
@@ -258,12 +285,6 @@ export default function SupportItemSelector(props) {
 
   function handleSearch(e) {
     setSearchText(e.target.value);
-
-    // setSearchResults(
-    //   supportItems.filter(s =>
-    //     s.name.toLowerCase().includes(e.target.value.toLowerCase())
-    //   )
-    // );
   }
 
   function handleDelete(planItem) {
@@ -379,7 +400,7 @@ export default function SupportItemSelector(props) {
                 </Tooltip>
               </ListItemIcon>
               <ListItemText
-                className={classes.buttonText}
+                className={classNames(classes.buttonText, classes.planItemText)}
                 primary={page === 0 ? planItem.name : supportItem.name}
               />
             </Fab>
@@ -390,33 +411,18 @@ export default function SupportItemSelector(props) {
   }
 
   function renderSupportItemList(list) {
-    let halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
-
     return list.length === 0 ? (
       <div> Press Add New to add a support </div>
     ) : (
-      <Grid container direction={"row"}>
-        <Grid item xs={matchesMd ? 6 : 12}>
-          <List>
-            {list.slice(0, halfOfItems).map((planItem, index) => (
-              <div key={index} className={classes.list}>
-                {renderPlanItem(planItem, index)}
-              </div>
-            ))}
-          </List>
+      <List>
+        <Grid container>
+          {list.map((planItem, index) => (
+            <Grid item key={index} xs={12} md={6} className={classes.list}>
+              {renderPlanItem(planItem, index)}
+            </Grid>
+          ))}
         </Grid>
-        <Grid item xs={matchesMd ? 6 : 12}>
-          {matchesMd && (
-            <List>
-              {list.slice(halfOfItems, list.length).map((planItem, index) => (
-                <div key={index} className={classes.list}>
-                  {renderPlanItem(planItem, index)}
-                </div>
-              ))}
-            </List>
-          )}
-        </Grid>
-      </Grid>
+      </List>
     );
   }
 
@@ -435,10 +441,6 @@ export default function SupportItemSelector(props) {
   }
 
   function renderSelectionContent() {
-    const supportItemsGroupedByRegistrationGroup = _.groupBy(
-      supportItems,
-      "registrationGroupId"
-    );
     return (
       <>
         <DialogContent>
@@ -526,6 +528,47 @@ export default function SupportItemSelector(props) {
     );
   }
 
+  function renderRegistrationGroupSelection() {
+    return (
+      <>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography>Please select a Registration Group</Typography>
+            </Grid>
+            {/* TODO improve performance */}
+            {_.map(
+              supportItemsGroupedByRegistrationGroup,
+              (supportItems, key) => {
+                const registrationGroup = _.find(registrationGroups, {
+                  id: parseInt(key)
+                });
+                return (
+                  <Grid item xs={12} xl={6} key={registrationGroup.id}>
+                    <Button
+                      size="large"
+                      variant="contained"
+                      fullWidth
+                      className={classes.buttonText}
+                      onClick={() =>
+                        handleSelectRegistrationGroup(registrationGroup.id)
+                      }
+                    >
+                      {registrationGroup.name}
+                    </Button>
+                  </Grid>
+                );
+              }
+            )}
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+        </DialogActions>
+      </>
+    );
+  }
+
   let content;
   if (page === SUPPORTS_LIST) {
     content = renderPlanContent();
@@ -535,24 +578,34 @@ export default function SupportItemSelector(props) {
     content = renderEditor();
   } else if (page === ADD_SUPPORT) {
     content = renderAdditionPage();
+  } else {
+    content = renderRegistrationGroupSelection();
   }
 
   return (
-    <div>
-      <Dialog
-        fullScreen={!matchesMd}
-        fullWidth
-        maxWidth={false}
-        open={props.open}
-        onClose={handleClose}
-      >
-        <DialogTitle className={classes.dialogTitle}>
-          <Grid container justify="space-between">
-            <div>{supportCategory.name} supports </div>
-          </Grid>
-        </DialogTitle>
-        {content}
-      </Dialog>
-    </div>
+    <Dialog
+      fullScreen={!matchesMd}
+      fullWidth
+      maxWidth={false}
+      open={props.open}
+      onClose={handleClose}
+    >
+      <DialogTitle className={classes.dialogTitle}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleClose}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            {supportCategory.name}
+          </Typography>
+        </Toolbar>
+      </DialogTitle>
+      {content}
+    </Dialog>
   );
 }

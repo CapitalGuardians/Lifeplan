@@ -8,7 +8,7 @@ import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
 import api from "../../api";
-import SupportItemSelector from "./SupportItemSelector";
+import SupportItemDialog from "./SupportItemDialog";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import connect from "react-redux/es/connect/connect";
 import { LocalStorageKeys } from "../../common/constants";
@@ -22,7 +22,11 @@ import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
 
 const PLAN_CATEGORIES = "planCategories";
-export const OPEN_ADD_SUPPORTS = 1;
+export const SUPPORTS_LIST = 0;
+export const SUPPORTS_SELECTION = 1;
+export const EDIT_SUPPORT = 2;
+export const ADD_SUPPORT = 3;
+export const REGISTRATION_GROUP_SELECTION = 4;
 
 function printPage(planCategories) {
   let w = window.open();
@@ -100,8 +104,8 @@ class BudgetDashBoard extends React.Component {
     birthYear: 1990,
     postcode: 3000,
     planId: null,
-    openAddSupports: 0,
-    registrationGroups: []
+    registrationGroups: [],
+    dialogPage: SUPPORTS_LIST
   };
 
   async componentDidMount() {
@@ -197,13 +201,23 @@ class BudgetDashBoard extends React.Component {
     return result;
   };
 
-  handleOpenSupports = (supportCategoryId, openAddSupports) => {
+  handleOpenSupports = supportCategoryId => {
     this.setState(
-      { activeCategory: supportCategoryId, openAddSupports: openAddSupports },
+      { activeCategory: supportCategoryId, dialogPage: SUPPORTS_LIST },
       () => {
-        this.setState({ openSupports: true }, () => {
-          this.setState({ openAddSupports: 0 });
-        });
+        this.setState({ openSupports: true });
+      }
+    );
+  };
+
+  handleAddSupports = supportCategoryId => {
+    this.setState(
+      {
+        dialogPage: REGISTRATION_GROUP_SELECTION,
+        activeCategory: supportCategoryId
+      },
+      () => {
+        this.setState({ openSupports: true });
       }
     );
   };
@@ -338,9 +352,8 @@ class BudgetDashBoard extends React.Component {
                     totalColor: LIGHT_BLUE,
                     allocatedColor: DARK_BLUE
                   }}
-                  openSupports={openAddSupports =>
-                    this.handleOpenSupports(3, openAddSupports)
-                  }
+                  openSupports={() => this.handleOpenSupports(3)}
+                  addSupports={() => this.handleAddSupports(3)}
                 />
               </Grid>
             </BudgetCategorySection>
@@ -385,11 +398,11 @@ class BudgetDashBoard extends React.Component {
                         totalColor: LIGHT_BLUE,
                         allocatedColor: DARK_BLUE
                       }}
-                      openSupports={openAddSupports =>
-                        this.handleOpenSupports(
-                          supportCategory.id,
-                          openAddSupports
-                        )
+                      openSupports={() =>
+                        this.handleOpenSupports(supportCategory.id)
+                      }
+                      addSupports={() =>
+                        this.handleAddSupports(supportCategory.id)
                       }
                     />
                   </Grid>
@@ -417,7 +430,7 @@ class BudgetDashBoard extends React.Component {
           )}
         </Grid>
         {this.state.openSupports && (
-          <SupportItemSelector
+          <SupportItemDialog
             open={this.state.openSupports}
             supportCategory={this.findSupportCategory()}
             birthYear={birthYear}
@@ -427,6 +440,8 @@ class BudgetDashBoard extends React.Component {
             setPlanItems={this.handleSetPlanItems}
             openAddSupports={this.state.openAddSupports}
             registrationGroups={this.state.registrationGroups}
+            page={this.state.dialogPage}
+            setPage={page => this.setState({ dialogPage: page })}
           />
         )}
       </div>
