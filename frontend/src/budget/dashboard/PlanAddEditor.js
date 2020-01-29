@@ -24,6 +24,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomDatePicker from "./CustomDatePicker";
 import _ from "lodash";
 import isSameDay from "date-fns/isSameDay";
+import CustomCalendar from "../CustomCalendar";
 
 export const DAY_UNITS = ["H", "D", "EA"];
 const DAY_DAILY = "Every day";
@@ -98,7 +99,7 @@ export default function PlanAddEditor(props) {
   }
 
   function createNewPlanItem(values, supportItemGroup) {
-    console.log(supportItemGroup);
+    // console.log(supportItemGroup);
     const planItem = {
       supportItemGroup: supportItemGroup,
       ...values
@@ -240,8 +241,18 @@ export default function PlanAddEditor(props) {
   });
   const [itemStartDates, setItemStartDates] = useState([]);
 
+  const newEvents = () => {
+    if (["D", "EA"].includes(supportItem.unit)) {
+      if (values.frequencyPerYear === YEARLY) {
+        return _.map(itemStartDates, startDate => {
+          return { title: values.name, date: startDate, allDay: true };
+        });
+      }
+    }
+  };
+
   const handleDayYearlyDateChange = date => {
-    const newItemStartDates = _.unionWith([date], itemStartDates, isSameDay);
+    const newItemStartDates = _.xorWith([date], itemStartDates, isSameDay);
 
     setItemStartDates(newItemStartDates);
   };
@@ -366,17 +377,13 @@ export default function PlanAddEditor(props) {
             </Grid>
           </Grid>
         </form>
+        <CustomCalendar newEvents={newEvents()} />
       </DialogContent>
       <DialogActions>
-        <Button
-          className={classes.textButton}
-          variant={"text"}
-          onClick={onClickBack}
-        >
+        <Button variant={"text"} onClick={onClickBack}>
           Back
         </Button>
         <Button
-          className={classes.textButton}
           variant={"text"}
           onClick={() => onClickSave(values, supportItem.id)}
         >
