@@ -586,7 +586,7 @@ export default function SupportItemDialog(props) {
     <Dialog
       fullScreen={!matchesMd}
       fullWidth
-      maxWidth={false}
+      maxWidth={"lg"}
       open={props.open}
       onClose={handleClose}
     >
