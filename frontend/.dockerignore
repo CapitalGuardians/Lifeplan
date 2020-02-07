@@ -1,1 +1,5 @@
+.git
+Dockerfile-CI
+entrypoint.prod.sh
+entrypoint.sh
 node_modules

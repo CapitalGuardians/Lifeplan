@@ -1,10 +1,7 @@
 import axios from "axios";
 import { LocalStorageKeys } from "./common/constants";
 
-axios.defaults.baseURL =
-  process.env.NODE_ENV === "production"
-    ? "http://lachieblack.com:8000/api/v1/"
-    : "http://localhost:8000/api/v1/";
+axios.defaults.baseURL = window.location.protocol + '//' + window.location.hostname + ':8000/api/v1/';
 
 // intercept 401 errors, and attempt to get new access token, otherwise redirect to signin
 function set401Interceptor(on401) {

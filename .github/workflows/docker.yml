@@ -28,7 +28,7 @@ jobs:
       - name: Build and Publish to Docker Hub
         uses: pangzineng/Github-Action-One-Click-Docker@master
         with:
-          args: "-f backend/ndis_calculator/Dockerfile ."
+          args: "-f backend/ndis_calculator/prod.Dockerfile ./backend/ndis_calculator"
 
   frontend:
     runs-on: ${{ matrix.os }}
@@ -45,4 +45,4 @@ jobs:
       - name: Build and Publish to Docker Hub
         uses: pangzineng/Github-Action-One-Click-Docker@master
         with:
-          args: "-f frontend/Dockerfile ."
+          args: "-f frontend/prod.Dockerfile ./frontend"

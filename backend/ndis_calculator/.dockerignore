@@ -1,0 +1,8 @@
+.coverage
+.git
+api.yaml
+coverage.xml
+Dockerfile-CI
+Dockerfile-CI.test
+entrypoint-test.sh
+staticfiles

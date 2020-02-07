@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql/mysql-server:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql:rw
+    environment:
+      MYSQL_DATABASE: ndis
+      MYSQL_ROOT_PASSWORD: ndisFP2019
+      MYSQL_ROOT_HOST: "%"
+
+  django:
+    image: nevrending/lifeplan:django-latest
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    image: nevrending/lifeplan:frontend-latest
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "80:3000"
+
+volumes:
+  db-data:
