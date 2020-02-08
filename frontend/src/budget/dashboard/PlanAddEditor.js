@@ -330,54 +330,60 @@ export default function PlanAddEditor(props) {
   return (
     <>
       <DialogContent>
-        <form className={classes.form}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <Typography cvariant={"body1"} align={"left"}>
-                What would you like to call this support item?
-              </Typography>
-              <FormControl margin={"dense"} required fullWidth>
-                <InputLabel htmlFor={supportItemName}>
-                  Support Item Name
-                </InputLabel>
-                <Input
-                  id={supportItemName}
-                  name={supportItemName}
-                  autoComplete={supportItemName}
-                  autoFocus
-                  value={values.name}
-                  onChange={e => handleChange(e)}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              {renderFrequencySelector()}
-            </Grid>
-            <Grid item xs={12}>
-              {renderStartDatePicker()}
-            </Grid>
-            <Grid item xs={12}>
-              <Typography cvariant={"body1"} align={"left"}>
-                How much does each {unit} cost?
-              </Typography>
-              <FormControl margin={"normal"} required>
-                <InputLabel htmlFor={itemPrice}>Amount</InputLabel>
-                <Input
-                  id={itemPrice}
-                  name={itemPrice}
-                  autoComplete={itemPrice}
-                  autoFocus
-                  value={values.priceActual}
-                  onChange={e => handleChange(e)}
-                  startAdornment={
-                    <InputAdornment position="start">$</InputAdornment>
-                  }
-                />
-              </FormControl>
-            </Grid>
+        <Grid container spacing={4}>
+          <Grid item md={5}>
+            <form className={classes.form}>
+              <Grid container spacing={4}>
+                <Grid item xs={12}>
+                  <Typography cvariant={"body1"} align={"left"}>
+                    What would you like to call this support item?
+                  </Typography>
+                  <FormControl margin={"dense"} required fullWidth>
+                    <InputLabel htmlFor={supportItemName}>
+                      Support Item Name
+                    </InputLabel>
+                    <Input
+                      id={supportItemName}
+                      name={supportItemName}
+                      autoComplete={supportItemName}
+                      autoFocus
+                      value={values.name}
+                      onChange={e => handleChange(e)}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  {renderFrequencySelector()}
+                </Grid>
+                <Grid item xs={12}>
+                  {renderStartDatePicker()}
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography cvariant={"body1"} align={"left"}>
+                    How much does each {unit} cost?
+                  </Typography>
+                  <FormControl margin={"normal"} required>
+                    <InputLabel htmlFor={itemPrice}>Amount</InputLabel>
+                    <Input
+                      id={itemPrice}
+                      name={itemPrice}
+                      autoComplete={itemPrice}
+                      autoFocus
+                      value={values.priceActual}
+                      onChange={e => handleChange(e)}
+                      startAdornment={
+                        <InputAdornment position="start">$</InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </form>
           </Grid>
-        </form>
-        <CustomCalendar newEvents={newEvents()} />
+          <Grid container item md={7} alignItems="flex-end">
+            <CustomCalendar newEvents={newEvents()} />
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button variant={"text"} onClick={onClickBack}>

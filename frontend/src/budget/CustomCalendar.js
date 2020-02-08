@@ -12,6 +12,7 @@ export default function CustomCalendar(props) {
       defaultView="dayGridMonth"
       plugins={[dayGridPlugin]}
       events={newEvents}
+      height={"auto"}
     />
   );
 }
