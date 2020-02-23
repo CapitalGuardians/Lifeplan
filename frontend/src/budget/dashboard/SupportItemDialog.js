@@ -582,15 +582,9 @@ export default function SupportItemDialog(props) {
   }
 
   return (
-    <Dialog
-      fullScreen={!matchesMd}
-      fullWidth
-      maxWidth={"lg"}
-      open={props.open}
-      onClose={handleClose}
-    >
+    <Dialog fullScreen open={props.open} onClose={handleClose}>
       <DialogTitle className={classes.dialogTitle}>
-        <Toolbar>
+        <Toolbar variant="dense">
           <IconButton
             edge="start"
             color="inherit"
