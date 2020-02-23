@@ -26,6 +26,10 @@ import _ from "lodash";
 import { isSameDay, addMonths, setDate, isSameMonth } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
+import FormLabel from "@material-ui/core/FormLabel";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 export const DAY_UNITS = ["H", "D", "EA"];
 const DAY_DAILY = "Every day";
@@ -221,6 +225,15 @@ export default function PlanAddEditor(props) {
     frequencyPerYear: frequency
   });
   const [itemStartDates, setItemStartDates] = useState([]);
+  const [checkedWeekdays, setCheckedWeekdays] = useState({
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+    sunday: false
+  });
 
   const newEvents = () => {
     if (["D", "EA"].includes(supportItem.unit)) {
@@ -234,10 +247,6 @@ export default function PlanAddEditor(props) {
           _.groupBy(itemStartDates, itemStartDate => itemStartDate.getDate()),
           (value, key) => parseInt(key)
         );
-        // return _.map(itemStartDates, startDate => {
-        //
-        //   return { title: values.name, date: startDate, allDay: true };
-        // });
         let eventDates = [];
 
         while (currentDate <= planEndDate) {
@@ -256,6 +265,10 @@ export default function PlanAddEditor(props) {
           currentDate = new Date(setDate(addMonths(currentDate, 1), 1));
         }
         return eventDates;
+      } else if (values.frequencyPerYear === WEEKLY) {
+        return [];
+      } else {
+        return [];
       }
     }
   };
@@ -317,27 +330,118 @@ export default function PlanAddEditor(props) {
     );
   };
 
-  const renderStartDatePicker = () => {
+  const handleCheckWeekDay = name => event => {
+    setCheckedWeekdays({ ...checkedWeekdays, [name]: event.target.checked });
+  };
+
+  const renderDatePicker = () => {
     if (DAY_UNITS.concat("WK").includes(supportItem.unit)) {
-      return (
-        <>
-          {[YEARLY, MONTHLY].includes(values.frequencyPerYear) && (
-            <>
-              <Typography variant={"body1"} align={"left"}>
-                Please select the starting date/s
-              </Typography>
-              <CustomDatePicker
-                frequency={values.frequencyPerYear}
-                unit={supportItem.unit}
-                handleChange={handleDayYearlyDateChange}
-                itemStartDates={itemStartDates}
-                minDate={planStartDate}
-                maxDate={planEndDate}
+      if ([YEARLY, MONTHLY].includes(values.frequencyPerYear)) {
+        return (
+          <>
+            <Typography variant={"body1"} align={"left"}>
+              Please select the starting date/s
+            </Typography>
+            <CustomDatePicker
+              frequency={values.frequencyPerYear}
+              unit={supportItem.unit}
+              handleChange={handleDayYearlyDateChange}
+              itemStartDates={itemStartDates}
+              minDate={planStartDate}
+              maxDate={planEndDate}
+            />
+          </>
+        );
+      } else if (values.frequencyPerYear === WEEKLY) {
+        const {
+          monday,
+          tuesday,
+          wednesday,
+          thursday,
+          friday,
+          saturday,
+          sunday
+        } = checkedWeekdays;
+        return (
+          <FormControl component="fieldset">
+            <FormLabel component="legend">
+              On which days do you use this support item?
+            </FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={monday}
+                    onChange={handleCheckWeekDay("monday")}
+                    value="monday"
+                  />
+                }
+                label="Monday"
               />
-            </>
-          )}
-        </>
-      );
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={tuesday}
+                    onChange={handleCheckWeekDay("tuesday")}
+                    value="tuesday"
+                  />
+                }
+                label="Tuesday"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={wednesday}
+                    onChange={handleCheckWeekDay("wednesday")}
+                    value="wednesday"
+                  />
+                }
+                label="Wednesday"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={thursday}
+                    onChange={handleCheckWeekDay("thursday")}
+                    value="thursday"
+                  />
+                }
+                label="Thursday"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={friday}
+                    onChange={handleCheckWeekDay("friday")}
+                    value="friday"
+                  />
+                }
+                label="Friday"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={saturday}
+                    onChange={handleCheckWeekDay("saturday")}
+                    value="saturday"
+                  />
+                }
+                label="Saturday"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={sunday}
+                    onChange={handleCheckWeekDay("sunday")}
+                    value="sunday"
+                  />
+                }
+                label="Sunday"
+              />
+            </FormGroup>
+          </FormControl>
+        );
+      }
     }
   };
 
@@ -370,7 +474,7 @@ export default function PlanAddEditor(props) {
                   {renderFrequencySelector()}
                 </Grid>
                 <Grid item xs={12}>
-                  {renderStartDatePicker()}
+                  {renderDatePicker()}
                 </Grid>
                 <Grid item xs={12}>
                   <Typography cvariant={"body1"} align={"left"}>
