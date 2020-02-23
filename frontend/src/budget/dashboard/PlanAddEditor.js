@@ -23,8 +23,9 @@ import DialogActions from "@material-ui/core/DialogActions";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomDatePicker from "./CustomDatePicker";
 import _ from "lodash";
-import isSameDay from "date-fns/isSameDay";
+import { isSameDay, addMonths, setDate, isSameMonth } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
+import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
 
 export const DAY_UNITS = ["H", "D", "EA"];
 const DAY_DAILY = "Every day";
@@ -68,6 +69,13 @@ const useStyles = makeStyles(theme => ({
 export default function PlanAddEditor(props) {
   const { supportItem } = props;
 
+  const planStartDate = new Date(
+    localStorage.getItem(localStorageKeys.PLAN_START_DATE)
+  );
+  const planEndDate = new Date(
+    localStorage.getItem(localStorageKeys.PLAN_END_DATE)
+  );
+
   const classes = useStyles();
 
   let quantityRegex = new RegExp(/^$|^[1-9]\d*$/);
@@ -106,33 +114,6 @@ export default function PlanAddEditor(props) {
     };
     return planItem;
   }
-
-  // function enumFrequency(itemUnit) {
-  //   let frequencyEnum = 0;
-  //   switch (itemUnit) {
-  //     case "H":
-  //       frequencyEnum = 365;
-  //       break;
-  //     case "EA":
-  //       frequencyEnum = 365;
-  //       break;
-  //     case "D":
-  //       frequencyEnum = 52;
-  //       break;
-  //     case "WK":
-  //       frequencyEnum = 12;
-  //       break;
-  //     case "MON":
-  //       frequencyEnum = 1;
-  //       break;
-  //     case "YR":
-  //       frequencyEnum = 1;
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //   return frequencyEnum;
-  // }
 
   function initialiseValues(supportItem) {
     let name, frequency, price;
@@ -247,6 +228,34 @@ export default function PlanAddEditor(props) {
         return _.map(itemStartDates, startDate => {
           return { title: values.name, date: startDate, allDay: true };
         });
+      } else if (values.frequencyPerYear === MONTHLY) {
+        let currentDate = new Date(planStartDate);
+        const days = _.map(
+          _.groupBy(itemStartDates, itemStartDate => itemStartDate.getDate()),
+          (value, key) => parseInt(key)
+        );
+        // return _.map(itemStartDates, startDate => {
+        //
+        //   return { title: values.name, date: startDate, allDay: true };
+        // });
+        let eventDates = [];
+
+        while (currentDate <= planEndDate) {
+          const newDates = [];
+          _.forEach(days, day => {
+            const newDate = setDate(currentDate, day);
+            if (isSameMonth(currentDate, newDate)) {
+              newDates.push({
+                title: values.name,
+                date: newDate,
+                allDay: true
+              });
+            }
+          });
+          eventDates = eventDates.concat(newDates);
+          currentDate = new Date(setDate(addMonths(currentDate, 1), 1));
+        }
+        return eventDates;
       }
     }
   };
@@ -275,7 +284,10 @@ export default function PlanAddEditor(props) {
             <Select
               value={values.frequencyPerYear}
               autoWidth
-              onChange={e => handleChange(e)}
+              onChange={e => {
+                console.log(e.target.value);
+                handleChange(e);
+              }}
               inputProps={{
                 name: usageFrequency,
                 id: usageFrequency
@@ -319,6 +331,8 @@ export default function PlanAddEditor(props) {
                 unit={supportItem.unit}
                 handleChange={handleDayYearlyDateChange}
                 itemStartDates={itemStartDates}
+                minDate={planStartDate}
+                maxDate={planEndDate}
               />
             </>
           )}

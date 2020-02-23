@@ -270,7 +270,7 @@ export default function PlanItemEditor(props) {
   };
 
   return (
-    <main>
+    <>
       <DialogContent>
         <form className={classes.form}>
           <Grid container spacing={5}>
@@ -359,6 +359,6 @@ export default function PlanItemEditor(props) {
           Save
         </Button>
       </DialogActions>
-    </main>
+    </>
   );
 }

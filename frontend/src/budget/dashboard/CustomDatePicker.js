@@ -1,6 +1,6 @@
 import React from "react";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { DAY_UNITS, YEARLY } from "./PlanAddEditor";
+import { DAY_UNITS, MONTHLY, YEARLY } from "./PlanAddEditor";
 import DateFnsUtils from "@date-io/date-fns";
 import IconButton from "@material-ui/core/IconButton";
 import format from "date-fns/format";
@@ -10,14 +10,21 @@ import _ from "lodash";
 import isSameDay from "date-fns/isSameDay";
 
 function CustomDatePicker(props) {
-  const { frequency, unit, handleChange, itemStartDates } = props;
+  const {
+    frequency,
+    unit,
+    handleChange,
+    itemStartDates,
+    classes,
+    minDate,
+    maxDate
+  } = props;
 
-  const renderDayYearlyPicker = () => {
-    const { classes } = props;
-
+  const renderDayPicker = () => {
     const renderDay = (date, selectedDate, dayInCurrentMonth) => {
       const dayClassName = classNames(classes.day, {
-        [classes.nonCurrentMonthDay]: !dayInCurrentMonth,
+        [classes.nonCurrentMonthDay]:
+          !dayInCurrentMonth || date < minDate || date > maxDate,
         [classes.highlight]: _.some(itemStartDates, itemStartDate => {
           return isSameDay(itemStartDate, date);
         })
@@ -32,6 +39,7 @@ function CustomDatePicker(props) {
     };
     return (
       <DatePicker
+        {...props}
         disableToolbar
         variant={"static"}
         onChange={handleChange}
@@ -41,11 +49,15 @@ function CustomDatePicker(props) {
     );
   };
 
+  const renderDatePicker = () => {
+    if (DAY_UNITS.includes(unit)) {
+      return renderDayPicker();
+    }
+  };
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      {DAY_UNITS.includes(unit) &&
-        frequency === YEARLY &&
-        renderDayYearlyPicker()}
+      {renderDatePicker()}
     </MuiPickersUtilsProvider>
   );
 }
