@@ -23,7 +23,16 @@ import DialogActions from "@material-ui/core/DialogActions";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomDatePicker from "./CustomDatePicker";
 import _ from "lodash";
-import { isSameDay, addMonths, setDate, isSameMonth } from "date-fns";
+import {
+  isSameDay,
+  addMonths,
+  setDate,
+  isSameMonth,
+  setDay,
+  getDay,
+  addWeeks,
+  startOfWeek
+} from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -235,6 +244,16 @@ export default function PlanAddEditor(props) {
     sunday: false
   });
 
+  const {
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    sunday
+  } = checkedWeekdays;
+
   const newEvents = () => {
     if (["D", "EA"].includes(supportItem.unit)) {
       if (values.frequencyPerYear === YEARLY) {
@@ -266,7 +285,51 @@ export default function PlanAddEditor(props) {
         }
         return eventDates;
       } else if (values.frequencyPerYear === WEEKLY) {
-        return [];
+        const startDate = new Date(planStartDate);
+        const dayArray = [
+          sunday,
+          monday,
+          tuesday,
+          wednesday,
+          thursday,
+          friday,
+          saturday
+        ];
+
+        const selectedDays = [];
+        for (let i = 0; i < 7; i++) {
+          if (dayArray[i] === true) {
+            selectedDays.push(i);
+          }
+        }
+
+        if (selectedDays.length === 0) {
+          return [];
+        } else {
+          const eventDates = [];
+          // add first week's days
+          let currentDate = new Date(startDate);
+
+          // add the weeks between first and last week of the plan
+          const endDate = new Date(planEndDate);
+          while (currentDate <= endDate) {
+            _.forEach(selectedDays, day => {
+              currentDate = setDay(currentDate, day);
+              eventDates.push({
+                title: values.name,
+                date: currentDate,
+                allDay: true
+              });
+            });
+            currentDate = startOfWeek(addWeeks(currentDate, 1));
+          }
+
+          // clean up dates outside of plan
+          _.remove(eventDates, eventDate => {
+            return eventDate.date < startDate || eventDate.date > endDate;
+          });
+          return eventDates;
+        }
       } else {
         return [];
       }
@@ -353,15 +416,6 @@ export default function PlanAddEditor(props) {
           </>
         );
       } else if (values.frequencyPerYear === WEEKLY) {
-        const {
-          monday,
-          tuesday,
-          wednesday,
-          thursday,
-          friday,
-          saturday,
-          sunday
-        } = checkedWeekdays;
         return (
           <FormControl component="fieldset">
             <FormLabel component="legend">
