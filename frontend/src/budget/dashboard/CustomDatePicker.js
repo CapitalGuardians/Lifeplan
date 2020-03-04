@@ -10,15 +10,7 @@ import _ from "lodash";
 import isSameDay from "date-fns/isSameDay";
 
 function CustomDatePicker(props) {
-  const {
-    frequency,
-    unit,
-    handleChange,
-    itemStartDates,
-    classes,
-    minDate,
-    maxDate
-  } = props;
+  const { handleChange, itemStartDates, classes, minDate, maxDate } = props;
 
   const renderDayPicker = () => {
     const renderDay = (date, selectedDate, dayInCurrentMonth) => {
@@ -26,6 +18,7 @@ function CustomDatePicker(props) {
         [classes.nonCurrentMonthDay]:
           !dayInCurrentMonth || date < minDate || date > maxDate,
         [classes.highlight]: _.some(itemStartDates, itemStartDate => {
+          console.log(itemStartDate);
           return isSameDay(itemStartDate, date);
         })
       });
@@ -39,7 +32,8 @@ function CustomDatePicker(props) {
     };
     return (
       <DatePicker
-        {...props}
+        minDate={minDate}
+        maxDate={maxDate}
         disableToolbar
         variant={"static"}
         onChange={handleChange}
@@ -49,15 +43,9 @@ function CustomDatePicker(props) {
     );
   };
 
-  const renderDatePicker = () => {
-    if (DAY_UNITS.includes(unit)) {
-      return renderDayPicker();
-    }
-  };
-
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      {renderDatePicker()}
+      {renderDayPicker()}
     </MuiPickersUtilsProvider>
   );
 }

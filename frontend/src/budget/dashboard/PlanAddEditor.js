@@ -29,9 +29,9 @@ import {
   setDate,
   isSameMonth,
   setDay,
-  getDay,
   addWeeks,
-  startOfWeek
+  startOfWeek,
+  isSameWeek
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -39,6 +39,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import CustomWeekpicker from "./CustomWeekPicker";
 
 export const DAY_UNITS = ["H", "D", "EA"];
 const DAY_DAILY = "Every day";
@@ -46,10 +47,10 @@ const DAY_WEEKLY = "Once or more per week recurringly";
 const DAY_MONTHLY = "Once or more per month recurringly";
 const DAY_YEARLY = "Specific times in the year";
 
-// const WEEK_WEEKLY = "Weekly";
-// const WEEK_FORTNIGHTLY = "Fortnightly";
-// const WEEK_MONTHLY = "Monthly";
-// const WEEK_YEARLY = "Specific weeks of the year";
+const WEEK_WEEKLY = "Weekly";
+const WEEK_FORTNIGHTLY = "Fortnightly";
+const WEEK_MONTHLY = "Monthly";
+const WEEK_YEARLY = "Specific weeks of the year";
 
 export const DAILY = "DAILY";
 export const WEEKLY = "WEEKLY";
@@ -121,11 +122,10 @@ export default function PlanAddEditor(props) {
 
   function createNewPlanItem(values, supportItemGroup) {
     // console.log(supportItemGroup);
-    const planItem = {
+    return {
       supportItemGroup: supportItemGroup,
       ...values
     };
-    return planItem;
   }
 
   function initialiseValues(supportItem) {
@@ -183,46 +183,6 @@ export default function PlanAddEditor(props) {
     return { units, unitTime, unit };
   }
 
-  function timeEnumeration(frequency) {
-    let timeEnum = "";
-    switch (frequency) {
-      case 365:
-        timeEnum = "day";
-        break;
-      case 52:
-        timeEnum = "week";
-        break;
-      case 12:
-        timeEnum = "month";
-        break;
-      case 1:
-        timeEnum = "year";
-        break;
-      default:
-        break;
-    }
-    return timeEnum;
-  }
-
-  function calculateTotalCost(values) {
-    if (values.priceActual === "" || values.quantity === "") {
-      return 0;
-    } else {
-      return values.priceActual * values.frequencyPerYear * values.quantity;
-    }
-  }
-
-  function displayTotalCost(totalPrice, frequencyUnit, quantityUnit) {
-    return totalPrice > 0 ? (
-      <Typography>
-        Total: ${values.priceActual} X {values.quantity} {quantityUnit}
-        (s) X {values.frequencyPerYear} {frequencyUnit}(s) = ${totalPrice}
-      </Typography>
-    ) : (
-      <Typography variant="button">Total: $0</Typography>
-    );
-  }
-
   const usageFrequency = "frequencyPerYear";
   const supportItemName = "name";
   const itemPrice = "priceActual";
@@ -261,7 +221,7 @@ export default function PlanAddEditor(props) {
           return { title: values.name, date: startDate, allDay: true };
         });
       } else if (values.frequencyPerYear === MONTHLY) {
-        let currentDate = new Date(planStartDate);
+        var currentDate = new Date(planStartDate);
         const days = _.map(
           _.groupBy(itemStartDates, itemStartDate => itemStartDate.getDate()),
           (value, key) => parseInt(key)
@@ -270,9 +230,10 @@ export default function PlanAddEditor(props) {
 
         while (currentDate <= planEndDate) {
           const newDates = [];
+          const dateClone = new Date(currentDate);
           _.forEach(days, day => {
-            const newDate = setDate(currentDate, day);
-            if (isSameMonth(currentDate, newDate)) {
+            const newDate = setDate(dateClone, day);
+            if (isSameMonth(dateClone, newDate)) {
               newDates.push({
                 title: values.name,
                 date: newDate,
@@ -313,15 +274,16 @@ export default function PlanAddEditor(props) {
           // add the weeks between first and last week of the plan
           const endDate = new Date(planEndDate);
           while (currentDate <= endDate) {
+            let dateClone = new Date(currentDate);
             _.forEach(selectedDays, day => {
-              currentDate = setDay(currentDate, day);
+              dateClone = setDay(dateClone, day);
               eventDates.push({
                 title: values.name,
-                date: currentDate,
+                date: dateClone,
                 allDay: true
               });
             });
-            currentDate = startOfWeek(addWeeks(currentDate, 1));
+            currentDate = startOfWeek(addWeeks(dateClone, 1));
           }
 
           // clean up dates outside of plan
@@ -342,54 +304,74 @@ export default function PlanAddEditor(props) {
     setItemStartDates(newItemStartDates);
   };
 
+  const handleWeekChange = date => {
+    const newItemStartDates = _.xorWith(
+      [startOfWeek(date)],
+      itemStartDates,
+      isSameDay
+    );
+    setItemStartDates(newItemStartDates);
+  };
+
   const enumResult = unitEnumeration(supportItem.unit);
   const unit = enumResult.unit;
-  const frequencyUsage = timeEnumeration(values.frequencyPerYear);
-
-  const totalCost = calculateTotalCost(values);
 
   const renderFrequencySelector = () => {
+    const frequencyOptions = () => {
+      if (DAY_UNITS.includes(supportItem.unit)) {
+        return [
+          <MenuItem value={YEARLY} key={DAY_YEARLY}>
+            {DAY_YEARLY}
+          </MenuItem>,
+          <MenuItem value={MONTHLY} key={DAY_MONTHLY}>
+            {DAY_MONTHLY}
+          </MenuItem>,
+          <MenuItem value={WEEKLY} key={DAY_WEEKLY}>
+            {DAY_WEEKLY}
+          </MenuItem>,
+          <MenuItem value={DAILY} key={DAY_DAILY}>
+            {DAY_DAILY}
+          </MenuItem>
+        ];
+      } else if (supportItem.unit === "WK") {
+        return [
+          <MenuItem value={YEARLY} key={WEEK_YEARLY}>
+            {WEEK_YEARLY}
+          </MenuItem>,
+          <MenuItem value={MONTHLY} key={WEEK_MONTHLY}>
+            {WEEK_MONTHLY}
+          </MenuItem>,
+          <MenuItem value={WEEKLY} key={WEEK_WEEKLY}>
+            {WEEK_WEEKLY}
+          </MenuItem>
+        ];
+      }
+    };
     return (
-      DAY_UNITS.concat("WK").includes(supportItem.unit) && (
-        <>
-          <Typography variant={"body1"} align={"left"}>
-            How often do you use this support item?
-          </Typography>
-          <FormControl margin={"normal"} required>
-            <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
-            <Select
-              value={values.frequencyPerYear}
-              autoWidth
-              onChange={e => {
-                console.log(e.target.value);
-                handleChange(e);
-              }}
-              inputProps={{
-                name: usageFrequency,
-                id: usageFrequency
-              }}
-            >
-              {DAY_UNITS.includes(supportItem.unit) && [
-                <MenuItem value={YEARLY} key={DAY_YEARLY}>
-                  {DAY_YEARLY}
-                </MenuItem>,
-                <MenuItem value={MONTHLY} key={DAY_MONTHLY}>
-                  {DAY_MONTHLY}
-                </MenuItem>,
-                <MenuItem value={WEEKLY} key={DAY_WEEKLY}>
-                  {DAY_WEEKLY}
-                </MenuItem>,
-                <MenuItem value={DAILY} key={DAY_DAILY}>
-                  {DAY_DAILY}
-                </MenuItem>
-              ]}
-            </Select>
-            <FormHelperText>
-              Please select the frequency from the dropdown box
-            </FormHelperText>
-          </FormControl>
-        </>
-      )
+      <>
+        <Typography variant={"body1"} align={"left"}>
+          How often do you use this support item?
+        </Typography>
+        <FormControl margin={"normal"} required>
+          <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
+          <Select
+            value={values.frequencyPerYear}
+            autoWidth
+            onChange={e => {
+              handleChange(e);
+            }}
+            inputProps={{
+              name: usageFrequency,
+              id: usageFrequency
+            }}
+          >
+            {frequencyOptions()}
+          </Select>
+          <FormHelperText>
+            Please select the frequency from the dropdown box
+          </FormHelperText>
+        </FormControl>
+      </>
     );
   };
 
@@ -398,7 +380,7 @@ export default function PlanAddEditor(props) {
   };
 
   const renderDatePicker = () => {
-    if (DAY_UNITS.concat("WK").includes(supportItem.unit)) {
+    if (DAY_UNITS.includes(supportItem.unit)) {
       if ([YEARLY, MONTHLY].includes(values.frequencyPerYear)) {
         return (
           <>
@@ -406,8 +388,6 @@ export default function PlanAddEditor(props) {
               Please select the starting date/s
             </Typography>
             <CustomDatePicker
-              frequency={values.frequencyPerYear}
-              unit={supportItem.unit}
               handleChange={handleDayYearlyDateChange}
               itemStartDates={itemStartDates}
               minDate={planStartDate}
@@ -496,6 +476,15 @@ export default function PlanAddEditor(props) {
           </FormControl>
         );
       }
+    } else if (supportItem.unit === "WK") {
+      return (
+        <CustomWeekpicker
+          onChange={handleWeekChange}
+          itemStartDates={itemStartDates}
+          minDate={planStartDate}
+          maxDate={planEndDate}
+        />
+      );
     }
   };
 
