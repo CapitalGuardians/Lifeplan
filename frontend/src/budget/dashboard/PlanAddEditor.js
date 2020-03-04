@@ -31,7 +31,9 @@ import {
   setDay,
   addWeeks,
   startOfWeek,
-  isSameWeek
+  endOfWeek,
+  addDays,
+  lastDayOfWeek
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -215,13 +217,14 @@ export default function PlanAddEditor(props) {
   } = checkedWeekdays;
 
   const newEvents = () => {
-    if (["D", "EA"].includes(supportItem.unit)) {
+    if (["D", "EA", "H"].includes(supportItem.unit)) {
+      const allDay = supportItem.unit !== "H";
       if (values.frequencyPerYear === YEARLY) {
         return _.map(itemStartDates, startDate => {
-          return { title: values.name, date: startDate, allDay: true };
+          return { title: values.name, date: startDate, allDay: allDay };
         });
       } else if (values.frequencyPerYear === MONTHLY) {
-        var currentDate = new Date(planStartDate);
+        let currentDate = new Date(planStartDate);
         const days = _.map(
           _.groupBy(itemStartDates, itemStartDate => itemStartDate.getDate()),
           (value, key) => parseInt(key)
@@ -237,7 +240,7 @@ export default function PlanAddEditor(props) {
               newDates.push({
                 title: values.name,
                 date: newDate,
-                allDay: true
+                allDay: allDay
               });
             }
           });
@@ -280,7 +283,7 @@ export default function PlanAddEditor(props) {
               eventDates.push({
                 title: values.name,
                 date: dateClone,
-                allDay: true
+                allDay: allDay
               });
             });
             currentDate = startOfWeek(addWeeks(dateClone, 1));
@@ -295,6 +298,18 @@ export default function PlanAddEditor(props) {
       } else {
         return [];
       }
+    } else if (supportItem.unit === "WK") {
+      return _.map(itemStartDates, itemStartDate => {
+        console.log(itemStartDate);
+        console.log(addDays(endOfWeek(itemStartDate), 1));
+        return {
+          title: values.name,
+          start: itemStartDate,
+          end: endOfWeek(itemStartDate)
+        };
+      });
+    } else {
+      return [];
     }
   };
 
