@@ -1,6 +1,5 @@
 import React from "react";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { DAY_UNITS, MONTHLY, YEARLY } from "./PlanAddEditor";
 import DateFnsUtils from "@date-io/date-fns";
 import IconButton from "@material-ui/core/IconButton";
 import format from "date-fns/format";
@@ -18,7 +17,6 @@ function CustomDatePicker(props) {
         [classes.nonCurrentMonthDay]:
           !dayInCurrentMonth || date < minDate || date > maxDate,
         [classes.highlight]: _.some(itemStartDates, itemStartDate => {
-          console.log(itemStartDate);
           return isSameDay(itemStartDate, date);
         })
       });

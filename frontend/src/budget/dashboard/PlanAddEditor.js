@@ -32,8 +32,11 @@ import {
   addWeeks,
   startOfWeek,
   endOfWeek,
-  addDays,
-  lastDayOfWeek
+  setHours,
+  startOfDay,
+  getHours,
+  setMinutes,
+  getMinutes
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -42,6 +45,8 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import CustomWeekpicker from "./CustomWeekPicker";
+import { TimePicker } from "@material-ui/pickers";
+import CustomTimePicker from "./CustomTimePicker";
 
 export const DAY_UNITS = ["H", "D", "EA"];
 const DAY_DAILY = "Every day";
@@ -206,6 +211,13 @@ export default function PlanAddEditor(props) {
     sunday: false
   });
 
+  const startOfToday = startOfDay(new Date());
+
+  const [itemTimes, setItemTimes] = useState({
+    start: setHours(startOfToday, 9),
+    end: setHours(startOfToday, 10)
+  });
+
   const {
     monday,
     tuesday,
@@ -218,10 +230,23 @@ export default function PlanAddEditor(props) {
 
   const newEvents = () => {
     if (["D", "EA", "H"].includes(supportItem.unit)) {
-      const allDay = supportItem.unit !== "H";
+      const createEvent = ({ title, date }) => {
+        return {
+          title,
+          date:
+            supportItem.unit === "H"
+              ? setMinutes(
+                  setHours(date, getHours(itemTimes.start)),
+                  getMinutes(itemTimes.start)
+                )
+              : date,
+          allDay: supportItem.unit !== "H"
+        };
+      };
+
       if (values.frequencyPerYear === YEARLY) {
         return _.map(itemStartDates, startDate => {
-          return { title: values.name, date: startDate, allDay: allDay };
+          return createEvent({ title: values.name, date: startDate });
         });
       } else if (values.frequencyPerYear === MONTHLY) {
         let currentDate = new Date(planStartDate);
@@ -237,11 +262,12 @@ export default function PlanAddEditor(props) {
           _.forEach(days, day => {
             const newDate = setDate(dateClone, day);
             if (isSameMonth(dateClone, newDate)) {
-              newDates.push({
-                title: values.name,
-                date: newDate,
-                allDay: allDay
-              });
+              newDates.push(
+                createEvent({
+                  title: values.name,
+                  date: newDate
+                })
+              );
             }
           });
           eventDates = eventDates.concat(newDates);
@@ -280,11 +306,12 @@ export default function PlanAddEditor(props) {
             let dateClone = new Date(currentDate);
             _.forEach(selectedDays, day => {
               dateClone = setDay(dateClone, day);
-              eventDates.push({
-                title: values.name,
-                date: dateClone,
-                allDay: allDay
-              });
+              eventDates.push(
+                createEvent({
+                  title: values.name,
+                  date: dateClone
+                })
+              );
             });
             currentDate = startOfWeek(addWeeks(dateClone, 1));
           }
@@ -300,8 +327,6 @@ export default function PlanAddEditor(props) {
       }
     } else if (supportItem.unit === "WK") {
       return _.map(itemStartDates, itemStartDate => {
-        console.log(itemStartDate);
-        console.log(addDays(endOfWeek(itemStartDate), 1));
         return {
           title: values.name,
           start: itemStartDate,
@@ -314,7 +339,11 @@ export default function PlanAddEditor(props) {
   };
 
   const handleDayYearlyDateChange = date => {
-    const newItemStartDates = _.xorWith([date], itemStartDates, isSameDay);
+    const newItemStartDates = _.xorWith(
+      [startOfDay(date)],
+      itemStartDates,
+      isSameDay
+    );
 
     setItemStartDates(newItemStartDates);
   };
@@ -392,6 +421,10 @@ export default function PlanAddEditor(props) {
 
   const handleCheckWeekDay = name => event => {
     setCheckedWeekdays({ ...checkedWeekdays, [name]: event.target.checked });
+  };
+
+  const handleTimeChange = name => value => {
+    setItemTimes({ ...itemTimes, [name]: value });
   };
 
   const renderDatePicker = () => {
@@ -503,6 +536,27 @@ export default function PlanAddEditor(props) {
     }
   };
 
+  const renderTimePicker = () => {
+    if (supportItem.unit === "H") {
+      return (
+        <Grid container spacing={4}>
+          <Grid item>
+            <CustomTimePicker
+              value={itemTimes.start}
+              onChange={handleTimeChange("start")}
+            />
+          </Grid>
+          <Grid item>
+            <CustomTimePicker
+              value={itemTimes.end}
+              onChange={handleTimeChange("end")}
+            />
+          </Grid>
+        </Grid>
+      );
+    }
+  };
+
   return (
     <>
       <DialogContent>
@@ -533,6 +587,7 @@ export default function PlanAddEditor(props) {
                 </Grid>
                 <Grid item xs={12}>
                   {renderDatePicker()}
+                  {renderTimePicker()}
                 </Grid>
                 <Grid item xs={12}>
                   <Typography cvariant={"body1"} align={"left"}>
