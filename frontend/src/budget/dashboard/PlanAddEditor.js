@@ -41,7 +41,8 @@ import {
   endOfMonth,
   startOfMonth,
   addYears,
-  addDays
+  addDays,
+  differenceInMinutes
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -437,6 +438,17 @@ export default function PlanAddEditor(props) {
     } else {
       return [];
     }
+  };
+
+  const calculateCost = () => {
+    const numberOfItems = newEvents().length;
+    const cost = numberOfItems * values.priceActual;
+    return supportItem.unit === "H"
+      ? Math.round(
+          ((cost * differenceInMinutes(itemTimes.end, itemTimes.start)) / 60) *
+            100
+        ) / 100
+      : Math.round(cost * 100) / 100;
   };
 
   const handleDayYearlyDateChange = date => {
@@ -894,6 +906,9 @@ export default function PlanAddEditor(props) {
                       }
                     />
                   </FormControl>
+                  <Typography cvariant={"body1"} align={"left"}>
+                    Total: ${calculateCost()}
+                  </Typography>
                 </Grid>
               </Grid>
             </form>
