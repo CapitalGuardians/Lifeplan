@@ -413,8 +413,7 @@ export default function PlanAddEditor(props) {
               eventDates.push({
                 title: values.name,
                 start: startDate,
-                end: endOfMonth(startDate),
-                allDay: true
+                end: endOfMonth(startDate)
               });
             }
           }
