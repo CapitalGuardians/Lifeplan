@@ -40,7 +40,8 @@ import {
   setMonth,
   endOfMonth,
   startOfMonth,
-  addYears
+  addYears,
+  addDays
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -48,7 +49,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import CustomWeekpicker from "./CustomWeekPicker";
+import CustomWeekPicker from "./CustomWeekPicker";
 import CustomTimePicker from "./CustomTimePicker";
 
 export const DAY_UNITS = ["H", "D", "EA"];
@@ -368,8 +369,19 @@ export default function PlanAddEditor(props) {
           });
           return eventDates;
         }
-      } else {
-        return [];
+      } else if (values.frequencyPerYear === DAILY) {
+        const eventDates = [];
+        let currentDate = new Date(planStartDate);
+        while (currentDate <= planEndDate) {
+          eventDates.push(
+            createEvent({
+              title: values.name,
+              date: new Date(currentDate)
+            })
+          );
+          currentDate = addDays(currentDate, 1);
+        }
+        return eventDates;
       }
     } else if (supportItem.unit === "WK") {
       return _.map(itemStartDates, itemStartDate => {
@@ -644,7 +656,7 @@ export default function PlanAddEditor(props) {
       }
     } else if (supportItem.unit === "WK") {
       return (
-        <CustomWeekpicker
+        <CustomWeekPicker
           onChange={handleWeekChange}
           itemStartDates={itemStartDates}
           minDate={planStartDate}

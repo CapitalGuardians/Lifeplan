@@ -11,7 +11,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import _ from "lodash";
 import { lastDayOfWeek, endOfWeek } from "date-fns";
 
-function CustomWeekpicker(props) {
+function CustomWeekPicker(props) {
   const { onChange, minDate, maxDate, itemStartDates } = props;
 
   const renderWrappedWeekDay = (date, selectedDate, dayInCurrentMonth) => {
@@ -106,4 +106,4 @@ const styles = createStyles(theme => ({
   }
 }));
 
-export default withStyles(styles)(CustomWeekpicker);
+export default withStyles(styles)(CustomWeekPicker);
