@@ -233,11 +233,18 @@ export default function PlanAddEditor(props) {
       const createEvent = ({ title, date }) => {
         return {
           title,
-          date:
+          start:
             supportItem.unit === "H"
               ? setMinutes(
                   setHours(date, getHours(itemTimes.start)),
                   getMinutes(itemTimes.start)
+                )
+              : date,
+          end:
+            supportItem.unit === "H"
+              ? setMinutes(
+                  setHours(date, getHours(itemTimes.end)),
+                  getMinutes(itemTimes.end)
                 )
               : date,
           allDay: supportItem.unit !== "H"
