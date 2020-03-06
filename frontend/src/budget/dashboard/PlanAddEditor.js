@@ -61,12 +61,11 @@ const DAY_YEARLY = "Specific times in the year";
 
 const WEEK_WEEKLY = "Weekly";
 const WEEK_FORTNIGHTLY = "Fortnightly";
-const WEEK_MONTHLY = "Monthly";
 const WEEK_YEARLY = "Specific weeks of the year";
 
 export const DAILY = "DAILY";
 export const WEEKLY = "WEEKLY";
-//export const FORTNIGHTLY = "FORTNIGHTLY";
+export const FORTNIGHTLY = "FORTNIGHTLY";
 export const MONTHLY = "MONTHLY";
 export const YEARLY = "YEARLY";
 
@@ -385,13 +384,31 @@ export default function PlanAddEditor(props) {
         return eventDates;
       }
     } else if (supportItem.unit === "WK") {
-      return _.map(itemStartDates, itemStartDate => {
-        return {
-          title: values.name,
-          start: itemStartDate,
-          end: endOfWeek(itemStartDate)
-        };
-      });
+      if (values.frequencyPerYear === YEARLY) {
+        return _.map(itemStartDates, itemStartDate => {
+          return {
+            title: values.name,
+            start: itemStartDate,
+            end: endOfWeek(itemStartDate)
+          };
+        });
+      } else {
+        let weeksToAdd = 1;
+        if (values.frequencyPerYear === FORTNIGHTLY) {
+          weeksToAdd += 1;
+        }
+        const eventDates = [];
+        let currentDate = startOfWeek(planStartDate);
+        while (currentDate <= planEndDate) {
+          eventDates.push({
+            title: values.name,
+            start: currentDate,
+            end: endOfWeek(currentDate)
+          });
+          currentDate = addWeeks(currentDate, weeksToAdd);
+        }
+        return eventDates;
+      }
     } else if (supportItem.unit === "MON") {
       const monthArray = [
         jan,
@@ -495,8 +512,8 @@ export default function PlanAddEditor(props) {
           <MenuItem value={YEARLY} key={WEEK_YEARLY}>
             {WEEK_YEARLY}
           </MenuItem>,
-          <MenuItem value={MONTHLY} key={WEEK_MONTHLY}>
-            {WEEK_MONTHLY}
+          <MenuItem value={FORTNIGHTLY} key={WEEK_FORTNIGHTLY}>
+            {WEEK_FORTNIGHTLY}
           </MenuItem>,
           <MenuItem value={WEEKLY} key={WEEK_WEEKLY}>
             {WEEK_WEEKLY}
