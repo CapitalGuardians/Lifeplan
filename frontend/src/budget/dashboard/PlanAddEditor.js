@@ -42,7 +42,8 @@ import {
   startOfMonth,
   addYears,
   addDays,
-  differenceInMinutes
+  differenceInMinutes,
+  endOfDay
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -452,8 +453,14 @@ export default function PlanAddEditor(props) {
       }
 
       return eventDates;
-    } else {
-      return [];
+    } else if (supportItem.unit === "YR") {
+      return [
+        {
+          title: values.name,
+          start: new Date(startOfDay(planStartDate)),
+          end: new Date(endOfDay(planEndDate))
+        }
+      ];
     }
   };
 
@@ -461,11 +468,14 @@ export default function PlanAddEditor(props) {
     const numberOfItems = newEvents().length;
     const cost = numberOfItems * values.priceActual;
     return supportItem.unit === "H"
-      ? Math.round(
-          ((cost * differenceInMinutes(itemTimes.end, itemTimes.start)) / 60) *
-            100
-        ) / 100
-      : Math.round(cost * 100) / 100;
+      ? (
+          Math.round(
+            ((cost * differenceInMinutes(itemTimes.end, itemTimes.start)) /
+              60) *
+              100
+          ) / 100
+        ).toFixed(2)
+      : (Math.round(cost * 100) / 100).toFixed(2);
   };
 
   const handleDayYearlyDateChange = date => {
