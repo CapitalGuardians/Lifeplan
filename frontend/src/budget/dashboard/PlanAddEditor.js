@@ -7,7 +7,7 @@
 // each field will be filled with a default value if users never costomised them before
 // an annual cost will be calculated based on the fields
 // once saved, a new item will be added into plan items list
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DialogContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -217,6 +217,12 @@ export default function PlanAddEditor(props) {
     start: setHours(startOfToday, 9),
     end: setHours(startOfToday, 10)
   });
+
+  useEffect(() => {
+    if (itemTimes.start > itemTimes.end) {
+      setItemTimes({ ...itemTimes, end: new Date(itemTimes.start) });
+    }
+  }, [itemTimes]);
 
   const {
     monday,
@@ -546,14 +552,20 @@ export default function PlanAddEditor(props) {
   const renderTimePicker = () => {
     if (supportItem.unit === "H") {
       return (
-        <Grid container spacing={4}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormLabel component="legend">When do you use it?</FormLabel>
+          </Grid>
           <Grid item>
+            <InputLabel>From</InputLabel>
             <CustomTimePicker
               value={itemTimes.start}
               onChange={handleTimeChange("start")}
             />
           </Grid>
           <Grid item>
+            <InputLabel>To</InputLabel>
+
             <CustomTimePicker
               value={itemTimes.end}
               onChange={handleTimeChange("end")}
