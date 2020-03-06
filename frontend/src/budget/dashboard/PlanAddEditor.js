@@ -36,7 +36,11 @@ import {
   startOfDay,
   getHours,
   setMinutes,
-  getMinutes
+  getMinutes,
+  setMonth,
+  endOfMonth,
+  startOfMonth,
+  addYears
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -45,7 +49,6 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import CustomWeekpicker from "./CustomWeekPicker";
-import { TimePicker } from "@material-ui/pickers";
 import CustomTimePicker from "./CustomTimePicker";
 
 export const DAY_UNITS = ["H", "D", "EA"];
@@ -211,6 +214,21 @@ export default function PlanAddEditor(props) {
     sunday: false
   });
 
+  const [checkedMonths, setCheckedMonths] = useState({
+    jan: false,
+    feb: false,
+    mar: false,
+    apr: false,
+    may: false,
+    jun: false,
+    jul: false,
+    aug: false,
+    sep: false,
+    oct: false,
+    nov: false,
+    dec: false
+  });
+
   const startOfToday = startOfDay(new Date());
 
   const [itemTimes, setItemTimes] = useState({
@@ -233,6 +251,21 @@ export default function PlanAddEditor(props) {
     saturday,
     sunday
   } = checkedWeekdays;
+
+  const {
+    jan,
+    feb,
+    mar,
+    apr,
+    may,
+    jun,
+    jul,
+    aug,
+    sep,
+    oct,
+    nov,
+    dec
+  } = checkedMonths;
 
   const newEvents = () => {
     if (["D", "EA", "H"].includes(supportItem.unit)) {
@@ -346,6 +379,50 @@ export default function PlanAddEditor(props) {
           end: endOfWeek(itemStartDate)
         };
       });
+    } else if (supportItem.unit === "MON") {
+      const monthArray = [
+        jan,
+        feb,
+        mar,
+        apr,
+        may,
+        jun,
+        jul,
+        aug,
+        sep,
+        oct,
+        nov,
+        dec
+      ];
+      const eventDates = [];
+
+      let currentDate = new Date(planStartDate);
+
+      while (
+        currentDate <= planEndDate ||
+        isSameMonth(currentDate, planEndDate)
+      ) {
+        const dateClone = new Date(currentDate);
+        for (let i = 0; i < 11; i++) {
+          if (monthArray[i] === true) {
+            const startDate = startOfMonth(setMonth(dateClone, i));
+            if (
+              (startDate >= planStartDate && startDate <= planEndDate) ||
+              isSameMonth(startDate, planStartDate)
+            ) {
+              eventDates.push({
+                title: values.name,
+                start: startDate,
+                end: endOfMonth(startDate),
+                allDay: true
+              });
+            }
+          }
+        }
+        currentDate = addYears(currentDate, 1);
+      }
+
+      return eventDates;
     } else {
       return [];
     }
@@ -404,40 +481,69 @@ export default function PlanAddEditor(props) {
         ];
       }
     };
-    return (
-      <>
-        <Typography variant={"body1"} align={"left"}>
-          How often do you use this support item?
-        </Typography>
-        <FormControl margin={"normal"} required>
-          <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
-          <Select
-            value={values.frequencyPerYear}
-            autoWidth
-            onChange={e => {
-              handleChange(e);
-            }}
-            inputProps={{
-              name: usageFrequency,
-              id: usageFrequency
-            }}
-          >
-            {frequencyOptions()}
-          </Select>
-          <FormHelperText>
-            Please select the frequency from the dropdown box
-          </FormHelperText>
-        </FormControl>
-      </>
-    );
+    if (!["MON", "YR"].includes(supportItem.unit)) {
+      return (
+        <>
+          <Typography variant={"body1"} align={"left"}>
+            How often do you use this support item?
+          </Typography>
+          <FormControl margin={"normal"} required>
+            <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
+            <Select
+              value={values.frequencyPerYear}
+              autoWidth
+              onChange={e => {
+                handleChange(e);
+              }}
+              inputProps={{
+                name: usageFrequency,
+                id: usageFrequency
+              }}
+            >
+              {frequencyOptions()}
+            </Select>
+            <FormHelperText>
+              Please select the frequency from the dropdown box
+            </FormHelperText>
+          </FormControl>
+        </>
+      );
+    }
   };
 
   const handleCheckWeekDay = name => event => {
     setCheckedWeekdays({ ...checkedWeekdays, [name]: event.target.checked });
   };
 
+  const handleCheckMonth = name => event => {
+    setCheckedMonths({ ...checkedMonths, [name]: event.target.checked });
+  };
+
   const handleTimeChange = name => value => {
     setItemTimes({ ...itemTimes, [name]: value });
+  };
+
+  const disableMonthCheckBox = month => {
+    const monthToNumber = {
+      jan: 0,
+      feb: 1,
+      mar: 2,
+      apr: 3,
+      may: 4,
+      jun: 5,
+      jul: 6,
+      aug: 7,
+      sep: 8,
+      oct: 9,
+      nov: 10,
+      dec: 11
+    };
+    const startDate = setMonth(planStartDate, monthToNumber[month]);
+    return !(
+      (startDate >= planStartDate && startDate <= planEndDate) ||
+      isSameMonth(startDate, planStartDate) ||
+      isSameMonth(startDate, planEndDate)
+    );
   };
 
   const renderDatePicker = () => {
@@ -545,6 +651,157 @@ export default function PlanAddEditor(props) {
           minDate={planStartDate}
           maxDate={planEndDate}
         />
+      );
+    } else if (supportItem.unit === "MON") {
+      return (
+        <FormControl component="fieldset">
+          <FormLabel component="legend">
+            On which months do you use this support item?
+          </FormLabel>
+
+          <Grid container>
+            <Grid item xs={6}>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={jan}
+                      onChange={handleCheckMonth("jan")}
+                      value="jan"
+                      disabled={disableMonthCheckBox("jan")}
+                    />
+                  }
+                  label="Jan"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={feb}
+                      onChange={handleCheckMonth("feb")}
+                      value="feb"
+                      disabled={disableMonthCheckBox("feb")}
+                    />
+                  }
+                  label="Feb"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={mar}
+                      onChange={handleCheckMonth("mar")}
+                      value="mar"
+                      disabled={disableMonthCheckBox("mar")}
+                    />
+                  }
+                  label="Mar"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={apr}
+                      onChange={handleCheckMonth("apr")}
+                      value="apr"
+                      disabled={disableMonthCheckBox("apr")}
+                    />
+                  }
+                  label="Apr"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={may}
+                      onChange={handleCheckMonth("may")}
+                      value="may"
+                      disabled={disableMonthCheckBox("may")}
+                    />
+                  }
+                  label="May"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={jun}
+                      onChange={handleCheckMonth("jun")}
+                      value="jun"
+                      disabled={disableMonthCheckBox("jun")}
+                    />
+                  }
+                  label="Jun"
+                />
+              </FormGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={jul}
+                      onChange={handleCheckMonth("jul")}
+                      disabled={disableMonthCheckBox("jul")}
+                      value="jul"
+                    />
+                  }
+                  label="Jul"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={aug}
+                      onChange={handleCheckMonth("aug")}
+                      disabled={disableMonthCheckBox("aug")}
+                      value="aug"
+                    />
+                  }
+                  label="Aug"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={sep}
+                      onChange={handleCheckMonth("sep")}
+                      disabled={disableMonthCheckBox("sep")}
+                      value="sep"
+                    />
+                  }
+                  label="Sep"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={oct}
+                      onChange={handleCheckMonth("oct")}
+                      disabled={disableMonthCheckBox("oct")}
+                      value="oct"
+                    />
+                  }
+                  label="Oct"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={nov}
+                      onChange={handleCheckMonth("nov")}
+                      disabled={disableMonthCheckBox("nov")}
+                      value="nov"
+                    />
+                  }
+                  label="Nov"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={dec}
+                      onChange={handleCheckMonth("dec")}
+                      disabled={disableMonthCheckBox("dec")}
+                      value="dec"
+                    />
+                  }
+                  label="Dec"
+                />
+              </FormGroup>
+            </Grid>
+          </Grid>
+        </FormControl>
       );
     }
   };
