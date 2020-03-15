@@ -8,7 +8,7 @@ export default function CustomTimePicker(props) {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <TimePicker value={value} onChange={onChange} autoOk />
+      <TimePicker value={value} onChange={onChange} autoOk ampm={false} />
     </MuiPickersUtilsProvider>
   );
 }

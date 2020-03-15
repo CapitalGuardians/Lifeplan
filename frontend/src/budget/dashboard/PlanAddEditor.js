@@ -43,7 +43,8 @@ import {
   addYears,
   addDays,
   differenceInMinutes,
-  endOfDay
+  endOfDay,
+  addHours
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -240,7 +241,7 @@ export default function PlanAddEditor(props) {
 
   useEffect(() => {
     if (itemTimes.start > itemTimes.end) {
-      setItemTimes({ ...itemTimes, end: new Date(itemTimes.start) });
+      setItemTimes({ ...itemTimes, end: addHours(itemTimes.start, 1) });
     }
   }, [itemTimes]);
 
