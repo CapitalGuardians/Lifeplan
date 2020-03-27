@@ -43,7 +43,6 @@ const styles = {
   }
 };
 
-
 //test
 function mapStateToProps(state) {
   return {
@@ -155,7 +154,7 @@ class FormPersonalDetails extends React.Component {
           _.map(supportGroup.supportCategories, supportCategory => {
             planCategories[supportCategory.id] = {
               budget: 0,
-              planItems: []
+              planItemGroups: []
             };
           });
         });

@@ -112,9 +112,14 @@ export default function PlanAddEditor(props) {
     props.redirectSelectionPage();
   }
 
-  function onClickSave(values, supportItemGroup) {
-    const planItem = createNewPlanItem(values, supportItemGroup);
-    props.save(planItem);
+  function onClickSave(values, supportItemGroup, events) {
+    const planItemGroup = createNewPlanItemGroup(
+      values,
+      supportItemGroup,
+      events
+    );
+    console.log(planItemGroup);
+    props.save(planItemGroup);
     props.redirectSupports();
   }
 
@@ -133,11 +138,22 @@ export default function PlanAddEditor(props) {
     }
   }
 
-  function createNewPlanItem(values, supportItemGroup) {
+  function createNewPlanItemGroup(values, supportItemGroup, events) {
     // console.log(supportItemGroup);
+    console.log(events);
+    const planItems = events.map(event => {
+      return {
+        startDate: event.start,
+        endDate: event.end,
+        priceActual: parseFloat(values.priceActual),
+        name: event.title,
+        allDay: event.allDay
+      };
+    });
     return {
       supportItemGroup: supportItemGroup,
-      ...values
+      planItems,
+      name: values.name
     };
   }
 
@@ -952,7 +968,7 @@ export default function PlanAddEditor(props) {
         </Button>
         <Button
           variant={"text"}
-          onClick={() => onClickSave(values, supportItem.id)}
+          onClick={() => onClickSave(values, supportItem.id, newEvents())}
         >
           Save
         </Button>

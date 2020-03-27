@@ -108,7 +108,7 @@ export default function SupportItemDialog(props) {
     postcode,
     planCategory,
     supportCategory,
-    setPlanItems,
+    setPlanItemGroups,
     registrationGroups,
     page,
     setPage
@@ -247,14 +247,16 @@ export default function SupportItemDialog(props) {
     goToSupportSelection();
   }
 
-  function handleAddSupportItem(planItem) {
-    const { planItems } = planCategory;
+  function handleAddPlanItemGroup(planItemGroup) {
+    const { planItemGroups } = planCategory;
+    console.log(planCategory);
     if (currentUser) {
-      api.PlanItems.create(planCategory.id, planItem).then(() => {
-        setPlanItems([planItem, ...planItems]);
+      // TODO: handle registered users
+      api.PlanItems.create(planCategory.id, planItemGroup).then(() => {
+        setPlanItemGroups([planItemGroup, ...planItemGroups]);
       });
     } else {
-      setPlanItems([planItem, ...planItems]);
+      setPlanItemGroups([planItemGroup, ...planItemGroups]);
     }
   }
 
@@ -286,24 +288,30 @@ export default function SupportItemDialog(props) {
     setSearchText(e.target.value);
   }
 
-  function handleDelete(planItem) {
+  function handleDelete(planItemGroup) {
+    // TODO: update for planItemGroups
     if (currentUser) {
-      api.PlanItems.delete(planItem.id).then(() => {
-        setPlanItems(_.difference(planCategory.planItems, [planItem]));
+      api.PlanItems.delete(planItemGroup.id).then(() => {
+        setPlanItemGroups(
+          _.difference(planCategory.planItemGroups, [planItemGroup])
+        );
       });
     } else {
-      setPlanItems(_.difference(planCategory.planItems, [planItem]));
+      setPlanItemGroups(
+        _.difference(planCategory.planItemGroups, [planItemGroup])
+      );
     }
 
     //saveToLocalStorage(planCategory.planItems);
   }
 
-  function handleItemUpdate(planItem, values) {
+  function handleItemUpdate(planItemGroup, values) {
+    // todo: update both for planItemGroups
     if (currentUser) {
-      api.PlanItems.update(planItem.id, values).then(() => {
-        setPlanItems(
-          planCategory.planItems.map(item => {
-            if (planItem === item) {
+      api.PlanItems.update(planItemGroup.id, values).then(() => {
+        setPlanItemGroups(
+          planCategory.planItemGroups.map(item => {
+            if (planItemGroup === item) {
               return {
                 ...item,
                 ...values
@@ -314,9 +322,9 @@ export default function SupportItemDialog(props) {
         );
       });
     } else {
-      setPlanItems(
-        planCategory.planItems.map(item => {
-          if (planItem === item) {
+      setPlanItemGroups(
+        planCategory.planItemGroups.map(item => {
+          if (planItemGroup === item) {
             return {
               ...item,
               ...values
@@ -357,16 +365,16 @@ export default function SupportItemDialog(props) {
   //   );
   // }
 
-  function renderPlanItem(planItem) {
+  function renderPlanItem(planItemGroup) {
     let supportItem;
 
     if (page === 0) {
       supportItem = _.find(supportItems, supportItem => {
-        return supportItem.id === planItem.supportItemGroup;
+        return supportItem.id === planItemGroup.supportItemGroup;
       });
     } else if (page === 1) {
       supportItem = _.find(supportItems, supportItem => {
-        return supportItem.id === planItem.id;
+        return supportItem.id === planItemGroup.id;
       });
     }
 
@@ -386,7 +394,7 @@ export default function SupportItemDialog(props) {
                   handleSelectSupportItem(supportItem);
                 }
                 if (page === 0) {
-                  handleEditSupportItem(supportItem, planItem);
+                  handleEditSupportItem(supportItem, planItemGroup);
                 }
               }}
             >
@@ -400,7 +408,7 @@ export default function SupportItemDialog(props) {
               </ListItemIcon>
               <ListItemText
                 className={classNames(classes.buttonText, classes.planItemText)}
-                primary={page === 0 ? planItem.name : supportItem.name}
+                primary={page === 0 ? planItemGroup.name : supportItem.name}
               />
             </Fab>
           </Grid>
@@ -415,9 +423,9 @@ export default function SupportItemDialog(props) {
     ) : (
       <List>
         <Grid container>
-          {list.map((planItem, index) => (
+          {list.map((planItemGroup, index) => (
             <Grid item key={index} xs={12} md={6} className={classes.list}>
-              {renderPlanItem(planItem, index)}
+              {renderPlanItem(planItemGroup, index)}
             </Grid>
           ))}
         </Grid>
@@ -429,7 +437,7 @@ export default function SupportItemDialog(props) {
     return (
       <>
         <DialogContent className={classes.dialogContent}>
-          {renderSupportItemList(planCategory.planItems)}
+          {renderSupportItemList(planCategory.planItemGroups)}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
@@ -522,7 +530,7 @@ export default function SupportItemDialog(props) {
         supportItem={editedItem}
         redirectSelectionPage={goToSupportSelection}
         redirectSupports={goToSupportsList}
-        save={handleAddSupportItem}
+        save={handleAddPlanItemGroup}
       />
     );
   }

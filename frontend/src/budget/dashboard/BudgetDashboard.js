@@ -28,54 +28,54 @@ export const EDIT_SUPPORT = 2;
 export const ADD_SUPPORT = 3;
 export const REGISTRATION_GROUP_SELECTION = 4;
 
-function printPage(planCategories) {
-  let w = window.open();
-
-  let html = ReactDOMServer.renderToStaticMarkup(
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell>Unit Price</TableCell>
-          <TableCell>Quantity</TableCell>
-          <TableCell>Frequency</TableCell>
-          <TableCell>Total</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {_.map(planCategories, planCategory => {
-          return _.map(planCategory.planItems, planItem => {
-            let frequency = "Yearly";
-            if (planItem.frequencyPerYear === 365) {
-              frequency = "Daily";
-            } else if (planItem.frequencyPerYear === 52) {
-              frequency = "Weekly";
-            } else if (planItem.frequencyPerYear === 12) {
-              frequency = "Monthly";
-            }
-            const total =
-              planItem.priceActual *
-              planItem.quantity *
-              planItem.frequencyPerYear;
-            return (
-              <TableRow key={planItem.id}>
-                <TableCell>{planItem.name}</TableCell>
-                <TableCell>${planItem.priceActual}</TableCell>
-                <TableCell>{planItem.quantity}</TableCell>
-                <TableCell>{frequency}</TableCell>
-                <TableCell>${total}</TableCell>
-              </TableRow>
-            );
-          });
-        })}
-      </TableBody>
-    </Table>
-  );
-
-  w.document.write(html);
-  w.window.print();
-  w.document.close();
-}
+// function printPage(planCategories) {
+//   let w = window.open();
+//
+//   let html = ReactDOMServer.renderToStaticMarkup(
+//     <Table>
+//       <TableHead>
+//         <TableRow>
+//           <TableCell>Name</TableCell>
+//           <TableCell>Unit Price</TableCell>
+//           <TableCell>Quantity</TableCell>
+//           <TableCell>Frequency</TableCell>
+//           <TableCell>Total</TableCell>
+//         </TableRow>
+//       </TableHead>
+//       <TableBody>
+//         {_.map(planCategories, planCategory => {
+//           return _.map(planCategory.planItemGroups, planItemGroup => {
+//             let frequency = "Yearly";
+//             if (planItemGroup.frequencyPerYear === 365) {
+//               frequency = "Daily";
+//             } else if (planItem.frequencyPerYear === 52) {
+//               frequency = "Weekly";
+//             } else if (planItem.frequencyPerYear === 12) {
+//               frequency = "Monthly";
+//             }
+//             const total =
+//               planItem.priceActual *
+//               planItem.quantity *
+//               planItem.frequencyPerYear;
+//             return (
+//               <TableRow key={planItem.id}>
+//                 <TableCell>{planItem.name}</TableCell>
+//                 <TableCell>${planItem.priceActual}</TableCell>
+//                 <TableCell>{planItem.quantity}</TableCell>
+//                 <TableCell>{frequency}</TableCell>
+//                 <TableCell>${total}</TableCell>
+//               </TableRow>
+//             );
+//           });
+//         })}
+//       </TableBody>
+//     </Table>
+//   );
+//
+//   w.document.write(html);
+//   w.window.print();
+//   w.document.close();
+// }
 
 function mapStateToProps(state) {
   return {
@@ -83,15 +83,15 @@ function mapStateToProps(state) {
   };
 }
 
-function calculateAllocated(planItems) {
+function calculateAllocated(planItemGroups) {
   let allocated = 0;
-  _.forEach(planItems, planItem => {
-    const { quantity, priceActual, frequencyPerYear } = planItem;
-    if (quantity && priceActual && frequencyPerYear) {
-      allocated +=
-        planItem.quantity * planItem.priceActual * planItem.frequencyPerYear;
-    }
+  _.forEach(planItemGroups, planItemGroup => {
+    _.forEach(planItemGroup.planItems, planItem => {
+      console.log(planItem);
+      allocated += planItem.priceActual;
+    });
   });
+
   return allocated;
 }
 
@@ -139,6 +139,7 @@ class BudgetDashBoard extends React.Component {
     let planCategories = {};
     let birthYear = null;
     let postcode = null;
+    // TODO: update for planItemGroups
     if (localStorage.getItem(LocalStorageKeys.ACCESS) != null) {
       await api.Participants.currentUser().then(response => {
         birthYear = response.data.birthYear;
@@ -226,13 +227,13 @@ class BudgetDashBoard extends React.Component {
     this.setState({ openSupports: false });
   };
 
-  handleSetPlanItems = planItems => {
+  handleSetPlanItemGroups = planItemGroups => {
     this.setState({
       planCategories: {
         ...this.state.planCategories,
         [this.state.activeCategory]: {
           ...this.state.planCategories[this.state.activeCategory],
-          planItems: planItems
+          planItemGroups: planItemGroups
         }
       }
     });
@@ -248,7 +249,7 @@ class BudgetDashBoard extends React.Component {
     });
     _.forEach(core.supportCategories, supportCategory => {
       const planCategory = this.state.planCategories[supportCategory.id];
-      allocated += calculateAllocated(planCategory.planItems);
+      allocated += calculateAllocated(planCategory.planItemGroups);
     });
     return allocated;
   };
@@ -260,7 +261,7 @@ class BudgetDashBoard extends React.Component {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
 
-        allocated += calculateAllocated(planCategory.planItems);
+        allocated += calculateAllocated(planCategory.planItemGroups);
       }
     });
     const available = total - allocated;
@@ -314,13 +315,13 @@ class BudgetDashBoard extends React.Component {
                 <EditIcon />
                 Edit Plan
               </Button>
-              <Button
-                onClick={() => printPage(this.state.planCategories)}
-                size="small"
-              >
-                <PrintIcon />
-                Print Plan
-              </Button>
+              {/*<Button*/}
+              {/*  onClick={() => printPage(this.state.planCategories)}*/}
+              {/*  size="small"*/}
+              {/*>*/}
+              {/*  <PrintIcon />*/}
+              {/*  Print Plan*/}
+              {/*</Button>*/}
             </Grid>
           </Grid>
         </CardActions>
@@ -394,7 +395,9 @@ class BudgetDashBoard extends React.Component {
                       {...{
                         category: supportCategory.name,
                         total: parseFloat(planCategory.budget),
-                        allocated: calculateAllocated(planCategory.planItems),
+                        allocated: calculateAllocated(
+                          planCategory.planItemGroups
+                        ),
                         totalColor: LIGHT_BLUE,
                         allocatedColor: DARK_BLUE
                       }}
@@ -437,7 +440,7 @@ class BudgetDashBoard extends React.Component {
             postcode={postcode}
             onClose={this.handleCloseSupports}
             planCategory={this.state.planCategories[this.state.activeCategory]}
-            setPlanItems={this.handleSetPlanItems}
+            setPlanItemGroups={this.handleSetPlanItemGroups}
             openAddSupports={this.state.openAddSupports}
             registrationGroups={this.state.registrationGroups}
             page={this.state.dialogPage}
