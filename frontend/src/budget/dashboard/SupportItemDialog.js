@@ -28,6 +28,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import classNames from "classnames";
 import {
   ADD_SUPPORT,
+  calculateAllocated,
   calculateTotalCost,
   EDIT_SUPPORT,
   SUPPORTS_LIST,
@@ -37,6 +38,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Toolbar from "@material-ui/core/Toolbar";
+import DoughnutBody from "../../DoughnutChart/DoughnutBody";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -347,7 +349,7 @@ export default function SupportItemDialog(props) {
     return (
       supportItem != null && (
         <Grid item>
-          <Grid container alignItems="center">
+          <Grid container>
             <Fab
               className={
                 page === SUPPORTS_SELECTION
@@ -397,18 +399,28 @@ export default function SupportItemDialog(props) {
   }
 
   function renderSupportItemList(list) {
-    return list.length === 0 ? (
-      <div> Press Add New to add a support </div>
-    ) : (
-      <List>
-        <Grid container>
-          {list.map((planItemGroup, index) => (
-            <Grid item key={index} xs={12} md={6} className={classes.list}>
-              {renderPlanItemGroup(planItemGroup, index)}
-            </Grid>
-          ))}
+    console.log(list);
+    return (
+      <Grid container>
+        <Grid container item xs={12} md={8} lg={7} alignItems="flex-start">
+          {list.length === 0 ? (
+            <div> Press Add New to add a support </div>
+          ) : (
+            list.map((planItemGroup, index) => (
+              <Grid item key={index} xs={12} className={classes.list}>
+                {renderPlanItemGroup(planItemGroup)}
+              </Grid>
+            ))
+          )}
         </Grid>
-      </List>
+
+        <Grid item md={4} lg={5}>
+          <DoughnutBody
+            allocated={calculateAllocated(planCategory.planItemGroups)}
+            total={parseFloat(planCategory.budget)}
+          />
+        </Grid>
+      </Grid>
     );
   }
 

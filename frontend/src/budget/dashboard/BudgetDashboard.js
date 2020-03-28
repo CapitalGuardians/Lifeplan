@@ -6,7 +6,7 @@ import { Button, CardActions, CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
+import BudgetCategoryCard from "../../DoughnutChart/BudgetCategoryCard";
 import api from "../../api";
 import SupportItemDialog from "./SupportItemDialog";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
@@ -21,6 +21,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
 import { differenceInMinutes } from "date-fns";
+import DoughnutBody from "../../DoughnutChart/DoughnutBody";
 
 const PLAN_CATEGORIES = "planCategories";
 export const SUPPORTS_LIST = 0;
@@ -104,7 +105,7 @@ export function calculateTotalCost(planItemGroup) {
   return Math.round(allocated * 100) / 100;
 }
 
-function calculateAllocated(planItemGroups) {
+export function calculateAllocated(planItemGroups) {
   let allocated = 0;
   _.forEach(planItemGroups, planItemGroup => {
     allocated += calculateTotalCost(planItemGroup);
@@ -282,7 +283,6 @@ class BudgetDashBoard extends React.Component {
         allocated += calculateAllocated(planCategory.planItemGroups);
       }
     });
-    const available = total - allocated;
     return (
       <Card>
         <CardHeader title="Budget Summary" />
@@ -294,31 +294,7 @@ class BudgetDashBoard extends React.Component {
                   No budgets allocated to any category! Please edit your plan.
                 </div>
               ) : (
-                <Doughnut
-                  legend={{
-                    // display:false,
-                    position: "right",
-                    onClick: () => {}
-                  }}
-                  data={{
-                    labels: [
-                      `Allocated: $${allocated}`,
-                      `Available: $${available}`
-                    ],
-                    datasets: [
-                      {
-                        data: available >= 0 ? [allocated, available] : [1, 0],
-                        backgroundColor:
-                          available >= 0
-                            ? [DARK_BLUE, LIGHT_BLUE]
-                            : ["red", LIGHT_BLUE]
-                      }
-                    ]
-                  }}
-                  options={{
-                    tooltips: { enabled: false }
-                  }}
-                />
+                <DoughnutBody allocated={allocated} total={total} />
               )}
             </Grid>
           </Grid>
