@@ -139,7 +139,6 @@ export default function PlanAddEditor(props) {
   }
 
   function createNewPlanItemGroup(values, supportItemGroup, events) {
-    // console.log(supportItemGroup);
     console.log(events);
     const planItems = events.map(event => {
       return {
@@ -485,14 +484,11 @@ export default function PlanAddEditor(props) {
     const numberOfItems = newEvents().length;
     const cost = numberOfItems * values.priceActual;
     return supportItem.unit === "H"
-      ? (
-          Math.round(
-            ((cost * differenceInMinutes(itemTimes.end, itemTimes.start)) /
-              60) *
-              100
-          ) / 100
-        ).toFixed(2)
-      : (Math.round(cost * 100) / 100).toFixed(2);
+      ? Math.round(
+          ((cost * differenceInMinutes(itemTimes.end, itemTimes.start)) / 60) *
+            100
+        ) / 100
+      : Math.round(cost * 100) / 100;
   };
 
   const handleDayYearlyDateChange = date => {

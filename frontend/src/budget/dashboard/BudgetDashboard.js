@@ -20,6 +20,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
+import { differenceInMinutes } from "date-fns";
 
 const PLAN_CATEGORIES = "planCategories";
 export const SUPPORTS_LIST = 0;
@@ -83,16 +84,33 @@ function mapStateToProps(state) {
   };
 }
 
+export function calculateTotalCost(planItemGroup) {
+  let allocated = 0;
+  _.forEach(planItemGroup.planItems, planItem => {
+    const amount = planItem.allDay
+      ? Math.round(planItem.priceActual * 100) / 100
+      : Math.round(
+          ((planItem.priceActual *
+            differenceInMinutes(
+              new Date(planItem.endDate),
+              new Date(planItem.startDate)
+            )) /
+            60) *
+            100
+        ) / 100;
+
+    allocated += amount;
+  });
+  return Math.round(allocated * 100) / 100;
+}
+
 function calculateAllocated(planItemGroups) {
   let allocated = 0;
   _.forEach(planItemGroups, planItemGroup => {
-    _.forEach(planItemGroup.planItems, planItem => {
-      console.log(planItem);
-      allocated += planItem.priceActual;
-    });
+    allocated += calculateTotalCost(planItemGroup);
   });
 
-  return allocated;
+  return Math.round(allocated * 100) / 100;
 }
 
 class BudgetDashBoard extends React.Component {
@@ -251,7 +269,7 @@ class BudgetDashBoard extends React.Component {
       const planCategory = this.state.planCategories[supportCategory.id];
       allocated += calculateAllocated(planCategory.planItemGroups);
     });
-    return allocated;
+    return allocated.toFixed(2);
   };
 
   renderSummary = () => {

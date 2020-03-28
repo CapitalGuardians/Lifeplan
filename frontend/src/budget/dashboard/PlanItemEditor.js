@@ -200,18 +200,6 @@ export default function PlanItemEditor(props) {
     return timeEnum;
   }
 
-  function displayTotalCost(totalPrice, frequencyUnit, quantityUnit) {
-    return totalPrice > 0 ? (
-      <Typography>
-        Total: ${values.priceActual} X {values.quantity} {quantityUnit}
-        (s) X {values.frequencyPerYear} {frequencyUnit}(s) = ${totalPrice}
-      </Typography>
-    ) : (
-      <Typography variant="button" align="right">
-        Total: $0
-      </Typography>
-    );
-  }
   const { name, frequency, quantity, price } = initialiseValues(
     editedItem,
     editedPlanItem
@@ -231,11 +219,6 @@ export default function PlanItemEditor(props) {
   const unitTime = enumResult.unitTime;
   const unit = enumResult.unit;
   const frequencyUsage = timeEnumeration(values.frequencyPerYear);
-  const totalPrice = (
-    values.priceActual *
-    values.frequencyPerYear *
-    values.quantity
-  ).toFixed(2);
 
   const renderFrequencySelector = () => {
     return (

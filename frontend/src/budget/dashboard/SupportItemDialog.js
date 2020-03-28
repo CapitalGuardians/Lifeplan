@@ -3,13 +3,10 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Fab from "@material-ui/core/Fab";
-import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import api from "../../api";
 import { DialogContent } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import DialogActions from "@material-ui/core/DialogActions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import _ from "lodash";
@@ -31,6 +28,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import classNames from "classnames";
 import {
   ADD_SUPPORT,
+  calculateTotalCost,
   EDIT_SUPPORT,
   SUPPORTS_LIST,
   SUPPORTS_SELECTION
@@ -114,15 +112,12 @@ export default function SupportItemDialog(props) {
     setPage
   } = props;
 
-  const theme = useTheme();
-
   // React Hooks
   // list of all support items for this group
   const [supportItems, setSupportItems] = useState([]);
   // id of registration group
   const [registrationGroupId] = useState(null);
   // 0: large screen; 1: small screen (mobile)
-  const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   // number representing current page
   // 0: supports list; 1: supports selection; 2: edit support; 3: add support
   // const [page, setPage] = useState(
@@ -336,43 +331,14 @@ export default function SupportItemDialog(props) {
     }
   }
 
-  // unused for now
-  // function handleChangeUnitPrice(event, planItem) {
-  //   setPlanItems(
-  //     planCategory.planItems.map((item, index) => {
-  //       if (planItem === item) {
-  //         return {
-  //           ...item,
-  //           priceActual: event.target.value
-  //         };
-  //       }
-  //       return item;
-  //     })
-  //   );
-  // }
-  //
-  // function handleChangeUnits(event, planItem) {
-  //   setPlanItems(
-  //     planCategory.planItems.map(item => {
-  //       if (planItem === item) {
-  //         return {
-  //           ...item,
-  //           quantity: event.target.value
-  //         };
-  //       }
-  //       return item;
-  //     })
-  //   );
-  // }
-
-  function renderPlanItem(planItemGroup) {
+  function renderPlanItemGroup(planItemGroup) {
     let supportItem;
 
-    if (page === 0) {
+    if (page === SUPPORTS_LIST) {
       supportItem = _.find(supportItems, supportItem => {
         return supportItem.id === planItemGroup.supportItemGroup;
       });
-    } else if (page === 1) {
+    } else if (page === SUPPORTS_SELECTION) {
       supportItem = _.find(supportItems, supportItem => {
         return supportItem.id === planItemGroup.id;
       });
@@ -384,16 +350,16 @@ export default function SupportItemDialog(props) {
           <Grid container alignItems="center">
             <Fab
               className={
-                page === 1
+                page === SUPPORTS_SELECTION
                   ? classes.supportButtonLight
                   : classes.supportButtonDark
               }
               variant="extended"
               onClick={() => {
-                if (page === 1) {
+                if (page === SUPPORTS_SELECTION) {
                   handleSelectSupportItem(supportItem);
                 }
-                if (page === 0) {
+                if (page === SUPPORTS_LIST) {
                   handleEditSupportItem(supportItem, planItemGroup);
                 }
               }}
@@ -406,10 +372,23 @@ export default function SupportItemDialog(props) {
                   <InfoIcon />
                 </Tooltip>
               </ListItemIcon>
-              <ListItemText
-                className={classNames(classes.buttonText, classes.planItemText)}
-                primary={page === 0 ? planItemGroup.name : supportItem.name}
-              />
+              <Grid container alignContent="space-between">
+                <Grid item xs={10}>
+                  <Typography
+                    className={classNames(
+                      classes.buttonText,
+                      classes.planItemText
+                    )}
+                  >
+                    {page === SUPPORTS_LIST
+                      ? planItemGroup.name
+                      : supportItem.name}
+                  </Typography>
+                </Grid>
+                {page === SUPPORTS_LIST && (
+                  <Grid item>${calculateTotalCost(planItemGroup)}</Grid>
+                )}
+              </Grid>
             </Fab>
           </Grid>
         </Grid>
@@ -425,7 +404,7 @@ export default function SupportItemDialog(props) {
         <Grid container>
           {list.map((planItemGroup, index) => (
             <Grid item key={index} xs={12} md={6} className={classes.list}>
-              {renderPlanItem(planItemGroup, index)}
+              {renderPlanItemGroup(planItemGroup, index)}
             </Grid>
           ))}
         </Grid>
