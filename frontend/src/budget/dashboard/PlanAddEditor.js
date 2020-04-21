@@ -483,12 +483,14 @@ export default function PlanAddEditor(props) {
   const calculateCost = () => {
     const numberOfItems = newEvents().length;
     const cost = numberOfItems * values.priceActual;
-    return supportItem.unit === "H"
+    const result = (supportItem.unit === "H"
       ? Math.round(
           ((cost * differenceInMinutes(itemTimes.end, itemTimes.start)) / 60) *
             100
         ) / 100
-      : Math.round(cost * 100) / 100;
+      : Math.round(cost * 100) / 100
+    ).toLocaleString();
+    return result;
   };
 
   const handleDayYearlyDateChange = date => {
@@ -947,7 +949,15 @@ export default function PlanAddEditor(props) {
                     />
                   </FormControl>
                   <Typography cvariant={"body1"} align={"left"}>
-                    Total: ${calculateCost()}
+                    {supportItem.unit === "H"
+                      ? `Total: $${values.priceActual} x ${
+                          newEvents().length
+                        } day(s) x 
+                    ${differenceInMinutes(itemTimes.end, itemTimes.start) /
+                      60} hours = $${calculateCost()}`
+                      : `Total: $${values.priceActual} x ${
+                          newEvents().length
+                        } ${enumResult.unit}(s)  = $${calculateCost()}`}
                   </Typography>
                 </Grid>
               </Grid>
