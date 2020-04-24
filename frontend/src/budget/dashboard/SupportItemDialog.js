@@ -3,7 +3,6 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Fab from "@material-ui/core/Fab";
-import List from "@material-ui/core/List";
 import api from "../../api";
 import { DialogContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
@@ -399,7 +398,6 @@ export default function SupportItemDialog(props) {
   }
 
   function renderSupportItemList(list) {
-    console.log(list);
     return (
       <Grid container>
         <Grid container item xs={12} md={8} lg={7} alignItems="flex-start">

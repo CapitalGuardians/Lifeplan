@@ -585,6 +585,7 @@ export default function PlanAddEditor(props) {
   };
 
   const handleTimeChange = name => value => {
+    console.log(value);
     setItemTimes({ ...itemTimes, [name]: value });
   };
 
@@ -883,6 +884,8 @@ export default function PlanAddEditor(props) {
             <CustomTimePicker
               value={itemTimes.start}
               onChange={handleTimeChange("start")}
+              minHour={0}
+              minMinute={0}
             />
           </Grid>
           <Grid item>
@@ -891,6 +894,8 @@ export default function PlanAddEditor(props) {
             <CustomTimePicker
               value={itemTimes.end}
               onChange={handleTimeChange("end")}
+              minHour={getHours(itemTimes.start)}
+              minMinute={getMinutes(itemTimes.start)}
             />
           </Grid>
         </Grid>
@@ -954,7 +959,7 @@ export default function PlanAddEditor(props) {
                           newEvents().length
                         } day(s) x 
                     ${differenceInMinutes(itemTimes.end, itemTimes.start) /
-                      60} hours = $${calculateCost()}`
+                      60} hour(s) = $${calculateCost()}`
                       : `Total: $${values.priceActual} x ${
                           newEvents().length
                         } ${enumResult.unit}(s)  = $${calculateCost()}`}

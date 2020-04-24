@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import withStyles from "@material-ui/core/styles/withStyles";
 import CardHeader from "@material-ui/core/CardHeader";
-import { Doughnut } from "react-chartjs-2";
 import classNames from "classnames";
 import DoughnutBody from "./DoughnutBody";
 
@@ -19,14 +18,7 @@ const styles = {
 
 class BudgetCategoryCard extends Component {
   render() {
-    const {
-      classes,
-      category,
-      allocated,
-      total,
-      allocatedColor,
-      totalColor
-    } = this.props;
+    const { classes, category, allocated, total } = this.props;
     return (
       <Card raised>
         <CardHeader
