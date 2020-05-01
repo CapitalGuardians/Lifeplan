@@ -489,7 +489,7 @@ export default function PlanAddEditor(props) {
             100
         ) / 100
       : Math.round(cost * 100) / 100
-    ).toLocaleString();
+    ).toLocaleString(undefined, { minimumFractionDigits: 2 });
     return result;
   };
 
@@ -618,7 +618,7 @@ export default function PlanAddEditor(props) {
         return (
           <>
             <Typography variant={"body1"} align={"left"}>
-              Please select the starting date/s
+              Please select the dates
             </Typography>
             <CustomDatePicker
               handleChange={handleDayYearlyDateChange}

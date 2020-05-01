@@ -12,17 +12,6 @@ import api from "./api";
 import { connect } from "react-redux";
 import { loadUser } from "./redux/reducers/auth";
 
-// function getCurrentUser() {
-//   const access = localStorage.getItem(LocalStorageKeys.ACCESS);
-//   if (access != null) {
-//     api.setAccess(access);
-//     return api.Participants.currentUser();
-//   }
-//   else {
-//    return null;
-//   }
-// }
-
 const mapStateToProps = state => {
   return {};
 };
@@ -39,6 +28,16 @@ async function fetchUser(loadUser) {
 }
 
 function App(props) {
+  // 01/05/2020: reset localstorage
+  useEffect(() => {
+    const reset = localStorage.getItem("reset");
+    if (reset == null || new Date(reset) < 1588326307865) {
+      localStorage.clear();
+      const today = new Date();
+      localStorage.setItem("reset", today.toString());
+    }
+  });
+
   useEffect(() => {
     // redirect if 401
     api.set401Interceptor(handle401);
