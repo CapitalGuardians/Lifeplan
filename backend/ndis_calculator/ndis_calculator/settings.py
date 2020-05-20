@@ -93,13 +93,15 @@ APPEND_SLASH = False
 DATABASE_USER = os.environ.get("DATABASE_USER", "root")
 DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
 DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "ndisFP2019")
+
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "ndis",
         "USER": DATABASE_USER,
-        "PASSWORD": "ndisFP2019",
+        "PASSWORD": DATABASE_PASSWORD,
         "HOST": DATABASE_HOST,
         "PORT": DATABASE_PORT,
         "OPTIONS": {"init_command": "SET foreign_key_checks = 0;"},
