@@ -6,9 +6,12 @@ import {
   CardContent,
   Typography
 } from "@material-ui/core";
+import { format } from "date-fns";
 
 export default function PlanItemCalendarPopup(props) {
   const { planItem } = props;
+  console.log(planItem);
+  // const startDateString = format(planItem.)
   return (
     <Card>
       <CardContent>
@@ -23,4 +26,10 @@ export default function PlanItemCalendarPopup(props) {
       </CardActions>
     </Card>
   );
+}
+
+function renderDateString(planItem) {
+  if (planItem.allDay === true) {
+    // const dateStirng = format(planItem.startDate, "")
+  }
 }
