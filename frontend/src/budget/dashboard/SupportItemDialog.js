@@ -14,7 +14,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
-import PlanItemEditor from "./PlanItemEditor";
+import PlanItemGroupEditView from "./PlanItemGroupEditView";
 import PlanAddEditor from "./PlanAddEditor";
 import { useSelector } from "react-redux";
 import Divider from "@material-ui/core/Divider";
@@ -130,7 +130,7 @@ export default function SupportItemDialog(props) {
   const [searchText, setSearchText] = useState("");
   // item that is being edited
   const [editedItem, setEditedItem] = useState(0);
-  const [editedPlanItem, setEditedPlanItem] = useState(0);
+  const [planItemGroup, setPlanItemGroup] = useState(0);
 
   const [registrationGroupIdFilter, setRegistrationGroupIdFilter] = useState(
     ""
@@ -276,7 +276,7 @@ export default function SupportItemDialog(props) {
 
   function handleEditSupportItem(supportItem, planItem) {
     setEditedItem(supportItem);
-    setEditedPlanItem(planItem);
+    setPlanItemGroup(planItem);
     goToEditSupport();
   }
 
@@ -502,15 +502,7 @@ export default function SupportItemDialog(props) {
   }
 
   function renderEditor() {
-    return (
-      <PlanItemEditor
-        editedItem={editedItem}
-        editedPlanItem={editedPlanItem}
-        redirect={goToSupportsList}
-        delete={handleDelete}
-        save={handleItemUpdate}
-      />
-    );
+    return <PlanItemGroupEditView planItemGroup={planItemGroup} />;
   }
 
   function renderAdditionPage() {
