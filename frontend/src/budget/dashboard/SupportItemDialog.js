@@ -14,7 +14,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
-import PlanItemGroupEditView from "./PlanItemGroupEditView";
+import PlanItemGroupCalendarView from "./PlanItemGroupCalendarView";
 import PlanAddEditor from "./PlanAddEditor";
 import { useSelector } from "react-redux";
 import Divider from "@material-ui/core/Divider";
@@ -130,7 +130,7 @@ export default function SupportItemDialog(props) {
   const [searchText, setSearchText] = useState("");
   // item that is being edited
   const [editedItem, setEditedItem] = useState(0);
-  const [planItemGroup, setPlanItemGroup] = useState(0);
+  const [selectedPlanItemGroup, setSelectedPlanItemGroup] = useState(0);
 
   const [registrationGroupIdFilter, setRegistrationGroupIdFilter] = useState(
     ""
@@ -276,7 +276,7 @@ export default function SupportItemDialog(props) {
 
   function handleEditSupportItem(supportItem, planItem) {
     setEditedItem(supportItem);
-    setPlanItemGroup(planItem);
+    setSelectedPlanItemGroup(planItem);
     goToEditSupport();
   }
 
@@ -284,14 +284,15 @@ export default function SupportItemDialog(props) {
     setSearchText(e.target.value);
   }
 
-  function handleDelete(planItemGroup) {
-    // TODO: update for planItemGroups
+  function handleDeletePlanItemGroup(planItemGroup) {
+    goToSupportsList();
+    // TODO: use newer API
     if (currentUser) {
-      api.PlanItems.delete(planItemGroup.id).then(() => {
-        setPlanItemGroups(
-          _.difference(planCategory.planItemGroups, [planItemGroup])
-        );
-      });
+      // api.PlanItems.delete(planItemGroup.id).then(() => {
+      //   setPlanItemGroups(
+      //     _.difference(planCategory.planItemGroups, [planItemGroup])
+      //   );
+      // });
     } else {
       setPlanItemGroups(
         _.difference(planCategory.planItemGroups, [planItemGroup])
@@ -299,6 +300,27 @@ export default function SupportItemDialog(props) {
     }
 
     //saveToLocalStorage(planCategory.planItems);
+  }
+
+  function handleDeletePlanItem(planItem) {
+    if (currentUser) {
+      // TODO: call backend
+    } else {
+      const editedPlanItemGroup = {
+        ...selectedPlanItemGroup,
+        planItems: _.difference(selectedPlanItemGroup.planItems, [planItem])
+      };
+      setPlanItemGroups(
+        planCategory.planItemGroups.map(pIG => {
+          if (selectedPlanItemGroup === pIG) {
+            return editedPlanItemGroup;
+          } else {
+            return pIG;
+          }
+        })
+      );
+      setSelectedPlanItemGroup(editedPlanItemGroup);
+    }
   }
 
   function handleItemUpdate(planItemGroup, values) {
@@ -502,7 +524,13 @@ export default function SupportItemDialog(props) {
   }
 
   function renderEditor() {
-    return <PlanItemGroupEditView planItemGroup={planItemGroup} />;
+    return (
+      <PlanItemGroupCalendarView
+        planItemGroup={selectedPlanItemGroup}
+        onDeletePlanItemGroup={handleDeletePlanItemGroup}
+        onDeletePlanItem={handleDeletePlanItem}
+      />
+    );
   }
 
   function renderAdditionPage() {
