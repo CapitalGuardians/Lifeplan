@@ -1,76 +1,25 @@
-import React from "react";
-import BudgetCategorySection from "./BudgetCategorySection";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
 import { Button, CardActions, CardContent } from "@material-ui/core";
-import _ from "lodash";
+import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
-import BudgetCategoryCard from "../../DoughnutChart/BudgetCategoryCard";
-import api from "../../api";
-import SupportItemDialog from "./SupportItemDialog";
-import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
-import connect from "react-redux/es/connect/connect";
-import { LocalStorageKeys } from "../../common/constants";
+import Grid from "@material-ui/core/Grid";
 import EditIcon from "@material-ui/icons/Edit";
-import PrintIcon from "@material-ui/icons/Print";
 import { differenceInMinutes } from "date-fns";
+import _ from "lodash";
+import React from "react";
+import connect from "react-redux/es/connect/connect";
+import api from "../../api";
+import { LocalStorageKeys } from "../../common/constants";
+import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
+import BudgetCategoryCard from "../../DoughnutChart/BudgetCategoryCard";
 import DoughnutBody from "../../DoughnutChart/DoughnutBody";
+import BudgetCategorySection from "./BudgetCategorySection";
+import SupportItemDialog from "./SupportItemDialog";
+import {
+  PLAN_ITEM_GROUPS_VIEW,
+  REGISTRATION_GROUPS_VIEW
+} from "./SupportItemDialog";
 
 const PLAN_CATEGORIES = "planCategories";
-export const SUPPORTS_LIST = 0;
-export const SUPPORTS_SELECTION = 1;
-export const EDIT_SUPPORT = 2;
-export const ADD_SUPPORT = 3;
-export const REGISTRATION_GROUP_SELECTION = 4;
-
-// function printPage(planCategories) {
-//   let w = window.open();
-//
-//   let html = ReactDOMServer.renderToStaticMarkup(
-//     <Table>
-//       <TableHead>
-//         <TableRow>
-//           <TableCell>Name</TableCell>
-//           <TableCell>Unit Price</TableCell>
-//           <TableCell>Quantity</TableCell>
-//           <TableCell>Frequency</TableCell>
-//           <TableCell>Total</TableCell>
-//         </TableRow>
-//       </TableHead>
-//       <TableBody>
-//         {_.map(planCategories, planCategory => {
-//           return _.map(planCategory.planItemGroups, planItemGroup => {
-//             let frequency = "Yearly";
-//             if (planItemGroup.frequencyPerYear === 365) {
-//               frequency = "Daily";
-//             } else if (planItem.frequencyPerYear === 52) {
-//               frequency = "Weekly";
-//             } else if (planItem.frequencyPerYear === 12) {
-//               frequency = "Monthly";
-//             }
-//             const total =
-//               planItem.priceActual *
-//               planItem.quantity *
-//               planItem.frequencyPerYear;
-//             return (
-//               <TableRow key={planItem.id}>
-//                 <TableCell>{planItem.name}</TableCell>
-//                 <TableCell>${planItem.priceActual}</TableCell>
-//                 <TableCell>{planItem.quantity}</TableCell>
-//                 <TableCell>{frequency}</TableCell>
-//                 <TableCell>${total}</TableCell>
-//               </TableRow>
-//             );
-//           });
-//         })}
-//       </TableBody>
-//     </Table>
-//   );
-//
-//   w.document.write(html);
-//   w.window.print();
-//   w.document.close();
-// }
 
 function mapStateToProps(state) {
   return {
@@ -117,7 +66,7 @@ class BudgetDashBoard extends React.Component {
     postcode: 3000,
     planId: null,
     registrationGroups: [],
-    dialogPage: SUPPORTS_LIST
+    dialogPage: PLAN_ITEM_GROUPS_VIEW
   };
 
   async componentDidMount() {
@@ -216,7 +165,7 @@ class BudgetDashBoard extends React.Component {
 
   handleOpenSupports = supportCategoryId => {
     this.setState(
-      { activeCategory: supportCategoryId, dialogPage: SUPPORTS_LIST },
+      { activeCategory: supportCategoryId, dialogPage: PLAN_ITEM_GROUPS_VIEW },
       () => {
         this.setState({ openSupports: true });
       }
@@ -226,7 +175,7 @@ class BudgetDashBoard extends React.Component {
   handleAddSupports = supportCategoryId => {
     this.setState(
       {
-        dialogPage: REGISTRATION_GROUP_SELECTION,
+        dialogPage: REGISTRATION_GROUPS_VIEW,
         activeCategory: supportCategoryId
       },
       () => {

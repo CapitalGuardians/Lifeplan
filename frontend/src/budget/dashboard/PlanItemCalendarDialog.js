@@ -10,7 +10,7 @@ import {
 import { format } from "date-fns";
 
 export default function PlanItemCalendarDialog(props) {
-  const { planItem, onClose, open, onDelete } = props;
+  const { planItem, onClose, open, onDelete, onEdit } = props;
   console.log(planItem.endDate);
   return (
     <Dialog open={open} onClose={onClose}>
@@ -28,7 +28,7 @@ export default function PlanItemCalendarDialog(props) {
       </DialogContent>
 
       <DialogActions>
-        <Button>Edit</Button>
+        <Button onClick={onEdit}>Edit</Button>
         <Button onClick={() => onDelete(planItem)}>Delete</Button>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>

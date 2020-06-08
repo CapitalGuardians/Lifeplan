@@ -11,6 +11,7 @@ import {
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { makeStyles } from "@material-ui/core/styles";
+import { PLAN_ITEM_GROUP_EDIT_ALL } from "./SupportItemDialog";
 
 const useStyles = makeStyles(theme => ({
   buttonContainer: {
@@ -21,11 +22,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DELETE_PLAN_ITEM = 0;
-const DELETE_PLAN_ITEM_GROUP = 1;
+const DELETE_ALL = true;
 
 export default function PlanItemGroupCalendarView(props) {
-  const { planItemGroup, onDeletePlanItem, onDeletePlanItemGroup } = props;
+  const {
+    planItemGroup,
+    onDeletePlanItem,
+    onDeletePlanItemGroup,
+    onEditPlanItem
+  } = props;
   const events = planItemGroupToEvents(planItemGroup);
   const [openPlanItemDialog, setOpenPlanItemDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -39,13 +44,33 @@ export default function PlanItemGroupCalendarView(props) {
   }
 
   const handleDelete = useCallback(() => {
-    if (deleteMode === DELETE_PLAN_ITEM) {
+    if (deleteMode !== DELETE_ALL && planItemGroup.planItems.length > 1) {
       onDeletePlanItem(selectedPlanItem);
     } else {
       onDeletePlanItemGroup(planItemGroup);
     }
     handleCloseDialog();
-  }, [deleteMode]);
+  }, [
+    deleteMode,
+    planItemGroup,
+    selectedPlanItem,
+    onDeletePlanItem,
+    onDeletePlanItemGroup
+  ]);
+
+  const handleEditAll = useCallback(() => {
+    onEditPlanItem({
+      editAll: PLAN_ITEM_GROUP_EDIT_ALL,
+      planItem: planItemGroup.planItems[0]
+    });
+  }, [planItemGroup, onEditPlanItem]);
+
+  const handleEdit = useCallback(() => {
+    onEditPlanItem({
+      editAll: !PLAN_ITEM_GROUP_EDIT_ALL,
+      planItem: selectedPlanItem
+    });
+  }, [selectedPlanItem, onEditPlanItem]);
 
   function handleCloseDialog() {
     setSelectedPlanItem(null);
@@ -55,46 +80,52 @@ export default function PlanItemGroupCalendarView(props) {
   }
 
   function handleDeletePlanItem(planItem) {
-    setDeleteMode(DELETE_PLAN_ITEM);
+    setDeleteMode(!DELETE_ALL);
     setOpenDeleteDialog(true);
   }
 
   function handleDeletePlanItemGroup() {
-    setDeleteMode(DELETE_PLAN_ITEM_GROUP);
+    setDeleteMode(DELETE_ALL);
     setOpenDeleteDialog(true);
   }
 
   return (
-    <Grid container justify="center" className={classes.root}>
-      <Grid container item xs={11} direction="column" justify="space-around">
-        <Grid item>
-          <FullCalendar
-            defaultView="dayGridMonth"
-            plugins={[dayGridPlugin]}
-            fixedWeekCount={false}
-            events={events}
-            eventClick={handleSelectEvent}
-            height="parent"
-          />
+    <>
+      <DialogContent>
+        <Grid container justify="center" className={classes.root}>
+          <Grid
+            container
+            item
+            xs={11}
+            direction="column"
+            justify="space-around"
+          >
+            <Grid item>
+              <FullCalendar
+                defaultView="dayGridMonth"
+                plugins={[dayGridPlugin]}
+                fixedWeekCount={false}
+                events={events}
+                eventClick={handleSelectEvent}
+                height="parent"
+              />
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid
-          container
-          item
-          justify="space-evenly"
-          className={classes.buttonContainer}
-        >
-          <Button variant="contained">Edit All</Button>
-          <Button variant="outlined" onClick={handleDeletePlanItemGroup}>
-            Delete All
-          </Button>
-        </Grid>
-      </Grid>
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={handleDeletePlanItemGroup}>Delete All</Button>
+        <Button onClick={handleEditAll}>Edit All</Button>
+        <Button onClick={props.back}>Back</Button>
+      </DialogActions>
       {openPlanItemDialog === true && selectedPlanItem != null && (
         <PlanItemCalendarDialog
           open={openPlanItemDialog && selectedPlanItem != null}
           planItem={selectedPlanItem}
           onClose={handleCloseDialog}
           onDelete={handleDeletePlanItem}
+          onEdit={handleEdit}
         />
       )}
       {openDeleteDialog === true && deleteMode !== -1 && (
@@ -110,7 +141,7 @@ export default function PlanItemGroupCalendarView(props) {
           </DialogActions>
         </Dialog>
       )}
-    </Grid>
+    </>
   );
 }
 

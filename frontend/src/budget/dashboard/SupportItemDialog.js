@@ -25,19 +25,23 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import classNames from "classnames";
-import {
-  ADD_SUPPORT,
-  calculateAllocated,
-  calculateTotalCost,
-  EDIT_SUPPORT,
-  SUPPORTS_LIST,
-  SUPPORTS_SELECTION
-} from "./BudgetDashboard";
+import { calculateAllocated, calculateTotalCost } from "./BudgetDashboard";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Toolbar from "@material-ui/core/Toolbar";
 import DoughnutBody from "../../DoughnutChart/DoughnutBody";
+import PlanItemEditView from "./PlanItemEditView";
+import { getHours, getMinutes, setHours, setMinutes } from "date-fns";
+
+export const PLAN_ITEM_GROUPS_VIEW = 0;
+export const SUPPORTS_SELECTION = 1;
+export const PLAN_ITEM_GROUP_CALENDAR_VIEW = 2;
+export const SUPPORT_ITEMS_VIEW = 3;
+export const REGISTRATION_GROUPS_VIEW = 4;
+export const PLAN_ITEM_EDIT_VIEW = 5;
+
+export const PLAN_ITEM_GROUP_EDIT_ALL = true;
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -136,6 +140,11 @@ export default function SupportItemDialog(props) {
     ""
   );
 
+  const [editPlanItemGroupOptions, setEditPlanItemGroupOptions] = useState({
+    editAll: false,
+    planItem: null
+  });
+
   const currentUser = useSelector(state => state.auth.currentUser);
 
   const classes = useStyles();
@@ -219,19 +228,24 @@ export default function SupportItemDialog(props) {
   );
 
   function goToSupportsList() {
-    setPage(SUPPORTS_LIST);
+    setPage(PLAN_ITEM_GROUPS_VIEW);
   }
 
   function goToSupportSelection() {
     setPage(SUPPORTS_SELECTION);
   }
 
-  function goToEditSupport() {
-    setPage(EDIT_SUPPORT);
+  function goToPlanItemGroupCalendarView() {
+    setPage(PLAN_ITEM_GROUP_CALENDAR_VIEW);
   }
 
   function goToAddSupport() {
-    setPage(ADD_SUPPORT);
+    setPage(SUPPORT_ITEMS_VIEW);
+  }
+
+  function goToEditPlanItem(editOptions) {
+    setEditPlanItemGroupOptions(editOptions);
+    setPage(PLAN_ITEM_EDIT_VIEW);
   }
 
   function handleClose() {
@@ -277,7 +291,7 @@ export default function SupportItemDialog(props) {
   function handleEditSupportItem(supportItem, planItem) {
     setEditedItem(supportItem);
     setSelectedPlanItemGroup(planItem);
-    goToEditSupport();
+    goToPlanItemGroupCalendarView();
   }
 
   function handleSearch(e) {
@@ -323,41 +337,66 @@ export default function SupportItemDialog(props) {
     }
   }
 
-  function handleItemUpdate(planItemGroup, values) {
-    // todo: update both for planItemGroups
-    if (currentUser) {
-      api.PlanItems.update(planItemGroup.id, values).then(() => {
-        setPlanItemGroups(
-          planCategory.planItemGroups.map(item => {
-            if (planItemGroup === item) {
-              return {
-                ...item,
-                ...values
-              };
-            }
-            return item;
-          })
-        );
-      });
-    } else {
-      setPlanItemGroups(
-        planCategory.planItemGroups.map(item => {
-          if (planItemGroup === item) {
-            return {
-              ...item,
-              ...values
-            };
-          }
-          return item;
+  function handleEditPlanItem(planItem) {
+    console.log(planItem);
+
+    let editedPlanItemGroup = {};
+    if (editPlanItemGroupOptions.editAll === true) {
+      const { name, priceActual } = planItem;
+      const startDate = new Date(planItem.startDate);
+      const endDate = new Date(planItem.endDate);
+      editedPlanItemGroup = {
+        ...selectedPlanItemGroup,
+        planItems: selectedPlanItemGroup.planItems.map(pI => {
+          return {
+            ...pI,
+            name,
+            priceActual,
+            startDate: setMinutes(
+              setHours(pI.startDate, getHours(startDate)),
+              getMinutes(startDate)
+            ),
+            endDate: setMinutes(
+              setHours(pI.endDate, getHours(endDate)),
+              getMinutes(endDate)
+            )
+          };
         })
-      );
+      };
+    } else {
+      editedPlanItemGroup = {
+        ...selectedPlanItemGroup,
+        planItems: selectedPlanItemGroup.planItems.map(pI => {
+          if (pI === editPlanItemGroupOptions.planItem) {
+            return planItem;
+          } else {
+            return pI;
+          }
+        })
+      };
     }
+
+    setPlanItemGroups(
+      planCategory.planItemGroups.map(pIG => {
+        if (selectedPlanItemGroup === pIG) {
+          return editedPlanItemGroup;
+        } else {
+          return pIG;
+        }
+      })
+    );
+    setSelectedPlanItemGroup(editedPlanItemGroup);
+    goToPlanItemGroupCalendarView();
+    setEditPlanItemGroupOptions({
+      editAll: !PLAN_ITEM_GROUP_EDIT_ALL,
+      planItem: null
+    });
   }
 
   function renderPlanItemGroup(planItemGroup) {
     let supportItem;
 
-    if (page === SUPPORTS_LIST) {
+    if (page === PLAN_ITEM_GROUPS_VIEW) {
       supportItem = _.find(supportItems, supportItem => {
         return supportItem.id === planItemGroup.supportItemGroup;
       });
@@ -382,7 +421,7 @@ export default function SupportItemDialog(props) {
                 if (page === SUPPORTS_SELECTION) {
                   handleSelectSupportItem(supportItem);
                 }
-                if (page === SUPPORTS_LIST) {
+                if (page === PLAN_ITEM_GROUPS_VIEW) {
                   handleEditSupportItem(supportItem, planItemGroup);
                 }
               }}
@@ -403,12 +442,12 @@ export default function SupportItemDialog(props) {
                       classes.planItemText
                     )}
                   >
-                    {page === SUPPORTS_LIST
+                    {page === PLAN_ITEM_GROUPS_VIEW
                       ? planItemGroup.name
                       : supportItem.name}
                   </Typography>
                 </Grid>
-                {page === SUPPORTS_LIST && (
+                {page === PLAN_ITEM_GROUPS_VIEW && (
                   <Grid item>${calculateTotalCost(planItemGroup)}</Grid>
                 )}
               </Grid>
@@ -523,12 +562,14 @@ export default function SupportItemDialog(props) {
     );
   }
 
-  function renderEditor() {
+  function renderPlanItemGroupCalendarView() {
     return (
       <PlanItemGroupCalendarView
         planItemGroup={selectedPlanItemGroup}
         onDeletePlanItemGroup={handleDeletePlanItemGroup}
         onDeletePlanItem={handleDeletePlanItem}
+        back={goToSupportsList}
+        onEditPlanItem={goToEditPlanItem}
       />
     );
   }
@@ -541,6 +582,17 @@ export default function SupportItemDialog(props) {
         redirectSupports={goToSupportsList}
         save={handleAddPlanItemGroup}
       />
+    );
+  }
+
+  function renderPlanItemEditView() {
+    return (
+      editPlanItemGroupOptions.planItem != null && (
+        <PlanItemEditView
+          planItem={editPlanItemGroupOptions.planItem}
+          onSave={handleEditPlanItem}
+        />
+      )
     );
   }
 
@@ -586,14 +638,16 @@ export default function SupportItemDialog(props) {
   }
 
   let content;
-  if (page === SUPPORTS_LIST) {
+  if (page === PLAN_ITEM_GROUPS_VIEW) {
     content = renderPlanContent();
   } else if (page === SUPPORTS_SELECTION) {
     content = renderSelectionContent();
-  } else if (page === EDIT_SUPPORT) {
-    content = renderEditor();
-  } else if (page === ADD_SUPPORT) {
+  } else if (page === PLAN_ITEM_GROUP_CALENDAR_VIEW) {
+    content = renderPlanItemGroupCalendarView();
+  } else if (page === SUPPORT_ITEMS_VIEW) {
     content = renderAdditionPage();
+  } else if (page === PLAN_ITEM_EDIT_VIEW) {
+    content = renderPlanItemEditView();
   } else {
     content = renderRegistrationGroupSelection();
   }
