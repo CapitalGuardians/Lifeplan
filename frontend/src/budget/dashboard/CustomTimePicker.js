@@ -1,14 +1,7 @@
 import React from "react";
 import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
-import {
-  addMinutes,
-  format,
-  getHours,
-  getMinutes,
-  setHours,
-  setMinutes
-} from "date-fns";
+import { getHours, getMinutes, setHours, setMinutes } from "date-fns";
 import MenuItem from "@material-ui/core/MenuItem";
 
 const options = ({ minHour, minMinute }) => {
