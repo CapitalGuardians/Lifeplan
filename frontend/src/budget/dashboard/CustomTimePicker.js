@@ -11,8 +11,6 @@ import {
 } from "date-fns";
 import MenuItem from "@material-ui/core/MenuItem";
 
-const defaultDate = new Date();
-
 const options = ({ minHour, minMinute }) => {
   let i, j;
   const timeOptions = [];
@@ -55,6 +53,8 @@ const options = ({ minHour, minMinute }) => {
 
 export default function CustomTimePicker(props) {
   const { onChange, value, minHour, minMinute } = props;
+
+  const defaultDate = new Date(value);
 
   const convertedValue = `${getHours(value)},${getMinutes(value)}`;
 
