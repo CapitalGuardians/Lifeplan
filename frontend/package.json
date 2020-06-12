@@ -18,7 +18,7 @@
     "date-fns": "^2.14.0",
     "is-promise": "^2.1.0",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.26.0",
     "nodemon": "^2.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
