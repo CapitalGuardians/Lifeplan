@@ -19,6 +19,11 @@ import {
   REGISTRATION_GROUPS_VIEW
 } from "./SupportItemDialog";
 
+import "react-calendar/dist/Calendar.css";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import TwelveMonthCalendar from "./TwelveMonthCalendar";
+
 const PLAN_CATEGORIES = "planCategories";
 
 function mapStateToProps(state) {
@@ -56,7 +61,21 @@ export function calculateAllocated(planItemGroups) {
   return Math.round(allocated * 100) / 100;
 }
 
-class BudgetDashBoard extends React.Component {
+export function planItemGroupToEvents(planItemGroup) {
+  const events = planItemGroup.planItems.map(planItem => {
+    const { allDay, endDate, name, startDate } = planItem;
+    return {
+      allDay,
+      start: new Date(startDate),
+      end: new Date(endDate),
+      title: name,
+      planItem
+    };
+  });
+  return events;
+}
+
+class BudgetDashboard extends React.Component {
   state = {
     supportGroups: [],
     planCategories: {},
@@ -66,7 +85,8 @@ class BudgetDashBoard extends React.Component {
     postcode: 3000,
     planId: null,
     registrationGroups: [],
-    dialogPage: PLAN_ITEM_GROUPS_VIEW
+    dialogPage: PLAN_ITEM_GROUPS_VIEW,
+    showPreview: true
   };
 
   async componentDidMount() {
@@ -218,6 +238,13 @@ class BudgetDashBoard extends React.Component {
   renderSummary = () => {
     let total = 0;
     let allocated = 0;
+    let events = [];
+    Object.values(this.state.planCategories).forEach(planCategories => {
+      planCategories.planItemGroups.forEach(planItemGroup => {
+        events = events.concat(planItemGroupToEvents(planItemGroup));
+      });
+    });
+    console.log(events);
     _.map(this.state.planCategories, planCategory => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
@@ -230,13 +257,20 @@ class BudgetDashBoard extends React.Component {
         <CardHeader title="Budget Summary" />
         <CardContent>
           <Grid container>
-            <Grid item xs={12} sm={8} md={6} lg={4}>
+            <Grid container item xs={12}>
               {total === 0 ? (
                 <div>
                   No budgets allocated to any category! Please edit your plan.
                 </div>
               ) : (
-                <DoughnutBody allocated={allocated} total={total} />
+                <Grid container item xs={12}>
+                  <Grid item xs={12}>
+                    <TwelveMonthCalendar showPreview={this.state.showPreview} />
+                  </Grid>
+                  <Grid item>
+                    <DoughnutBody allocated={allocated} total={total} />
+                  </Grid>
+                </Grid>
               )}
             </Grid>
           </Grid>
@@ -388,4 +422,4 @@ class BudgetDashBoard extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(BudgetDashBoard);
+export default connect(mapStateToProps)(BudgetDashboard);

@@ -1,0 +1,50 @@
+/* .calendar {
+    table-layout:fixed;
+    width: 200px;
+} */
+
+/* .day {
+    text-align: right;
+    width:26px;
+}
+
+.weekday {
+    text-align: right;
+    width:26px;
+
+} */
+
+.calendarContainer {
+  width: 200px;
+  position: relative;
+}
+.calendarContainer:hover {
+  background-color: grey;
+}
+
+.card {
+  position: absolute;
+  width: 150px;
+  height: 100px;
+  left: 50%;
+  top: 50%;
+  margin-left: -75px;
+  margin-top: -30px;
+}
+
+.month {
+  margin: auto;
+  text-align: center;
+}
+
+table {
+  table-layout: fixed;
+  width: 200px;
+}
+
+th,
+td {
+  width: 26px;
+  text-align: right;
+  overflow: hidden;
+}

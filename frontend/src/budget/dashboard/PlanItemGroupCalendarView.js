@@ -12,6 +12,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { makeStyles } from "@material-ui/core/styles";
 import { PLAN_ITEM_GROUP_EDIT_ALL } from "./SupportItemDialog";
+import { planItemGroupToEvents } from "./BudgetDashboard";
 
 const useStyles = makeStyles(theme => ({
   buttonContainer: {
@@ -143,18 +144,4 @@ export default function PlanItemGroupCalendarView(props) {
       )}
     </>
   );
-}
-
-function planItemGroupToEvents(planItemGroup) {
-  const events = planItemGroup.planItems.map(planItem => {
-    const { allDay, endDate, name, startDate } = planItem;
-    return {
-      allDay,
-      start: new Date(startDate),
-      end: new Date(endDate),
-      title: name,
-      planItem
-    };
-  });
-  return events;
 }
