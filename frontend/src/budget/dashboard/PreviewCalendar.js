@@ -4,8 +4,7 @@ import styles from "./PreviewCalendar.module.css";
 import { Card, CardContent } from "@material-ui/core";
 
 export default function PreviewCalendar(props) {
-  const { showPreview, startDate, supportGroups } = props;
-  console.log(showPreview);
+  const { costs, showPreview, startDate, supportGroups } = props;
   const months = [
     "Jan",
     "Feb",
@@ -25,7 +24,7 @@ export default function PreviewCalendar(props) {
     <div className={styles.calendarContainer}>
       {showPreview === true && (
         <Card className={styles.card}>
-          <CardContent>Core: $100 Capacity: $200 Capital: $300</CardContent>
+          <CardContent>{`Core: $${costs[0]} Capacity: $${costs[1]} Capital: $${costs[2]}`}</CardContent>
         </Card>
       )}
 
@@ -59,18 +58,22 @@ const renderDays = date => {
   const days = [];
   const daysInMonth = getDaysInMonth(date);
   for (let i = 0; i < startDay; i++) {
-    days.push(<td key={i} className="empty-day" />);
+    days.push(<td key={i - startDay} className="empty-day" />);
   }
   for (let i = 1; i < daysInMonth + 1; i++) {
     days.push(
-      <td key={i + startDay - 1} className={styles.day}>
+      <td key={i - 1} className={styles.day}>
         {i}
       </td>
     );
   }
   const rows = [];
-  for (let i = 0; i < days.length % 7; i++) {
+  console.log(getMonth(date));
+  console.log(days.length);
+
+  for (let i = 0; i < days.length / 7; i++) {
     rows.push(<tr key={i}>{days.slice(i * 7, (i + 1) * 7)}</tr>);
   }
+  console.log(rows);
   return rows;
 };

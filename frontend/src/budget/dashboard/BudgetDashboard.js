@@ -20,8 +20,6 @@ import {
 } from "./SupportItemDialog";
 
 import "react-calendar/dist/Calendar.css";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 import TwelveMonthCalendar from "./TwelveMonthCalendar";
 
 const PLAN_CATEGORIES = "planCategories";
@@ -31,21 +29,25 @@ function mapStateToProps(state) {
     currentUser: state.auth.currentUser
   };
 }
+export function calculatePlanItemCost(planItem) {
+  const amount = planItem.allDay
+    ? Math.round(planItem.priceActual * 100) / 100
+    : Math.round(
+        ((planItem.priceActual *
+          differenceInMinutes(
+            new Date(planItem.endDate),
+            new Date(planItem.startDate)
+          )) /
+          60) *
+          100
+      ) / 100;
+  return amount;
+}
 
 export function calculateTotalCost(planItemGroup) {
   let allocated = 0;
   _.forEach(planItemGroup.planItems, planItem => {
-    const amount = planItem.allDay
-      ? Math.round(planItem.priceActual * 100) / 100
-      : Math.round(
-          ((planItem.priceActual *
-            differenceInMinutes(
-              new Date(planItem.endDate),
-              new Date(planItem.startDate)
-            )) /
-            60) *
-            100
-        ) / 100;
+    const amount = calculatePlanItemCost(planItem);
 
     allocated += amount;
   });
@@ -265,7 +267,11 @@ class BudgetDashboard extends React.Component {
               ) : (
                 <Grid container item xs={12}>
                   <Grid item xs={12}>
-                    <TwelveMonthCalendar showPreview={this.state.showPreview} />
+                    <TwelveMonthCalendar
+                      showPreview={this.state.showPreview}
+                      supportGroups={this.state.supportGroups}
+                      planCategories={this.state.planCategories}
+                    />
                   </Grid>
                   <Grid item>
                     <DoughnutBody allocated={allocated} total={total} />
