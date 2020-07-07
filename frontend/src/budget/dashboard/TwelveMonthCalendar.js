@@ -1,18 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import PreviewCalendar from "./PreviewCalendar";
-import { Grid } from "@material-ui/core";
+import { Button, Grid, Typography } from "@material-ui/core";
 import styles from "./TwelveMonthCalendar.module.css";
-import { getMonth, setMonth, setYear } from "date-fns";
+import { getMonth, getYear, setMonth, setYear } from "date-fns";
 import { calculatePlanItemCost } from "./BudgetDashboard";
 
 export default function TwelveMonthCalendar(props) {
   const { planCategories, showPreview, supportGroups } = props;
-  const year = 2020;
+  const [year, setYear] = useState(getYear(new Date()));
   console.log(supportGroups);
   // each array in costs represents a month,
   // where month[0] is Core, month[1] is Capacity, month[2] is Capital
 
-  // TODO: consider year
   const costs = [
     [0, 0, 0],
     [0, 0, 0],
@@ -47,15 +46,34 @@ export default function TwelveMonthCalendar(props) {
     value.planItemGroups.forEach(planItemGroup => {
       planItemGroup.planItems.forEach(planItem => {
         const startDate = new Date(planItem.startDate);
-        const month = getMonth(startDate);
-        costs[month][supportGroupId] += calculatePlanItemCost(planItem);
+        const itemMonth = getMonth(startDate);
+        const itemYear = getYear(startDate);
+        if (itemYear === year) {
+          costs[itemMonth][supportGroupId] += calculatePlanItemCost(planItem);
+        }
       });
     });
   }
-  console.log(costs);
 
   return (
-    <Grid container className={styles.container} justify="flex-start">
+    <Grid container className={styles.container}>
+      <Grid container item xs={12} justify="center" alignItems="center">
+        <Button
+          onClick={() => {
+            setYear(year - 1);
+          }}
+        >
+          {"<"}
+        </Button>
+        <Typography>{year}</Typography>
+        <Button
+          onClick={() => {
+            setYear(year + 1);
+          }}
+        >
+          {">"}
+        </Button>
+      </Grid>
       {renderCalendars(costs, year, showPreview)}
     </Grid>
   );
@@ -67,7 +85,7 @@ function renderCalendars(costs, year, showPreview) {
     const date = setYear(setMonth(new Date(), i), year);
 
     calendars.push(
-      <Grid key={i} item xs={12} sm={4} md={3}>
+      <Grid key={i} container item xs={12} sm={4} md={3} justify="center">
         <PreviewCalendar
           showPreview={showPreview}
           startDate={date}
