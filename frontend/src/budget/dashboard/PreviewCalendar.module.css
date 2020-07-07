@@ -17,6 +17,7 @@
 .calendarContainer {
   width: 200px;
   position: relative;
+  margin: 10px;
 }
 .calendarContainer:hover {
   background-color: grey;

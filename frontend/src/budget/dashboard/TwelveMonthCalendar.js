@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import PreviewCalendar from "./PreviewCalendar";
-import { Button, Grid, Typography } from "@material-ui/core";
+import { Button, Checkbox, Grid, Typography } from "@material-ui/core";
 import styles from "./TwelveMonthCalendar.module.css";
 import { getMonth, getYear, setMonth, setYear } from "date-fns";
 import { calculatePlanItemCost } from "./BudgetDashboard";
 
 export default function TwelveMonthCalendar(props) {
-  const { planCategories, showPreview, supportGroups } = props;
+  const { planCategories, supportGroups } = props;
   const [year, setYear] = useState(getYear(new Date()));
+  const [showPreview, setShowPreview] = useState(true);
   console.log(supportGroups);
   // each array in costs represents a month,
   // where month[0] is Core, month[1] is Capacity, month[2] is Capital
@@ -57,24 +58,36 @@ export default function TwelveMonthCalendar(props) {
 
   return (
     <Grid container className={styles.container}>
-      <Grid container item xs={12} justify="center" alignItems="center">
-        <Button
-          onClick={() => {
-            setYear(year - 1);
-          }}
-        >
-          {"<"}
-        </Button>
-        <Typography>{year}</Typography>
-        <Button
-          onClick={() => {
-            setYear(year + 1);
-          }}
-        >
-          {">"}
-        </Button>
+      <Grid container item alignItems="center">
+        <Grid item>
+          <Button
+            onClick={() => {
+              setYear(year - 1);
+            }}
+          >
+            {"<"}
+          </Button>
+          <Typography display="inline">{year}</Typography>
+          <Button
+            onClick={() => {
+              setYear(year + 1);
+            }}
+          >
+            {">"}
+          </Button>
+        </Grid>
+        <Grid item>
+          <Checkbox
+            className={styles.checkbox}
+            checked={showPreview}
+            onChange={() => setShowPreview(!showPreview)}
+          />
+          <Typography display="inline">Show Budgets</Typography>
+        </Grid>
+        <Grid container item justify="flex-start">
+          {renderCalendars(costs, year, showPreview)}
+        </Grid>
       </Grid>
-      {renderCalendars(costs, year, showPreview)}
     </Grid>
   );
 }
@@ -85,7 +98,7 @@ function renderCalendars(costs, year, showPreview) {
     const date = setYear(setMonth(new Date(), i), year);
 
     calendars.push(
-      <Grid key={i} container item xs={12} sm={4} md={3} justify="center">
+      <Grid key={i}>
         <PreviewCalendar
           showPreview={showPreview}
           startDate={date}

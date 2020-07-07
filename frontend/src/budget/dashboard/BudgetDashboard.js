@@ -87,8 +87,7 @@ class BudgetDashboard extends React.Component {
     postcode: 3000,
     planId: null,
     registrationGroups: [],
-    dialogPage: PLAN_ITEM_GROUPS_VIEW,
-    showPreview: true
+    dialogPage: PLAN_ITEM_GROUPS_VIEW
   };
 
   async componentDidMount() {
@@ -268,7 +267,6 @@ class BudgetDashboard extends React.Component {
                 <Grid container item xs={12}>
                   <Grid item xs={12}>
                     <TwelveMonthCalendar
-                      showPreview={this.state.showPreview}
                       supportGroups={this.state.supportGroups}
                       planCategories={this.state.planCategories}
                     />
