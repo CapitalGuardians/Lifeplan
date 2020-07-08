@@ -13,6 +13,7 @@ export default function CustomCalendar(props) {
       plugins={[dayGridPlugin]}
       events={newEvents}
       height={"auto"}
+      fixedWeekCount={false}
     />
   );
 }

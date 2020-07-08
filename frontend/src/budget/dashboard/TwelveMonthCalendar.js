@@ -6,10 +6,9 @@ import { getMonth, getYear, setMonth, setYear } from "date-fns";
 import { calculatePlanItemCost } from "./BudgetDashboard";
 
 export default function TwelveMonthCalendar(props) {
-  const { planCategories, supportGroups } = props;
+  const { onClick, planCategories, supportGroups } = props;
   const [year, setYear] = useState(getYear(new Date()));
   const [showPreview, setShowPreview] = useState(true);
-  console.log(supportGroups);
   // each array in costs represents a month,
   // where month[0] is Core, month[1] is Capacity, month[2] is Capital
 
@@ -27,7 +26,6 @@ export default function TwelveMonthCalendar(props) {
     [0, 0, 0],
     [0, 0, 0]
   ];
-  console.log(planCategories);
   // populate array
   for (const [key, value] of Object.entries(planCategories)) {
     const intKey = parseInt(key);
@@ -85,20 +83,24 @@ export default function TwelveMonthCalendar(props) {
           <Typography display="inline">Show Budgets</Typography>
         </Grid>
         <Grid container item justify="flex-start">
-          {renderCalendars(costs, year, showPreview)}
+          {renderCalendars(costs, year, showPreview, onClick)}
         </Grid>
       </Grid>
     </Grid>
   );
 }
 
-function renderCalendars(costs, year, showPreview) {
+function renderCalendars(costs, year, showPreview, onClick) {
   const calendars = [];
   for (let i = 0; i < 12; i++) {
     const date = setYear(setMonth(new Date(), i), year);
 
     calendars.push(
-      <Grid key={i}>
+      <Grid
+        onClick={() => onClick(date)}
+        className={styles.calendarGrid}
+        key={i}
+      >
         <PreviewCalendar
           showPreview={showPreview}
           startDate={date}

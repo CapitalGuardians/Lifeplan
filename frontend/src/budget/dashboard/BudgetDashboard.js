@@ -3,7 +3,7 @@ import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import Grid from "@material-ui/core/Grid";
 import EditIcon from "@material-ui/icons/Edit";
-import { differenceInMinutes } from "date-fns";
+import { differenceInMinutes, setMonth } from "date-fns";
 import _ from "lodash";
 import React from "react";
 import connect from "react-redux/es/connect/connect";
@@ -21,6 +21,8 @@ import {
 
 import "react-calendar/dist/Calendar.css";
 import TwelveMonthCalendar from "./TwelveMonthCalendar";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
 
 const PLAN_CATEGORIES = "planCategories";
 
@@ -87,7 +89,11 @@ class BudgetDashboard extends React.Component {
     postcode: 3000,
     planId: null,
     registrationGroups: [],
-    dialogPage: PLAN_ITEM_GROUPS_VIEW
+    dialogPage: PLAN_ITEM_GROUPS_VIEW,
+    showTwelveMonthsCalendar: true,
+    monthViewDate: setMonth(new Date(), 1),
+    openPlanItemDialog: false,
+    selectedPlanItem: null
   };
 
   async componentDidMount() {
@@ -209,19 +215,31 @@ class BudgetDashboard extends React.Component {
     this.setState({ openSupports: false });
   };
 
-  handleSetPlanItemGroups = planItemGroups => {
-    this.setState({
-      planCategories: {
-        ...this.state.planCategories,
-        [this.state.activeCategory]: {
-          ...this.state.planCategories[this.state.activeCategory],
-          planItemGroups: planItemGroups
-        }
-      }
-    });
+  handleEditPlanItemGroups = planItemGroups => {
     if (this.props.currentUser) {
       // todo: call backend to save changes
+    } else {
+      this.setState({
+        planCategories: {
+          ...this.state.planCategories,
+          [this.state.activeCategory]: {
+            ...this.state.planCategories[this.state.activeCategory],
+            planItemGroups: planItemGroups
+          }
+        }
+      });
     }
+  };
+
+  handleSetMonthView = date => {
+    console.log(date);
+    this.setState({ monthViewDate: date }, () =>
+      this.setState({ showTwelveMonthsCalendar: false })
+    );
+  };
+
+  handleCloseDialog = () => {
+    this.setState({ openPlanItemDialog: false });
   };
 
   calculateCoreAllocated = () => {
@@ -245,7 +263,6 @@ class BudgetDashboard extends React.Component {
         events = events.concat(planItemGroupToEvents(planItemGroup));
       });
     });
-    console.log(events);
     _.map(this.state.planCategories, planCategory => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
@@ -254,52 +271,77 @@ class BudgetDashboard extends React.Component {
       }
     });
     return (
-      <Card>
-        <CardHeader title="Budget Summary" />
-        <CardContent>
-          <Grid container>
-            <Grid container item xs={12}>
-              {total === 0 ? (
-                <div>
-                  No budgets allocated to any category! Please edit your plan.
-                </div>
-              ) : (
-                <Grid container item xs={12}>
-                  <Grid item xs={12}>
-                    <TwelveMonthCalendar
-                      supportGroups={this.state.supportGroups}
-                      planCategories={this.state.planCategories}
-                    />
+      <div>
+        {/* {
+          openPlanItemDialog === true && selectedPlanItem != null && (
+            <PlanItemCalendarDialog
+              open={openPlanItemDialog && selectedPlanItem != null}
+              planItem={selectedPlanItem}
+              onClose={handleCloseDialog}
+              onDelete={handleDeletePlanItem}
+              onEdit={handleEdit}
+            />
+          )
+        } */}
+
+        <Card>
+          <CardHeader title="Budget Summary" />
+          <CardContent>
+            <Grid container>
+              <Grid container item xs={12}>
+                {total === 0 ? (
+                  <div>
+                    No budgets allocated to any category! Please edit your plan.
+                  </div>
+                ) : (
+                  <Grid container item xs={12}>
+                    <Grid item xs={12}>
+                      {this.state.showTwelveMonthsCalendar === true ? (
+                        <TwelveMonthCalendar
+                          supportGroups={this.state.supportGroups}
+                          planCategories={this.state.planCategories}
+                          onClick={this.handleSetMonthView}
+                        />
+                      ) : (
+                        <FullCalendar
+                          plugins={[dayGridPlugin]}
+                          defaultDate={this.state.monthViewDate}
+                          fixedWeekCount={false}
+                          height="parent"
+                          events={this.events()}
+                        />
+                      )}
+                    </Grid>
+                    <Grid item>
+                      <DoughnutBody allocated={allocated} total={total} />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <DoughnutBody allocated={allocated} total={total} />
-                  </Grid>
-                </Grid>
-              )}
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-        <CardActions disableSpacing>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Button
-                onClick={() => (window.location.href = "/budget/edit")}
-                size="small"
-              >
-                <EditIcon />
-                Edit Plan
-              </Button>
-              {/*<Button*/}
-              {/*  onClick={() => printPage(this.state.planCategories)}*/}
-              {/*  size="small"*/}
-              {/*>*/}
-              {/*  <PrintIcon />*/}
-              {/*  Print Plan*/}
-              {/*</Button>*/}
+          </CardContent>
+          <CardActions disableSpacing>
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button
+                  onClick={() => (window.location.href = "/budget/edit")}
+                  size="small"
+                >
+                  <EditIcon />
+                  Edit Plan
+                </Button>
+                {/*<Button*/}
+                {/*  onClick={() => printPage(this.state.planCategories)}*/}
+                {/*  size="small"*/}
+                {/*>*/}
+                {/*  <PrintIcon />*/}
+                {/*  Print Plan*/}
+                {/*</Button>*/}
+              </Grid>
             </Grid>
-          </Grid>
-        </CardActions>
-      </Card>
+          </CardActions>
+        </Card>
+      </div>
     );
   };
 
@@ -392,6 +434,19 @@ class BudgetDashboard extends React.Component {
     });
   };
 
+  events = () => {
+    const events = [];
+    for (const planCategory of Object.values(this.state.planCategories)) {
+      planCategory.planItemGroups.forEach(planItemGroup => {
+        const toAdd = planItemGroupToEvents(planItemGroup);
+        events.push(...toAdd);
+      });
+    }
+    console.log(events);
+
+    return events;
+  };
+
   render() {
     const { planCategories, birthYear, postcode } = this.state;
 
@@ -414,7 +469,7 @@ class BudgetDashboard extends React.Component {
             postcode={postcode}
             onClose={this.handleCloseSupports}
             planCategory={this.state.planCategories[this.state.activeCategory]}
-            setPlanItemGroups={this.handleSetPlanItemGroups}
+            onEditPlanItemGroups={this.handleEditPlanItemGroups}
             openAddSupports={this.state.openAddSupports}
             registrationGroups={this.state.registrationGroups}
             page={this.state.dialogPage}

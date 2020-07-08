@@ -111,7 +111,7 @@ export default function SupportItemDialog(props) {
     postcode,
     planCategory,
     supportCategory,
-    setPlanItemGroups,
+    onEditPlanItemGroups,
     registrationGroups,
     page,
     setPage
@@ -259,15 +259,12 @@ export default function SupportItemDialog(props) {
 
   function handleAddPlanItemGroup(planItemGroup) {
     const { planItemGroups } = planCategory;
-    console.log(planCategory);
-    if (currentUser) {
-      // TODO: handle registered users
-      api.PlanItems.create(planCategory.id, planItemGroup).then(() => {
-        setPlanItemGroups([planItemGroup, ...planItemGroups]);
-      });
-    } else {
-      setPlanItemGroups([planItemGroup, ...planItemGroups]);
-    }
+    // if (currentUser) {
+    //   // TODO: handle registered users
+    //   api.PlanItems.create(planCategory.id, planItemGroup).then(() => {
+    //     onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
+    //   });
+    onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
   }
 
   function handleSelectSupportItem(supportItem) {
@@ -300,41 +297,26 @@ export default function SupportItemDialog(props) {
 
   function handleDeletePlanItemGroup(planItemGroup) {
     goToSupportsList();
-    // TODO: use newer API
-    if (currentUser) {
-      // api.PlanItems.delete(planItemGroup.id).then(() => {
-      //   setPlanItemGroups(
-      //     _.difference(planCategory.planItemGroups, [planItemGroup])
-      //   );
-      // });
-    } else {
-      setPlanItemGroups(
-        _.difference(planCategory.planItemGroups, [planItemGroup])
-      );
-    }
-
-    //saveToLocalStorage(planCategory.planItems);
+    onEditPlanItemGroups(
+      _.difference(planCategory.planItemGroups, [planItemGroup])
+    );
   }
 
   function handleDeletePlanItem(planItem) {
-    if (currentUser) {
-      // TODO: call backend
-    } else {
-      const editedPlanItemGroup = {
-        ...selectedPlanItemGroup,
-        planItems: _.difference(selectedPlanItemGroup.planItems, [planItem])
-      };
-      setPlanItemGroups(
-        planCategory.planItemGroups.map(pIG => {
-          if (selectedPlanItemGroup === pIG) {
-            return editedPlanItemGroup;
-          } else {
-            return pIG;
-          }
-        })
-      );
-      setSelectedPlanItemGroup(editedPlanItemGroup);
-    }
+    const editedPlanItemGroup = {
+      ...selectedPlanItemGroup,
+      planItems: _.difference(selectedPlanItemGroup.planItems, [planItem])
+    };
+    onEditPlanItemGroups(
+      planCategory.planItemGroups.map(pIG => {
+        if (selectedPlanItemGroup === pIG) {
+          return editedPlanItemGroup;
+        } else {
+          return pIG;
+        }
+      })
+    );
+    setSelectedPlanItemGroup(editedPlanItemGroup);
   }
 
   function handleEditPlanItem(planItem) {
@@ -376,7 +358,7 @@ export default function SupportItemDialog(props) {
       };
     }
 
-    setPlanItemGroups(
+    onEditPlanItemGroups(
       planCategory.planItemGroups.map(pIG => {
         if (selectedPlanItemGroup === pIG) {
           return editedPlanItemGroup;

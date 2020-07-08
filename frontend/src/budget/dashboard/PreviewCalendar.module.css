@@ -19,9 +19,6 @@
   position: relative;
   margin: 10px;
 }
-.calendarContainer:hover {
-  background-color: grey;
-}
 
 .card {
   position: absolute;

@@ -13,6 +13,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import { makeStyles } from "@material-ui/core/styles";
 import { PLAN_ITEM_GROUP_EDIT_ALL } from "./SupportItemDialog";
 import { planItemGroupToEvents } from "./BudgetDashboard";
+import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
 
 const useStyles = makeStyles(theme => ({
   buttonContainer: {
@@ -130,17 +131,11 @@ export default function PlanItemGroupCalendarView(props) {
         />
       )}
       {openDeleteDialog === true && deleteMode !== -1 && (
-        <Dialog open={openDeleteDialog && deleteMode !== -1}>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this? It cannot be undone.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button onClick={handleDelete}>Delete</Button>
-          </DialogActions>
-        </Dialog>
+        <PlanItemDeleteDialog
+          open={openDeleteDialog === true && deleteMode !== -1}
+          onClose={handleCloseDialog}
+          onDelete={handleDelete}
+        />
       )}
     </>
   );
