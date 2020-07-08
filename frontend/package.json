@@ -17,7 +17,7 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.14.0",
     "is-promise": "^2.1.0",
-    "lodash": "^4.17.18",
+    "lodash": "^4.17.19",
     "moment": "^2.27.0",
     "nodemon": "^2.0.4",
     "prop-types": "^15.7.2",
