@@ -23,6 +23,8 @@ import "react-calendar/dist/Calendar.css";
 import TwelveMonthCalendar from "./TwelveMonthCalendar";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import PlanItemCalendarDialog from "./PlanItemCalendarDialog";
+import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
 
 const PLAN_CATEGORIES = "planCategories";
 
@@ -79,6 +81,12 @@ export function planItemGroupToEvents(planItemGroup) {
   return events;
 }
 
+const PLAN_ITEM_DIALOG_PAGES = {
+  preview: 0,
+  delete: 1,
+  edit: 2
+};
+
 class BudgetDashboard extends React.Component {
   state = {
     supportGroups: [],
@@ -92,7 +100,7 @@ class BudgetDashboard extends React.Component {
     dialogPage: PLAN_ITEM_GROUPS_VIEW,
     showTwelveMonthsCalendar: true,
     monthViewDate: setMonth(new Date(), 1),
-    openPlanItemDialog: false,
+    planItemDialogPage: -1,
     selectedPlanItem: null
   };
 
@@ -215,32 +223,81 @@ class BudgetDashboard extends React.Component {
     this.setState({ openSupports: false });
   };
 
-  handleEditPlanItemGroups = planItemGroups => {
+  handleEditPlanItemGroups = (planCategory, planItemGroups) => {
+    console.log(planItemGroups);
     if (this.props.currentUser) {
       // todo: call backend to save changes
     } else {
-      this.setState({
-        planCategories: {
-          ...this.state.planCategories,
-          [this.state.activeCategory]: {
-            ...this.state.planCategories[this.state.activeCategory],
-            planItemGroups: planItemGroups
+      this.setState(
+        {
+          planCategories: {
+            ...this.state.planCategories,
+            [planCategory]: {
+              ...this.state.planCategories[planCategory],
+              planItemGroups: planItemGroups
+            }
           }
+        },
+        () => {
+          this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
         }
-      });
+      );
     }
   };
 
+  handleDeletePlanItem = () => {
+    const planItem = this.state.selectedPlanItem;
+    let editedPlanItemGroups;
+    let supportCategory;
+    for (const [key, value] of Object.entries(this.state.planCategories)) {
+      for (let i = 0; i < value.planItemGroups.length; i++) {
+        if (value.planItemGroups[i].planItems.includes(planItem)) {
+          const planItemGroup = value.planItemGroups[i];
+          console.log(planItemGroup);
+
+          const editedPlanItemGroup = {
+            ...planItemGroup,
+            planItems: _.difference(planItemGroup.planItems, [planItem])
+          };
+          editedPlanItemGroups = _.difference(value.planItemGroups, [
+            planItemGroup
+          ]);
+          editedPlanItemGroups.push(editedPlanItemGroup);
+          supportCategory = key;
+
+          break;
+        }
+      }
+      if (supportCategory != null) {
+        break;
+      }
+    }
+
+    this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
+  };
+
   handleSetMonthView = date => {
-    console.log(date);
     this.setState({ monthViewDate: date }, () =>
       this.setState({ showTwelveMonthsCalendar: false })
     );
   };
 
   handleCloseDialog = () => {
-    this.setState({ openPlanItemDialog: false });
+    this.setState({ planItemDialogPage: -1 });
   };
+
+  handleSelectEvent = info => {
+    this.setState({
+      selectedPlanItem: info.event.extendedProps.planItem,
+      planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.preview
+    });
+  };
+
+  handleClickDelete = () => {
+    this.setState({ planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.delete });
+  };
+
+  handleClickEdit = () => {};
 
   calculateCoreAllocated = () => {
     let allocated = 0;
@@ -272,17 +329,29 @@ class BudgetDashboard extends React.Component {
     });
     return (
       <div>
-        {/* {
-          openPlanItemDialog === true && selectedPlanItem != null && (
+        {this.state.selectedPlanItem != null &&
+          ((this.state.planItemDialogPage === 0 && (
             <PlanItemCalendarDialog
-              open={openPlanItemDialog && selectedPlanItem != null}
-              planItem={selectedPlanItem}
-              onClose={handleCloseDialog}
-              onDelete={handleDeletePlanItem}
-              onEdit={handleEdit}
+              open={
+                this.state.planItemDialogPage === 0 &&
+                this.state.selectedPlanItem != null
+              }
+              planItem={this.state.selectedPlanItem}
+              onClose={this.handleCloseDialog}
+              onDelete={this.handleClickDelete}
+              onEdit={this.handleClickEdit}
             />
-          )
-        } */}
+          )) ||
+            (this.state.planItemDialogPage === 1 && (
+              <PlanItemDeleteDialog
+                open={
+                  this.state.planItemDialogPage === 1 &&
+                  this.state.selectedPlanItem != null
+                }
+                onClose={this.handleCloseDialog}
+                onDelete={this.handleDeletePlanItem}
+              />
+            )))}
 
         <Card>
           <CardHeader title="Budget Summary" />
@@ -309,6 +378,7 @@ class BudgetDashboard extends React.Component {
                           fixedWeekCount={false}
                           height="parent"
                           events={this.events()}
+                          eventClick={this.handleSelectEvent}
                         />
                       )}
                     </Grid>
@@ -442,7 +512,6 @@ class BudgetDashboard extends React.Component {
         events.push(...toAdd);
       });
     }
-    console.log(events);
 
     return events;
   };

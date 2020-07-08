@@ -1,13 +1,6 @@
 import React, { useCallback, useState } from "react";
 import PlanItemCalendarDialog from "./PlanItemCalendarDialog";
-import {
-  Button,
-  Grid,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogActions
-} from "@material-ui/core";
+import { Button, Grid, DialogContent, DialogActions } from "@material-ui/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { makeStyles } from "@material-ui/core/styles";

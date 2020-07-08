@@ -25,7 +25,11 @@ export default function PreviewCalendar(props) {
       {showPreview === true && (
         <Card className={styles.card}>
           <CardContent>
-            {`Core: $${costs[0]} Capacity: $${costs[1]} Capital: $${costs[2]}`}
+            {`Core: $${costs[0]}`}
+            <br />
+            {`Capacity: $${costs[1]}`}
+            <br />
+            {`Capital: $${costs[2]}`}
           </CardContent>
         </Card>
       )}

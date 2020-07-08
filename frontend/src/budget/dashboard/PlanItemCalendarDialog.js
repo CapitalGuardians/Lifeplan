@@ -11,7 +11,6 @@ import { format } from "date-fns";
 
 export default function PlanItemCalendarDialog(props) {
   const { planItem, onClose, open, onDelete, onEdit } = props;
-  console.log(planItem.endDate);
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{planItem.name}</DialogTitle>
