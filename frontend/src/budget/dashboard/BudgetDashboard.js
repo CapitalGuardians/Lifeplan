@@ -1,4 +1,4 @@
-import { Button, CardActions, CardContent } from "@material-ui/core";
+import { Button, CardActions, CardContent, Dialog } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import Grid from "@material-ui/core/Grid";
@@ -16,7 +16,8 @@ import BudgetCategorySection from "./BudgetCategorySection";
 import SupportItemDialog from "./SupportItemDialog";
 import {
   PLAN_ITEM_GROUPS_VIEW,
-  REGISTRATION_GROUPS_VIEW
+  REGISTRATION_GROUPS_VIEW,
+  PLAN_ITEM_EDIT_VIEW
 } from "./SupportItemDialog";
 
 import "react-calendar/dist/Calendar.css";
@@ -25,6 +26,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import PlanItemCalendarDialog from "./PlanItemCalendarDialog";
 import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
+import PlanItemEditView from "./PlanItemEditView";
 
 const PLAN_CATEGORIES = "planCategories";
 
@@ -224,7 +226,6 @@ class BudgetDashboard extends React.Component {
   };
 
   handleEditPlanItemGroups = (planCategory, planItemGroups) => {
-    console.log(planItemGroups);
     if (this.props.currentUser) {
       // todo: call backend to save changes
     } else {
@@ -253,11 +254,46 @@ class BudgetDashboard extends React.Component {
       for (let i = 0; i < value.planItemGroups.length; i++) {
         if (value.planItemGroups[i].planItems.includes(planItem)) {
           const planItemGroup = value.planItemGroups[i];
-          console.log(planItemGroup);
 
           const editedPlanItemGroup = {
             ...planItemGroup,
             planItems: _.difference(planItemGroup.planItems, [planItem])
+          };
+          editedPlanItemGroups = _.difference(value.planItemGroups, [
+            planItemGroup
+          ]);
+          editedPlanItemGroups.push(editedPlanItemGroup);
+          supportCategory = key;
+
+          break;
+        }
+      }
+      if (supportCategory != null) {
+        break;
+      }
+    }
+
+    this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
+  };
+
+  handleEditPlanItem = editedPlanItem => {
+    const planItem = this.state.selectedPlanItem;
+    let editedPlanItemGroups;
+    let supportCategory;
+    for (const [key, value] of Object.entries(this.state.planCategories)) {
+      for (let i = 0; i < value.planItemGroups.length; i++) {
+        if (value.planItemGroups[i].planItems.includes(planItem)) {
+          const planItemGroup = value.planItemGroups[i];
+
+          const editedPlanItemGroup = {
+            ...planItemGroup,
+            planItems: planItemGroup.planItems.map(pI => {
+              if (pI === planItem) {
+                return editedPlanItem;
+              } else {
+                return pI;
+              }
+            })
           };
           editedPlanItemGroups = _.difference(value.planItemGroups, [
             planItemGroup
@@ -297,7 +333,9 @@ class BudgetDashboard extends React.Component {
     this.setState({ planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.delete });
   };
 
-  handleClickEdit = () => {};
+  handleClickEdit = () => {
+    this.setState({ planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.edit });
+  };
 
   calculateCoreAllocated = () => {
     let allocated = 0;
@@ -330,10 +368,12 @@ class BudgetDashboard extends React.Component {
     return (
       <div>
         {this.state.selectedPlanItem != null &&
-          ((this.state.planItemDialogPage === 0 && (
+          ((this.state.planItemDialogPage ===
+            PLAN_ITEM_DIALOG_PAGES.preview && (
             <PlanItemCalendarDialog
               open={
-                this.state.planItemDialogPage === 0 &&
+                this.state.planItemDialogPage ===
+                  PLAN_ITEM_DIALOG_PAGES.preview &&
                 this.state.selectedPlanItem != null
               }
               planItem={this.state.selectedPlanItem}
@@ -342,15 +382,31 @@ class BudgetDashboard extends React.Component {
               onEdit={this.handleClickEdit}
             />
           )) ||
-            (this.state.planItemDialogPage === 1 && (
+            (this.state.planItemDialogPage ===
+              PLAN_ITEM_DIALOG_PAGES.delete && (
               <PlanItemDeleteDialog
                 open={
-                  this.state.planItemDialogPage === 1 &&
+                  this.state.planItemDialogPage ===
+                    PLAN_ITEM_DIALOG_PAGES.delete &&
                   this.state.selectedPlanItem != null
                 }
                 onClose={this.handleCloseDialog}
                 onDelete={this.handleDeletePlanItem}
               />
+            )) ||
+            (this.state.planItemDialogPage === PLAN_ITEM_DIALOG_PAGES.edit && (
+              <Dialog
+                open={
+                  this.state.planItemDialogPage ===
+                    PLAN_ITEM_DIALOG_PAGES.edit &&
+                  this.state.selectedPlanItem != null
+                }
+              >
+                <PlanItemEditView
+                  planItem={this.state.selectedPlanItem}
+                  onSave={this.handleEditPlanItem}
+                />
+              </Dialog>
             )))}
 
         <Card>
