@@ -69,8 +69,8 @@ export default function TwelveMonthCalendar(props) {
         <Typography variant="h5">12-Month View</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Grid container className={styles.container}>
-          <Grid container item alignItems="center">
+        <Grid container justify="center">
+          <Grid container item className={styles.container} alignItems="center">
             <Grid item>
               <Button
                 onClick={() => {
