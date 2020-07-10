@@ -3,7 +3,6 @@ import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -28,18 +27,11 @@ export default function BudgetCategorySection(props) {
         aria-controls={sectionName + "content"}
         id={sectionName + "-header"}
       >
-        <Grid container>
-          <Grid item>
-            <MonetizationOnIcon fontSize="large" color="secondary" />
-          </Grid>
-          <Grid item>
-            <Typography variant="h5">{sectionName}</Typography>
-          </Grid>
-        </Grid>
+        <Typography variant="h5">{sectionName}</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <Grid container spacing={4}>
-          <Grid item container spacing={2}>
+          <Grid item container spacing={2} justify="space-evenly">
             {props.children}
           </Grid>
         </Grid>

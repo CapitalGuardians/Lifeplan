@@ -1,8 +1,17 @@
-import { Button, CardActions, CardContent, Dialog } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import Grid from "@material-ui/core/Grid";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Grid
+} from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
+import CloseIcon from "@material-ui/icons/Close";
 import { differenceInMinutes, setMonth } from "date-fns";
 import _ from "lodash";
 import React from "react";
@@ -16,8 +25,7 @@ import BudgetCategorySection from "./BudgetCategorySection";
 import SupportItemDialog from "./SupportItemDialog";
 import {
   PLAN_ITEM_GROUPS_VIEW,
-  REGISTRATION_GROUPS_VIEW,
-  PLAN_ITEM_EDIT_VIEW
+  REGISTRATION_GROUPS_VIEW
 } from "./SupportItemDialog";
 
 import "react-calendar/dist/Calendar.css";
@@ -27,6 +35,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import PlanItemCalendarDialog from "./PlanItemCalendarDialog";
 import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
 import PlanItemEditView from "./PlanItemEditView";
+import styles from "./BudgetDashboard.module.css";
 
 const PLAN_CATEGORIES = "planCategories";
 
@@ -100,7 +109,7 @@ class BudgetDashboard extends React.Component {
     planId: null,
     registrationGroups: [],
     dialogPage: PLAN_ITEM_GROUPS_VIEW,
-    showTwelveMonthsCalendar: true,
+    showMonthView: false,
     monthViewDate: setMonth(new Date(), 1),
     planItemDialogPage: -1,
     selectedPlanItem: null
@@ -314,7 +323,7 @@ class BudgetDashboard extends React.Component {
 
   handleSetMonthView = date => {
     this.setState({ monthViewDate: date }, () =>
-      this.setState({ showTwelveMonthsCalendar: false })
+      this.setState({ showMonthView: true })
     );
   };
 
@@ -408,39 +417,45 @@ class BudgetDashboard extends React.Component {
                 />
               </Dialog>
             )))}
+        {this.state.showMonthView === true && (
+          <Dialog
+            open={this.state.showMonthView === true}
+            onClose={() => this.setState({ showMonthView: false })}
+          >
+            <DialogTitle classes={{ root: styles.dialogTitle }}>
+              <IconButton
+                aria-label="close"
+                className={styles.closeButton}
+                onClick={() => this.setState({ showMonthView: false })}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent>
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                defaultDate={this.state.monthViewDate}
+                fixedWeekCount={false}
+                height="parent"
+                events={this.events()}
+                eventClick={this.handleSelectEvent}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
 
         <Card>
           <CardHeader title="Budget Summary" />
           <CardContent>
-            <Grid container>
-              <Grid container item xs={12}>
+            <Grid container justify="center">
+              <Grid item>
                 {total === 0 ? (
                   <div>
                     No budgets allocated to any category! Please edit your plan.
                   </div>
                 ) : (
-                  <Grid container item xs={12}>
-                    <Grid item xs={12}>
-                      {this.state.showTwelveMonthsCalendar === true ? (
-                        <TwelveMonthCalendar
-                          supportGroups={this.state.supportGroups}
-                          planCategories={this.state.planCategories}
-                          onClick={this.handleSetMonthView}
-                        />
-                      ) : (
-                        <FullCalendar
-                          plugins={[dayGridPlugin]}
-                          defaultDate={this.state.monthViewDate}
-                          fixedWeekCount={false}
-                          height="parent"
-                          events={this.events()}
-                          eventClick={this.handleSelectEvent}
-                        />
-                      )}
-                    </Grid>
-                    <Grid item>
-                      <DoughnutBody allocated={allocated} total={total} />
-                    </Grid>
+                  <Grid item>
+                    <DoughnutBody allocated={allocated} total={total} />
                   </Grid>
                 )}
               </Grid>
@@ -581,6 +596,12 @@ class BudgetDashboard extends React.Component {
           {this.state.planCategories !== {} && (
             <Grid item xs={12} md={11} xl={10}>
               {this.renderSummary()}
+
+              <TwelveMonthCalendar
+                supportGroups={this.state.supportGroups}
+                planCategories={this.state.planCategories}
+                onClick={this.handleSetMonthView}
+              />
               {Object.keys(planCategories).length !== 0 &&
                 this.renderPlanCategories()}
             </Grid>

@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import PreviewCalendar from "./PreviewCalendar";
-import { Button, Checkbox, Grid, Typography } from "@material-ui/core";
+import {
+  Button,
+  Checkbox,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  Grid,
+  Typography
+} from "@material-ui/core";
 import styles from "./TwelveMonthCalendar.module.css";
 import { getMonth, getYear, setMonth, setYear } from "date-fns";
 import { calculatePlanItemCost } from "./BudgetDashboard";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 export default function TwelveMonthCalendar(props) {
   const { onClick, planCategories, supportGroups } = props;
@@ -55,38 +64,45 @@ export default function TwelveMonthCalendar(props) {
   }
 
   return (
-    <Grid container className={styles.container}>
-      <Grid container item alignItems="center">
-        <Grid item>
-          <Button
-            onClick={() => {
-              setYear(year - 1);
-            }}
-          >
-            {"<"}
-          </Button>
-          <Typography display="inline">{year}</Typography>
-          <Button
-            onClick={() => {
-              setYear(year + 1);
-            }}
-          >
-            {">"}
-          </Button>
+    <ExpansionPanel defaultExpanded>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon color="secondary" />}>
+        <Typography variant="h5">12-Month View</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Grid container className={styles.container}>
+          <Grid container item alignItems="center">
+            <Grid item>
+              <Button
+                onClick={() => {
+                  setYear(year - 1);
+                }}
+              >
+                {"<"}
+              </Button>
+              <Typography display="inline">{year}</Typography>
+              <Button
+                onClick={() => {
+                  setYear(year + 1);
+                }}
+              >
+                {">"}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Checkbox
+                className={styles.checkbox}
+                checked={showPreview}
+                onChange={() => setShowPreview(!showPreview)}
+              />
+              <Typography display="inline">Show Budgets</Typography>
+            </Grid>
+            <Grid container item justify="center">
+              {renderCalendars(costs, year, showPreview, onClick)}
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item>
-          <Checkbox
-            className={styles.checkbox}
-            checked={showPreview}
-            onChange={() => setShowPreview(!showPreview)}
-          />
-          <Typography display="inline">Show Budgets</Typography>
-        </Grid>
-        <Grid container item justify="flex-start">
-          {renderCalendars(costs, year, showPreview, onClick)}
-        </Grid>
-      </Grid>
-    </Grid>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   );
 }
 

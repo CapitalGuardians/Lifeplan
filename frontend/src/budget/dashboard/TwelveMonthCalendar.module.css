@@ -3,6 +3,6 @@
 }
 
 .calendarGrid:hover {
-  background-color: grey;
+  background-color: #97c7ef;
   cursor: pointer;
 }
