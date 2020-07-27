@@ -5,6 +5,7 @@ from .models import (
     Participant,
     Plan,
     PlanCategory,
+    PlanItemGroup,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
