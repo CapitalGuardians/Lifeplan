@@ -6,6 +6,7 @@ from .models import (
     Participant,
     Plan,
     PlanCategory,
+    PlanItemGroup,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -32,6 +33,7 @@ admin.site.register(Participant, ParticipantAdmin)
 # Default registrations
 admin.site.register(Plan)
 admin.site.register(PlanCategory)
+admin.site.register(PlanItemGroup)
 admin.site.register(PlanItem)
 admin.site.register(SupportGroup)
 admin.site.register(SupportCategory)

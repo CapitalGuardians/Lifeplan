@@ -172,14 +172,22 @@ class PlanCategory(models.Model):
     budget = models.DecimalField(max_digits=10, decimal_places=2)
 
 
-class PlanItem(models.Model):
+class PlanItemGroup(models.Model):
     plan_category = models.ForeignKey(
         PlanCategory, related_name="plan_items", on_delete=models.PROTECT
     )
     support_item_group = models.ForeignKey(
         SupportItemGroup, on_delete=models.PROTECT
     )
-    quantity = models.DecimalField(max_digits=10, decimal_places=1)
-    price_actual = models.DecimalField(max_digits=10, decimal_places=2)
-    frequency_per_year = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255)
+
+
+class PlanItem(models.Model):
+    plan_item_group = models.ForeignKey(
+        PlanItemGroup, related_name="plan_item_group", on_delete=models.PROTECT
+    )
+    name = models.CharField(max_length=255)
+    price_actual = models.DecimalField(max_digits=10, decimal_places=2)
+    all_day = models.BooleanField(default=False)
+    start_date = models.DateField()
+    end_date = models.DateField()
