@@ -185,4 +185,4 @@ sketch
 
 .env
 .idea/
-venv/
+.venv/

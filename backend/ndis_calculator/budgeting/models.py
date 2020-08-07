@@ -174,17 +174,17 @@ class PlanCategory(models.Model):
 
 class PlanItemGroup(models.Model):
     plan_category = models.ForeignKey(
-        PlanCategory, related_name="plan_items", on_delete=models.PROTECT
+        PlanCategory, related_name="plan_item_groups", on_delete=models.PROTECT
     )
     support_item_group = models.ForeignKey(
-        SupportItemGroup, on_delete=models.PROTECT
+        SupportItemGroup, related_name="support_item_groups", on_delete=models.PROTECT
     )
     name = models.CharField(max_length=255)
 
 
 class PlanItem(models.Model):
     plan_item_group = models.ForeignKey(
-        PlanItemGroup, related_name="plan_item_group", on_delete=models.PROTECT
+        PlanItemGroup, related_name="plan_items", on_delete=models.PROTECT
     )
     name = models.CharField(max_length=255)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)

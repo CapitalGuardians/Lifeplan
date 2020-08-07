@@ -91,9 +91,9 @@ APPEND_SLASH = False
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASE_USER = os.environ.get("DATABASE_USER", "root")
-DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
+DATABASE_HOST = os.environ.get("DATABASE_HOST", "127.0.0.1")
 DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
-DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "ndisFP2019")
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "")
 
 
 DATABASES = {

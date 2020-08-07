@@ -2,6 +2,7 @@ from budgeting.models import (
     Participant,
     Plan,
     PlanCategory,
+    PlanItemGroup,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -143,23 +144,38 @@ class PlanContainsCategoriesTest(TestCase):
             )
 
 
-class PlanContainsItemsTest:
+class PlanItemGroupTest(TestCase):
     @staticmethod
-    def create_PlanContainsItems(
+    def create_PlanItemGroup(
         plan_category,
         support_item_group=SupportItemGroupTest.create_SupportItemGroup(),
-        price_actual=200.50,
-        quantity=2,
-        hours_weekday=10.50,
-        hours_weekend=10.50,
-        hours_holiday=0.00,
-        hours_holiday_after_hours=2.50,
+        name="itemGroup1"
+    ):
+        if PlanItemGroup.objects.filter(plan_category=plan_category).first():
+            return PlanItemGroup.objects.first()
+        else:
+            return PlanItemGroup.objects.create(
+                plan_category=plan_category, support_item_group=support_item_group, name=name
+            )
+
+
+class PlanItemTest(TestCase):
+    @staticmethod
+    def create_PlanItem(
+        plan_item_group,
+        name="item1",
+        price_actual=100.20,
+        all_day=False,
+        start_date="2018-06-01",
+        end_date="2019-06-01"
     ):
         return PlanItem.objects.create(
-            plan_category=plan_category,
-            support_item_group=support_item_group,
+            plan_item_group=plan_item_group,
+            name=name,
             price_actual=price_actual,
-            quantity=quantity,
+            all_day=all_day,
+            start_date=start_date,
+            end_date=end_date
         )
 
 
@@ -175,12 +191,12 @@ class PlanTest(TestCase):
             start_date="2018-06-01",
             end_date="2019-06-01",
         )
-        category = PlanContainsCategoriesTest.create_PlanContainsCategories(
+        self.categories = PlanContainsCategoriesTest.create_PlanContainsCategories(
             plan=obj
         )
-        self.categories = category
-        self.items = PlanContainsItemsTest.create_PlanContainsItems(
-            plan_category=category
+        self.item_groups = PlanItemGroupTest.create_PlanItemGroup(plan_category=self.categories)
+        self.items = PlanItemTest.create_PlanItem(
+            plan_item_group=self.item_groups
         )
         return obj
 
@@ -189,12 +205,17 @@ class PlanTest(TestCase):
             self.p = self.create_Plan()
         self.assertTrue(isinstance(self.p, Plan))
 
-    def test_PlanContainsItems(self):
-        if self.p is None:
-            self.p = self.create_Plan()
-        self.assertTrue(isinstance(self.items, PlanItem))
-
     def test_PlanContainsCategories(self):
         if self.p is None:
             self.p = self.create_Plan()
         self.assertTrue(isinstance(self.categories, PlanCategory))
+
+    def test_PlanContainsItemGroups(self):
+        if self.p is None:
+            self.p = self.create_Plan()
+        self.assertTrue(isinstance(self.item_groups, PlanItemGroup))
+
+    def test_PlanContainsItems(self):
+        if self.p is None:
+            self.p = self.create_Plan()
+        self.assertTrue(isinstance(self.items, PlanItem))
