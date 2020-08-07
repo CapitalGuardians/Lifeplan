@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1.1.1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Verify MySQL connection from host
@@ -66,6 +66,7 @@ jobs:
           DATABASE_USER: root
           DATABASE_HOST: 127.0.0.1
           DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
+          DATABASE_PASSWORD: ndisFP2019
       - name: Run tests
         working-directory: ./backend/ndis_calculator
         run: |
@@ -74,6 +75,7 @@ jobs:
           DATABASE_USER: root
           DATABASE_HOST: 127.0.0.1
           DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
+          DATABASE_PASSWORD: ndisFP2019
 
   frontend:
     runs-on: ${{ matrix.os }}
@@ -81,14 +83,15 @@ jobs:
       max-parallel: 4
       matrix:
         os: [ubuntu-18.04]
-        node-version: [13]
+        node-version: [14]
 
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1.3.0
+        uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
       - name: List packages
         run: |
           cat frontend/package.json

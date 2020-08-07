@@ -93,7 +93,7 @@ APPEND_SLASH = False
 DATABASE_USER = os.environ.get("DATABASE_USER", "root")
 DATABASE_HOST = os.environ.get("DATABASE_HOST", "127.0.0.1")
 DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
-DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "")
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", None)
 
 
 DATABASES = {
