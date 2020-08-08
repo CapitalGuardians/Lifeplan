@@ -8,7 +8,7 @@ import {
   InputAdornment,
   InputLabel,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import CustomTimePicker from "./CustomTimePicker";
 import { addHours, endOfDay, getHours, getMinutes, startOfDay } from "date-fns";
@@ -18,25 +18,25 @@ export default function PlanItemEditView(props) {
   const [editedPlanItem, setEditedPlanItem] = useState({
     ...planItem,
     startDate: new Date(planItem.startDate),
-    endDate: new Date(planItem.endDate)
+    endDate: new Date(planItem.endDate),
   });
   console.log(editedPlanItem);
   const dateRef = useRef({
     startDate: new Date(editedPlanItem.startDate),
-    endDate: new Date(editedPlanItem.endDate)
+    endDate: new Date(editedPlanItem.endDate),
   });
 
   function handleChange(event) {
     setEditedPlanItem({
       ...editedPlanItem,
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   }
 
   function handleSave() {
     onSave({
       ...editedPlanItem,
-      priceActual: parseFloat(editedPlanItem.priceActual)
+      priceActual: parseFloat(editedPlanItem.priceActual),
     });
   }
 
@@ -49,7 +49,7 @@ export default function PlanItemEditView(props) {
             : addHours(editedPlanItem.endDate, -1);
         dateRef.current = {
           startDate: newStartDate,
-          endDate: editedPlanItem.endDate
+          endDate: editedPlanItem.endDate,
         };
         setEditedPlanItem({ ...editedPlanItem, startDate: newStartDate });
       } else {
@@ -59,7 +59,7 @@ export default function PlanItemEditView(props) {
             : addHours(editedPlanItem.startDate, 1);
         dateRef.current = {
           startDate: editedPlanItem.startDate,
-          endDate: newEndDate
+          endDate: newEndDate,
         };
 
         setEditedPlanItem({ ...editedPlanItem, endDate: newEndDate });
@@ -67,7 +67,7 @@ export default function PlanItemEditView(props) {
     } else {
       dateRef.current = {
         startDate: editedPlanItem.startDate,
-        endDate: editedPlanItem.endDate
+        endDate: editedPlanItem.endDate,
       };
     }
   }, [editedPlanItem]);

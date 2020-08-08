@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import CloseIcon from "@material-ui/icons/Close";
@@ -25,7 +25,7 @@ import BudgetCategorySection from "./BudgetCategorySection";
 import SupportItemDialog from "./SupportItemDialog";
 import {
   PLAN_ITEM_GROUPS_VIEW,
-  REGISTRATION_GROUPS_VIEW
+  REGISTRATION_GROUPS_VIEW,
 } from "./SupportItemDialog";
 
 import "react-calendar/dist/Calendar.css";
@@ -41,7 +41,7 @@ const PLAN_CATEGORIES = "planCategories";
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.auth.currentUser
+    currentUser: state.auth.currentUser,
   };
 }
 export function calculatePlanItemCost(planItem) {
@@ -61,7 +61,7 @@ export function calculatePlanItemCost(planItem) {
 
 export function calculateTotalCost(planItemGroup) {
   let allocated = 0;
-  _.forEach(planItemGroup.planItems, planItem => {
+  _.forEach(planItemGroup.planItems, (planItem) => {
     const amount = calculatePlanItemCost(planItem);
 
     allocated += amount;
@@ -71,7 +71,7 @@ export function calculateTotalCost(planItemGroup) {
 
 export function calculateAllocated(planItemGroups) {
   let allocated = 0;
-  _.forEach(planItemGroups, planItemGroup => {
+  _.forEach(planItemGroups, (planItemGroup) => {
     allocated += calculateTotalCost(planItemGroup);
   });
 
@@ -79,14 +79,14 @@ export function calculateAllocated(planItemGroups) {
 }
 
 export function planItemGroupToEvents(planItemGroup) {
-  const events = planItemGroup.planItems.map(planItem => {
+  const events = planItemGroup.planItems.map((planItem) => {
     const { allDay, endDate, name, startDate } = planItem;
     return {
       allDay,
       start: new Date(startDate),
       end: new Date(endDate),
       title: name,
-      planItem
+      planItem,
     };
   });
   return events;
@@ -95,7 +95,7 @@ export function planItemGroupToEvents(planItemGroup) {
 const PLAN_ITEM_DIALOG_PAGES = {
   preview: 0,
   delete: 1,
-  edit: 2
+  edit: 2,
 };
 
 class BudgetDashboard extends React.Component {
@@ -112,19 +112,19 @@ class BudgetDashboard extends React.Component {
     showMonthView: false,
     monthViewDate: setMonth(new Date(), 1),
     planItemDialogPage: -1,
-    selectedPlanItem: null
+    selectedPlanItem: null,
   };
 
   async componentDidMount() {
     // call backend to load all plan groups and corresponding categories
     api.SupportGroups.all()
-      .then(response => {
+      .then((response) => {
         this.setState({ supportGroups: [...response.data] }, this.loadState);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-    api.RegistrationGroups.list().then(response => {
+    api.RegistrationGroups.list().then((response) => {
       this.setState({ registrationGroups: response.data });
     });
   }
@@ -148,22 +148,22 @@ class BudgetDashboard extends React.Component {
     let postcode = null;
     // TODO: update for planItemGroups
     if (localStorage.getItem(LocalStorageKeys.ACCESS) != null) {
-      await api.Participants.currentUser().then(response => {
+      await api.Participants.currentUser().then((response) => {
         birthYear = response.data.birthYear;
         postcode = response.data.postcode;
       });
-      await api.Plans.list().then(async response => {
+      await api.Plans.list().then(async (response) => {
         if (response.data.length === 0) {
           window.location.href = "/budget/edit";
         } else {
           const plan = response.data[0];
           this.setState({ planId: plan.id });
           await Promise.all(
-            _.map(plan.planCategories, async planCategory => {
+            _.map(plan.planCategories, async (planCategory) => {
               const response = await api.PlanItems.list(planCategory.id);
               planCategories[planCategory.supportCategory] = {
                 ...planCategory,
-                planItems: response.data
+                planItems: response.data,
               };
             })
           );
@@ -172,7 +172,7 @@ class BudgetDashboard extends React.Component {
       this.setState({
         planCategories,
         birthYear,
-        postcode
+        postcode,
       });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -189,7 +189,7 @@ class BudgetDashboard extends React.Component {
         this.setState({
           planCategories,
           birthYear,
-          postcode
+          postcode,
         });
       } else {
         this.props.history.push("/budget/edit");
@@ -199,8 +199,8 @@ class BudgetDashboard extends React.Component {
 
   findSupportCategory = () => {
     let result = null;
-    _.forEach(this.state.supportGroups, supportGroup => {
-      _.forEach(supportGroup.supportCategories, supportCategory => {
+    _.forEach(this.state.supportGroups, (supportGroup) => {
+      _.forEach(supportGroup.supportCategories, (supportCategory) => {
         if (supportCategory.id === this.state.activeCategory) {
           result = supportCategory;
         }
@@ -209,7 +209,7 @@ class BudgetDashboard extends React.Component {
     return result;
   };
 
-  handleOpenSupports = supportCategoryId => {
+  handleOpenSupports = (supportCategoryId) => {
     this.setState(
       { activeCategory: supportCategoryId, dialogPage: PLAN_ITEM_GROUPS_VIEW },
       () => {
@@ -218,11 +218,11 @@ class BudgetDashboard extends React.Component {
     );
   };
 
-  handleAddSupports = supportCategoryId => {
+  handleAddSupports = (supportCategoryId) => {
     this.setState(
       {
         dialogPage: REGISTRATION_GROUPS_VIEW,
-        activeCategory: supportCategoryId
+        activeCategory: supportCategoryId,
       },
       () => {
         this.setState({ openSupports: true });
@@ -244,9 +244,9 @@ class BudgetDashboard extends React.Component {
             ...this.state.planCategories,
             [planCategory]: {
               ...this.state.planCategories[planCategory],
-              planItemGroups: planItemGroups
-            }
-          }
+              planItemGroups: planItemGroups,
+            },
+          },
         },
         () => {
           this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
@@ -266,10 +266,10 @@ class BudgetDashboard extends React.Component {
 
           const editedPlanItemGroup = {
             ...planItemGroup,
-            planItems: _.difference(planItemGroup.planItems, [planItem])
+            planItems: _.difference(planItemGroup.planItems, [planItem]),
           };
           editedPlanItemGroups = _.difference(value.planItemGroups, [
-            planItemGroup
+            planItemGroup,
           ]);
           editedPlanItemGroups.push(editedPlanItemGroup);
           supportCategory = key;
@@ -285,7 +285,7 @@ class BudgetDashboard extends React.Component {
     this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
   };
 
-  handleEditPlanItem = editedPlanItem => {
+  handleEditPlanItem = (editedPlanItem) => {
     const planItem = this.state.selectedPlanItem;
     let editedPlanItemGroups;
     let supportCategory;
@@ -296,16 +296,16 @@ class BudgetDashboard extends React.Component {
 
           const editedPlanItemGroup = {
             ...planItemGroup,
-            planItems: planItemGroup.planItems.map(pI => {
+            planItems: planItemGroup.planItems.map((pI) => {
               if (pI === planItem) {
                 return editedPlanItem;
               } else {
                 return pI;
               }
-            })
+            }),
           };
           editedPlanItemGroups = _.difference(value.planItemGroups, [
-            planItemGroup
+            planItemGroup,
           ]);
           editedPlanItemGroups.push(editedPlanItemGroup);
           supportCategory = key;
@@ -321,7 +321,7 @@ class BudgetDashboard extends React.Component {
     this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
   };
 
-  handleSetMonthView = date => {
+  handleSetMonthView = (date) => {
     this.setState({ monthViewDate: date }, () =>
       this.setState({ showMonthView: true })
     );
@@ -331,10 +331,10 @@ class BudgetDashboard extends React.Component {
     this.setState({ planItemDialogPage: -1 });
   };
 
-  handleSelectEvent = info => {
+  handleSelectEvent = (info) => {
     this.setState({
       selectedPlanItem: info.event.extendedProps.planItem,
-      planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.preview
+      planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.preview,
     });
   };
 
@@ -348,10 +348,10 @@ class BudgetDashboard extends React.Component {
 
   calculateCoreAllocated = () => {
     let allocated = 0;
-    let core = this.state.supportGroups.find(obj => {
+    let core = this.state.supportGroups.find((obj) => {
       return obj.name === "Core";
     });
-    _.forEach(core.supportCategories, supportCategory => {
+    _.forEach(core.supportCategories, (supportCategory) => {
       const planCategory = this.state.planCategories[supportCategory.id];
       allocated += calculateAllocated(planCategory.planItemGroups);
     });
@@ -362,12 +362,12 @@ class BudgetDashboard extends React.Component {
     let total = 0;
     let allocated = 0;
     let events = [];
-    Object.values(this.state.planCategories).forEach(planCategories => {
-      planCategories.planItemGroups.forEach(planItemGroup => {
+    Object.values(this.state.planCategories).forEach((planCategories) => {
+      planCategories.planItemGroups.forEach((planItemGroup) => {
         events = events.concat(planItemGroupToEvents(planItemGroup));
       });
     });
-    _.map(this.state.planCategories, planCategory => {
+    _.map(this.state.planCategories, (planCategory) => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
 
@@ -487,11 +487,11 @@ class BudgetDashboard extends React.Component {
   };
 
   renderPlanCategories = () => {
-    return _.map(this.state.supportGroups, supportGroup => {
+    return _.map(this.state.supportGroups, (supportGroup) => {
       if (supportGroup.id === 1) {
         let coreBudget = 0;
 
-        _.forEach(supportGroup.supportCategories, supportCategory => {
+        _.forEach(supportGroup.supportCategories, (supportCategory) => {
           const planCategory = this.state.planCategories[supportCategory.id];
           coreBudget += parseFloat(planCategory.budget);
         });
@@ -508,7 +508,7 @@ class BudgetDashboard extends React.Component {
                     total: coreBudget,
                     allocated: this.calculateCoreAllocated(),
                     totalColor: LIGHT_BLUE,
-                    allocatedColor: DARK_BLUE
+                    allocatedColor: DARK_BLUE,
                   }}
                   openSupports={() => this.handleOpenSupports(3)}
                   addSupports={() => this.handleAddSupports(3)}
@@ -522,7 +522,7 @@ class BudgetDashboard extends React.Component {
       }
 
       let renderedPlanCategories = [];
-      _.forEach(supportGroup.supportCategories, supportCategory => {
+      _.forEach(supportGroup.supportCategories, (supportCategory) => {
         const planCategory = this.state.planCategories[supportCategory.id];
         if (planCategory.budget > 0) {
           renderedPlanCategories.push(planCategory);
@@ -534,7 +534,7 @@ class BudgetDashboard extends React.Component {
             sectionName={supportGroup.name}
             key={supportGroup.id}
           >
-            {_.map(supportGroup.supportCategories, supportCategory => {
+            {_.map(supportGroup.supportCategories, (supportCategory) => {
               const planCategory = this.state.planCategories[
                 supportCategory.id
               ];
@@ -556,7 +556,7 @@ class BudgetDashboard extends React.Component {
                           planCategory.planItemGroups
                         ),
                         totalColor: LIGHT_BLUE,
-                        allocatedColor: DARK_BLUE
+                        allocatedColor: DARK_BLUE,
                       }}
                       openSupports={() =>
                         this.handleOpenSupports(supportCategory.id)
@@ -578,7 +578,7 @@ class BudgetDashboard extends React.Component {
   events = () => {
     const events = [];
     for (const planCategory of Object.values(this.state.planCategories)) {
-      planCategory.planItemGroups.forEach(planItemGroup => {
+      planCategory.planItemGroups.forEach((planItemGroup) => {
         const toAdd = planItemGroupToEvents(planItemGroup);
         events.push(...toAdd);
       });
@@ -619,7 +619,7 @@ class BudgetDashboard extends React.Component {
             openAddSupports={this.state.openAddSupports}
             registrationGroups={this.state.registrationGroups}
             page={this.state.dialogPage}
-            setPage={page => this.setState({ dialogPage: page })}
+            setPage={(page) => this.setState({ dialogPage: page })}
           />
         )}
       </div>

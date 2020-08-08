@@ -55,7 +55,10 @@ class Migration(migrations.Migration):
                         else None
                     )
 
-                    registration_group, created = RegistrationGroup.objects.get_or_create(
+                    (
+                        registration_group,
+                        created,
+                    ) = RegistrationGroup.objects.get_or_create(
                         number=registration_group_number,
                         defaults={"name": registration_group_name},
                     )
@@ -67,7 +70,10 @@ class Migration(migrations.Migration):
                     else:
                         support_group_id = 3
 
-                    support_category, create = SupportCategory.objects.get_or_create(
+                    (
+                        support_category,
+                        create,
+                    ) = SupportCategory.objects.get_or_create(
                         number=support_category_number,
                         defaults={
                             "name": support_category_name,

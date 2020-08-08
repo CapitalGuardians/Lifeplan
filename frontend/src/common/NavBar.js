@@ -4,22 +4,21 @@ import { NAV_BAR_HEIGHT } from "./theme";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import connect from "react-redux/es/connect/connect";
-import {LocalStorageKeys} from "./constants";
+import { LocalStorageKeys } from "./constants";
 
 const navBarStyles = makeStyles({
   navBar: {
-    height: NAV_BAR_HEIGHT
+    height: NAV_BAR_HEIGHT,
   },
   grow: {
-    flexGrow: 1
-  }
+    flexGrow: 1,
+  },
 });
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.auth.currentUser
-  }
-
+    currentUser: state.auth.currentUser,
+  };
 }
 
 function NavBar(props) {
@@ -40,23 +39,19 @@ function NavBar(props) {
           <Button href="/" color="inherit">
             Home
           </Button>
-          {
-            props.currentUser ?
-              <Button onClick={handleSignOut} color="inherit">Sign out</Button>
-            :
-              <Button href="/signin" color="inherit">
-                Sign In
-              </Button>
-          }
-
+          {props.currentUser ? (
+            <Button onClick={handleSignOut} color="inherit">
+              Sign out
+            </Button>
+          ) : (
+            <Button href="/signin" color="inherit">
+              Sign In
+            </Button>
+          )}
         </div>
-        {
-          props.currentUser &&
-          <Typography>
-            Welcome, {props.currentUser.firstName}
-          </Typography>
-        }
-
+        {props.currentUser && (
+          <Typography>Welcome, {props.currentUser.firstName}</Typography>
+        )}
       </Toolbar>
     </AppBar>
   );

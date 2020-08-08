@@ -1,4 +1,5 @@
-[{
+[
+  {
     "model": "budgeting.registrationgroup",
     "pk": 8,
     "fields": {

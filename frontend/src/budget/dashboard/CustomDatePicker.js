@@ -16,9 +16,9 @@ function CustomDatePicker(props) {
       const dayClassName = classNames(classes.day, {
         [classes.nonCurrentMonthDay]:
           !dayInCurrentMonth || date < minDate || date > maxDate,
-        [classes.highlight]: _.some(itemStartDates, itemStartDate => {
+        [classes.highlight]: _.some(itemStartDates, (itemStartDate) => {
           return isSameDay(itemStartDate, date);
-        })
+        }),
       });
       return (
         <div>
@@ -48,16 +48,16 @@ function CustomDatePicker(props) {
   );
 }
 
-const styles = createStyles(theme => ({
+const styles = createStyles((theme) => ({
   dayWrapper: {
-    position: "relative"
+    position: "relative",
   },
   day: {
     width: 36,
     height: 36,
     fontSize: theme.typography.caption.fontSize,
     margin: "0 2px",
-    color: "inherit"
+    color: "inherit",
   },
   customDayHighlight: {
     position: "absolute",
@@ -66,31 +66,31 @@ const styles = createStyles(theme => ({
     left: "2px",
     right: "2px",
     border: `1px solid ${theme.palette.secondary.main}`,
-    borderRadius: "50%"
+    borderRadius: "50%",
   },
   nonCurrentMonthDay: {
-    color: theme.palette.text.disabled
+    color: theme.palette.text.disabled,
   },
   highlightNonCurrentMonthDay: {
-    color: "#676767"
+    color: "#676767",
   },
   highlight: {
     background: theme.palette.primary.main,
     color: theme.palette.common.white,
     "&:hover": {
-      background: theme.palette.primary.main
-    }
+      background: theme.palette.primary.main,
+    },
   },
   firstHighlight: {
     extend: "highlight",
     borderTopLeftRadius: "50%",
-    borderBottomLeftRadius: "50%"
+    borderBottomLeftRadius: "50%",
   },
   endHighlight: {
     extend: "highlight",
     borderTopRightRadius: "50%",
-    borderBottomRightRadius: "50%"
-  }
+    borderBottomRightRadius: "50%",
+  },
 }));
 
 export default withStyles(styles)(CustomDatePicker);

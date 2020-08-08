@@ -7,14 +7,14 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   secondary: {
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   categoryIcon: {},
   expansionPanelSummary: {
-    marginBottom: 0
-  }
+    marginBottom: 0,
+  },
 }));
 export default function BudgetCategorySection(props) {
   const classes = useStyles();

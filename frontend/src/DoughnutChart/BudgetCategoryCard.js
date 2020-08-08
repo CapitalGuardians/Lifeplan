@@ -4,7 +4,7 @@ import {
   Card,
   CardContent,
   Button,
-  CardActions
+  CardActions,
 } from "@material-ui/core";
 import withStyles from "@material-ui/core/styles/withStyles";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -13,7 +13,7 @@ import DoughnutBody from "./DoughnutBody";
 
 const styles = {
   cardHeader: { height: 80 },
-  noVerticalPadding: { paddingTop: 0, paddingBottom: 0 }
+  noVerticalPadding: { paddingTop: 0, paddingBottom: 0 },
 };
 
 class BudgetCategoryCard extends Component {

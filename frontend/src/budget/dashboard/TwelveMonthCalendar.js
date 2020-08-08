@@ -7,7 +7,7 @@ import {
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   Grid,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import styles from "./TwelveMonthCalendar.module.css";
 import { getMonth, getYear, setMonth, setYear } from "date-fns";
@@ -33,7 +33,7 @@ export default function TwelveMonthCalendar(props) {
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0],
-    [0, 0, 0]
+    [0, 0, 0],
   ];
   // populate array
   for (const [key, value] of Object.entries(planCategories)) {
@@ -51,8 +51,8 @@ export default function TwelveMonthCalendar(props) {
       }
     }
     // support group found, now find month of events
-    value.planItemGroups.forEach(planItemGroup => {
-      planItemGroup.planItems.forEach(planItem => {
+    value.planItemGroups.forEach((planItemGroup) => {
+      planItemGroup.planItems.forEach((planItem) => {
         const startDate = new Date(planItem.startDate);
         const itemMonth = getMonth(startDate);
         const itemYear = getYear(startDate);

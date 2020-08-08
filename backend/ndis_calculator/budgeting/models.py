@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
 from ndis_calculator import settings
 
 from .managers import CustomUserManager
@@ -177,7 +178,9 @@ class PlanItemGroup(models.Model):
         PlanCategory, related_name="plan_item_groups", on_delete=models.PROTECT
     )
     support_item_group = models.ForeignKey(
-        SupportItemGroup, related_name="support_item_groups", on_delete=models.PROTECT
+        SupportItemGroup,
+        related_name="support_item_groups",
+        on_delete=models.PROTECT,
     )
     name = models.CharField(max_length=255)
 

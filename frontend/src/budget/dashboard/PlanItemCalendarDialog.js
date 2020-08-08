@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
 } from "@material-ui/core";
 import { format } from "date-fns";
 
@@ -21,7 +21,7 @@ export default function PlanItemCalendarDialog(props) {
           Cost: $
           {planItem.priceActual.toLocaleString(undefined, {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
           })}
         </DialogContentText>
       </DialogContent>

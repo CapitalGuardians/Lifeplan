@@ -8,22 +8,22 @@ import { NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
 import classNames from "classnames";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   home: {
-    height: `calc(100vh - ${NAV_BAR_HEIGHT}px)`
+    height: `calc(100vh - ${NAV_BAR_HEIGHT}px)`,
   },
   planPageSelector: {
     backgroundColor: theme.palette.primary.main,
-    color: "white"
+    color: "white",
   },
   budgetPageSelector: {
     background: theme.palette.secondary.main,
-    color: theme.palette.primary.main
+    color: theme.palette.primary.main,
   },
   pageSelector: {
     width: theme.spacing(16),
-    height: theme.spacing(16)
-  }
+    height: theme.spacing(16),
+  },
 }));
 
 export default function Home() {
@@ -38,8 +38,7 @@ export default function Home() {
               <Grid item xs={12}>
                 <Typography variant="h5" align="center">
                   Welcome to NDIS Financial Planner.
-                  <br />
-                  I want to:
+                  <br />I want to:
                 </Typography>
               </Grid>
 
@@ -47,7 +46,10 @@ export default function Home() {
               <Grid item xs={12}>
                 <Grid container justify="space-evenly">
                   <Grid item>
-                    <Card raised onClick={() => (window.location.href = "/budget/edit")}>
+                    <Card
+                      raised
+                      onClick={() => (window.location.href = "/budget/edit")}
+                    >
                       <CardActionArea
                         className={classNames(
                           classes.planPageSelector,
@@ -70,7 +72,9 @@ export default function Home() {
                   <Grid item>
                     <Card
                       raised
-                      onClick={() => (window.location.href = "/budget/dashboard")}
+                      onClick={() =>
+                        (window.location.href = "/budget/dashboard")
+                      }
                     >
                       <CardActionArea
                         className={classNames(

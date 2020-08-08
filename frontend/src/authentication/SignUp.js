@@ -17,17 +17,17 @@ import { LocalStorageKeys } from "../common/constants";
 import { loadUser } from "../redux/reducers/auth";
 import connect from "react-redux/es/connect/connect";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {};
 };
 
-const mapDispatchToProps = dispatch => ({
-  loadUser: user => {
+const mapDispatchToProps = (dispatch) => ({
+  loadUser: (user) => {
     dispatch(loadUser(user));
-  }
+  },
 });
 
-const styles = theme => ({
+const styles = (theme) => ({
   main: {
     width: "auto",
     display: "block",
@@ -36,30 +36,32 @@ const styles = theme => ({
     [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
-      marginRight: "auto"
-    }
+      marginRight: "auto",
+    },
   },
   paper: {
     marginTop: theme.spacing(10),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(
+      3
+    )}px`,
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submitBtn: {
     marginLeft: "7%",
     marginRight: "7%",
     width: "36%",
-    marginTop: theme.spacing(3)
-  }
+    marginTop: theme.spacing(3),
+  },
 });
 
 class SignUp extends React.Component {
@@ -73,20 +75,20 @@ class SignUp extends React.Component {
     accept: false,
     submitted: false,
     submittedSuccess: true,
-    alertMessage: "Oops"
+    alertMessage: "Oops",
   };
 
-  handleInput = event => {
+  handleInput = (event) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
 
     this.setState({
-      [name]: value
+      [name]: value,
     });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     this.setState({ submitted: true });
 
     event.preventDefault();
@@ -97,9 +99,8 @@ class SignUp extends React.Component {
       firstName,
       lastName,
       postcode,
-      birthYear
+      birthYear,
     } = this.state;
-
 
     const Reginfo = {
       email: email,
@@ -107,20 +108,20 @@ class SignUp extends React.Component {
       firstName: firstName,
       lastName: lastName,
       postcode: postcode,
-      birthYear: birthYear
+      birthYear: birthYear,
     };
 
     Api.Auth.register(Reginfo)
-      .then(response => {
+      .then((response) => {
         const token = response.data.tokens;
         Api.setAccess(token.access);
         localStorage.setItem(LocalStorageKeys.REFRESH, token.refresh);
         this.props.history.replace("/");
-        Api.Participants.currentUser()
-          .then((response) => {this.props.loadUser(response.data)})
-
+        Api.Participants.currentUser().then((response) => {
+          this.props.loadUser(response.data);
+        });
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({ submittedSuccess: false });
         if (err.response != null) {
           let keys = Object.keys(err.response.data);
@@ -128,11 +129,11 @@ class SignUp extends React.Component {
           console.log(receivedMessage);
 
           this.setState({
-            alertMessage: receivedMessage
+            alertMessage: receivedMessage,
           });
         } else {
           this.setState({
-            alertMessage: "Sign up failed. Server failures have occured."
+            alertMessage: "Sign up failed. Server failures have occured.",
           });
         }
       });
@@ -177,7 +178,7 @@ class SignUp extends React.Component {
                 name={email}
                 autoComplete={email}
                 autoFocus
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
@@ -189,7 +190,7 @@ class SignUp extends React.Component {
                 type={pwd}
                 id={pwd}
                 autoComplete="current-password"
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
@@ -198,7 +199,7 @@ class SignUp extends React.Component {
                 id={firstName}
                 name={firstName}
                 autoComplete="name"
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
@@ -207,7 +208,7 @@ class SignUp extends React.Component {
                 id={lastName}
                 name={lastName}
                 autoComplete="family-name"
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
@@ -216,7 +217,7 @@ class SignUp extends React.Component {
                 id={postCode}
                 name={postCode}
                 autoComplete="postal-code"
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
@@ -225,7 +226,7 @@ class SignUp extends React.Component {
                 id={birthYear}
                 name={birthYear}
                 autoComplete="bday-year"
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControlLabel
@@ -234,7 +235,7 @@ class SignUp extends React.Component {
                   value={this.state.accept}
                   name={accept}
                   color="primary"
-                  onChange={e => this.handleInput(e)}
+                  onChange={(e) => this.handleInput(e)}
                 />
               }
               label="Click to accept our Terms & Conditions"

@@ -4,7 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
 } from "@material-ui/core/";
 
 export default function PlanItemDeleteDialog(props) {

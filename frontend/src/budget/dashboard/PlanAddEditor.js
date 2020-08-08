@@ -44,7 +44,7 @@ import {
   addDays,
   differenceInMinutes,
   endOfDay,
-  addHours
+  addHours,
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
 import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
@@ -71,10 +71,10 @@ export const FORTNIGHTLY = "FORTNIGHTLY";
 export const MONTHLY = "MONTHLY";
 export const YEARLY = "YEARLY";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%",
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   main: {
     width: "auto",
@@ -84,13 +84,13 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
-      marginRight: "auto"
-    }
+      marginRight: "auto",
+    },
   },
   blackButton: {
     backgroundColor: "black",
-    color: "white"
-  }
+    color: "white",
+  },
 }));
 
 export default function PlanAddEditor(props) {
@@ -131,28 +131,28 @@ export default function PlanAddEditor(props) {
     } else if (name === "quantity" && !quantityRegex.test(value)) {
       /*do nothing*/
     } else {
-      setValues(values => ({
+      setValues((values) => ({
         ...values,
-        [name]: value
+        [name]: value,
       }));
     }
   }
 
   function createNewPlanItemGroup(values, supportItemGroup, events) {
     console.log(events);
-    const planItems = events.map(event => {
+    const planItems = events.map((event) => {
       return {
         startDate: event.start,
         endDate: event.end,
         priceActual: parseFloat(values.priceActual),
         name: event.title,
-        allDay: event.allDay
+        allDay: event.allDay,
       };
     });
     return {
       supportItemGroup: supportItemGroup,
       planItems,
-      name: values.name
+      name: values.name,
     };
   }
 
@@ -219,7 +219,7 @@ export default function PlanAddEditor(props) {
     name: name,
     priceActual: price,
     quantity: quantity,
-    frequencyPerYear: frequency
+    frequencyPerYear: frequency,
   });
   const [itemStartDates, setItemStartDates] = useState([]);
   const [checkedWeekdays, setCheckedWeekdays] = useState({
@@ -229,7 +229,7 @@ export default function PlanAddEditor(props) {
     thursday: false,
     friday: false,
     saturday: false,
-    sunday: false
+    sunday: false,
   });
 
   const [checkedMonths, setCheckedMonths] = useState({
@@ -244,14 +244,14 @@ export default function PlanAddEditor(props) {
     sep: false,
     oct: false,
     nov: false,
-    dec: false
+    dec: false,
   });
 
   const startOfToday = startOfDay(new Date());
 
   const [itemTimes, setItemTimes] = useState({
     start: setHours(startOfToday, 9),
-    end: setHours(startOfToday, 10)
+    end: setHours(startOfToday, 10),
   });
 
   useEffect(() => {
@@ -267,7 +267,7 @@ export default function PlanAddEditor(props) {
     thursday,
     friday,
     saturday,
-    sunday
+    sunday,
   } = checkedWeekdays;
 
   const {
@@ -282,7 +282,7 @@ export default function PlanAddEditor(props) {
     sep,
     oct,
     nov,
-    dec
+    dec,
   } = checkedMonths;
 
   const newEvents = () => {
@@ -304,18 +304,18 @@ export default function PlanAddEditor(props) {
                   getMinutes(itemTimes.end)
                 )
               : date,
-          allDay: supportItem.unit !== "H"
+          allDay: supportItem.unit !== "H",
         };
       };
 
       if (values.frequencyPerYear === YEARLY) {
-        return _.map(itemStartDates, startDate => {
+        return _.map(itemStartDates, (startDate) => {
           return createEvent({ title: values.name, date: startDate });
         });
       } else if (values.frequencyPerYear === MONTHLY) {
         let currentDate = new Date(planStartDate);
         const days = _.map(
-          _.groupBy(itemStartDates, itemStartDate => itemStartDate.getDate()),
+          _.groupBy(itemStartDates, (itemStartDate) => itemStartDate.getDate()),
           (value, key) => parseInt(key)
         );
         let eventDates = [];
@@ -323,13 +323,13 @@ export default function PlanAddEditor(props) {
         while (currentDate <= planEndDate) {
           const newDates = [];
           const dateClone = new Date(currentDate);
-          _.forEach(days, day => {
+          _.forEach(days, (day) => {
             const newDate = setDate(dateClone, day);
             if (isSameMonth(dateClone, newDate)) {
               newDates.push(
                 createEvent({
                   title: values.name,
-                  date: newDate
+                  date: newDate,
                 })
               );
             }
@@ -347,7 +347,7 @@ export default function PlanAddEditor(props) {
           wednesday,
           thursday,
           friday,
-          saturday
+          saturday,
         ];
 
         const selectedDays = [];
@@ -368,12 +368,12 @@ export default function PlanAddEditor(props) {
           const endDate = new Date(planEndDate);
           while (currentDate <= endDate) {
             let dateClone = new Date(currentDate);
-            _.forEach(selectedDays, day => {
+            _.forEach(selectedDays, (day) => {
               dateClone = setDay(dateClone, day);
               eventDates.push(
                 createEvent({
                   title: values.name,
-                  date: dateClone
+                  date: dateClone,
                 })
               );
             });
@@ -381,7 +381,7 @@ export default function PlanAddEditor(props) {
           }
 
           // clean up dates outside of plan
-          _.remove(eventDates, eventDate => {
+          _.remove(eventDates, (eventDate) => {
             return eventDate.date < startDate || eventDate.date > endDate;
           });
           return eventDates;
@@ -393,7 +393,7 @@ export default function PlanAddEditor(props) {
           eventDates.push(
             createEvent({
               title: values.name,
-              date: new Date(currentDate)
+              date: new Date(currentDate),
             })
           );
           currentDate = addDays(currentDate, 1);
@@ -402,11 +402,11 @@ export default function PlanAddEditor(props) {
       }
     } else if (supportItem.unit === "WK") {
       if (values.frequencyPerYear === YEARLY) {
-        return _.map(itemStartDates, itemStartDate => {
+        return _.map(itemStartDates, (itemStartDate) => {
           return {
             title: values.name,
             start: itemStartDate,
-            end: endOfWeek(itemStartDate)
+            end: endOfWeek(itemStartDate),
           };
         });
       } else {
@@ -420,7 +420,7 @@ export default function PlanAddEditor(props) {
           eventDates.push({
             title: values.name,
             start: currentDate,
-            end: endOfWeek(currentDate)
+            end: endOfWeek(currentDate),
           });
           currentDate = addWeeks(currentDate, weeksToAdd);
         }
@@ -439,7 +439,7 @@ export default function PlanAddEditor(props) {
         sep,
         oct,
         nov,
-        dec
+        dec,
       ];
       const eventDates = [];
 
@@ -460,7 +460,7 @@ export default function PlanAddEditor(props) {
               eventDates.push({
                 title: values.name,
                 start: startDate,
-                end: endOfMonth(startDate)
+                end: endOfMonth(startDate),
               });
             }
           }
@@ -474,8 +474,8 @@ export default function PlanAddEditor(props) {
         {
           title: values.name,
           start: new Date(startOfDay(planStartDate)),
-          end: new Date(endOfDay(planEndDate))
-        }
+          end: new Date(endOfDay(planEndDate)),
+        },
       ];
     }
   };
@@ -493,7 +493,7 @@ export default function PlanAddEditor(props) {
     return result;
   };
 
-  const handleDayYearlyDateChange = date => {
+  const handleDayYearlyDateChange = (date) => {
     const newItemStartDates = _.xorWith(
       [startOfDay(date)],
       itemStartDates,
@@ -503,7 +503,7 @@ export default function PlanAddEditor(props) {
     setItemStartDates(newItemStartDates);
   };
 
-  const handleWeekChange = date => {
+  const handleWeekChange = (date) => {
     const newItemStartDates = _.xorWith(
       [startOfWeek(date)],
       itemStartDates,
@@ -530,7 +530,7 @@ export default function PlanAddEditor(props) {
           </MenuItem>,
           <MenuItem value={DAILY} key={DAY_DAILY}>
             {DAY_DAILY}
-          </MenuItem>
+          </MenuItem>,
         ];
       } else if (supportItem.unit === "WK") {
         return [
@@ -542,7 +542,7 @@ export default function PlanAddEditor(props) {
           </MenuItem>,
           <MenuItem value={WEEKLY} key={WEEK_WEEKLY}>
             {WEEK_WEEKLY}
-          </MenuItem>
+          </MenuItem>,
         ];
       }
     };
@@ -557,12 +557,12 @@ export default function PlanAddEditor(props) {
             <Select
               value={values.frequencyPerYear}
               autoWidth
-              onChange={e => {
+              onChange={(e) => {
                 handleChange(e);
               }}
               inputProps={{
                 name: usageFrequency,
-                id: usageFrequency
+                id: usageFrequency,
               }}
             >
               {frequencyOptions()}
@@ -576,20 +576,20 @@ export default function PlanAddEditor(props) {
     }
   };
 
-  const handleCheckWeekDay = name => event => {
+  const handleCheckWeekDay = (name) => (event) => {
     setCheckedWeekdays({ ...checkedWeekdays, [name]: event.target.checked });
   };
 
-  const handleCheckMonth = name => event => {
+  const handleCheckMonth = (name) => (event) => {
     setCheckedMonths({ ...checkedMonths, [name]: event.target.checked });
   };
 
-  const handleTimeChange = name => value => {
+  const handleTimeChange = (name) => (value) => {
     console.log(value);
     setItemTimes({ ...itemTimes, [name]: value });
   };
 
-  const disableMonthCheckBox = month => {
+  const disableMonthCheckBox = (month) => {
     const monthToNumber = {
       jan: 0,
       feb: 1,
@@ -602,7 +602,7 @@ export default function PlanAddEditor(props) {
       sep: 8,
       oct: 9,
       nov: 10,
-      dec: 11
+      dec: 11,
     };
     const startDate = setMonth(planStartDate, monthToNumber[month]);
     return !(
@@ -924,7 +924,7 @@ export default function PlanAddEditor(props) {
                       autoComplete={supportItemName}
                       autoFocus
                       value={values.name}
-                      onChange={e => handleChange(e)}
+                      onChange={(e) => handleChange(e)}
                     />
                   </FormControl>
                 </Grid>
@@ -947,7 +947,7 @@ export default function PlanAddEditor(props) {
                       autoComplete={itemPrice}
                       autoFocus
                       value={values.priceActual}
-                      onChange={e => handleChange(e)}
+                      onChange={(e) => handleChange(e)}
                       startAdornment={
                         <InputAdornment position="start">$</InputAdornment>
                       }
@@ -958,8 +958,9 @@ export default function PlanAddEditor(props) {
                       ? `Total: $${values.priceActual} x ${
                           newEvents().length
                         } day(s) x 
-                    ${differenceInMinutes(itemTimes.end, itemTimes.start) /
-                      60} hour(s) = $${calculateCost()}`
+                    ${
+                      differenceInMinutes(itemTimes.end, itemTimes.start) / 60
+                    } hour(s) = $${calculateCost()}`
                       : `Total: $${values.priceActual} x ${
                           newEvents().length
                         } ${enumResult.unit}(s)  = $${calculateCost()}`}

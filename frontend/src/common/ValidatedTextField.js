@@ -5,7 +5,7 @@ import { TextField } from "@material-ui/core";
 export default class ValidatedTextField extends Component {
   state = {
     clickedAway: false,
-    clicked: false
+    clicked: false,
   };
 
   handleClickAway = () => {

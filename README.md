@@ -33,6 +33,7 @@ to remove containers and clean up.
 ### Without Docker
 
 #### Frontend
+
 1. Install yarn
 2. `cd Lifeplan/frontend/`
 3. Install dependencies with `yarn`
@@ -40,6 +41,7 @@ to remove containers and clean up.
 5. The frontend server is now located at localhost:3000
 
 #### Backend
+
 1. Make sure you have done the pip install instructions above
 2. Install and start MySQL service at localhost:3306, create a database called ndis
 3. Create a .env file at Lifeplan/backend/ndis_calculator/ with contents:
@@ -51,7 +53,6 @@ to remove containers and clean up.
 7. Pre-fill the db with initial data with `python manage.py loaddata budgeting`
 8. Start the server with `python manage.py runserver`
 9. The backend server is now located at localhost:8000
-
 
 ## Settings
 

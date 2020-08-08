@@ -1,6 +1,11 @@
 import datetime
 import json
 
+from django.contrib.auth.hashers import check_password
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from budgeting.models import (
     Participant,
     Plan,
@@ -10,10 +15,6 @@ from budgeting.models import (
     SupportItem,
     SupportItemGroup,
 )
-from django.contrib.auth.hashers import check_password
-from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
 
 URL_AUTH_REGISTER = reverse("auth_register")
 URL_AUTH_LOGIN = reverse("auth_login")

@@ -13,10 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from budgeting.views import (
+from django.contrib import admin
+from django.urls import include, path
+from rest_framework_simplejwt import views as jwt_views
+
+from budgeting.views import (  # SupportCategoryViewSet,
     Authentication,
     DefaultView,
     ParticipantView,
+    PlanItemGroupViewSet,
     PlanItemViewSet,
     PlanViewSet,
     RegistrationGroupViewSet,
@@ -24,25 +29,6 @@ from budgeting.views import (
     SupportItemGroupViewSet,
     SupportItemViewSet,
 )
-from django.contrib import admin
-from django.urls import include, path
-from rest_framework_simplejwt import views as jwt_views
-
-plan_list = PlanViewSet.as_view({"get": "list", "post": "create"})
-plan_detail = PlanViewSet.as_view({"patch": "partial_update"})
-
-plan_item_list = PlanItemViewSet.as_view({"get": "list", "post": "create"})
-# Temporary
-plan_item_detail = PlanItemViewSet.as_view(
-    {"patch": "partial_update", "delete": "destroy"}
-)
-
-support_group_list = SupportGroupViewSet.as_view({"get": "list"})
-
-support_item_list = SupportItemViewSet.as_view({"get": "list"})
-support_item_group_list = SupportItemGroupViewSet.as_view({"get": "list"})
-
-registration_group_list = RegistrationGroupViewSet.as_view({"get": "list"})
 
 api_patterns = [
     # Authentication
@@ -58,41 +44,67 @@ api_patterns = [
     ),
     path("auth/register", Authentication.register, name="auth_register"),
     path(
-        "participants/current-user",
+        "participant/current-user",
         ParticipantView.current_user,
         name="participant_current_user",
     ),
     # Participant
     path(
-        "participant/<int:pk>",
+        "participant/<int:participant_id>",
         ParticipantView.update,
         name="participant_update",
     ),
     # Plan
-    path("plans", plan_list, name="plan_list"),
-    path("plans/<int:plan_id>", plan_detail, name="plan_detail"),
     path(
-        "plan-categories/<int:plan_category_id>/plan-items",
-        plan_item_list,
+        "plans",
+        PlanViewSet.as_view({"get": "list", "post": "create"}),
+        name="plan_list",
+    ),
+    path(
+        "plans/<int:plan_id>",
+        PlanViewSet.as_view({"patch": "update"}),
+        name="plan_update",
+    ),
+    path(
+        "plans/<int:plan_id>/categories/<int:plan_category_id>/groups",
+        PlanItemGroupViewSet.as_view({"get": "list", "post": "create"}),
+        name="plan_item_group_list",
+    ),
+    path(
+        "plans/<int:plan_id>/categories/<int:plan_category_id>/groups/<int:plan_item_group_id>",
+        PlanItemGroupViewSet.as_view({"patch": "update", "delete": "destroy"}),
+        name="plan_item_group_update",
+    ),
+    path(
+        "plans/<int:plan_id>/categories/<int:plan_category_id>/groups/<int:plan_item_group_id>/items",
+        PlanItemViewSet.as_view({"get": "list", "post": "create"}),
         name="plan_item_list",
     ),
     path(
-        "plan-items/<int:plan_item_id>",
-        plan_item_detail,
-        name="plan_item_detail",
+        "plans/<int:plan_id>/categories/<int:plan_category_id>/groups/<int:plan_item_group_id>/items/<int:plan_item_id>",
+        PlanItemViewSet.as_view({"patch": "update", "delete": "destroy"}),
+        name="plan_item_update",
     ),
     # Support
-    path("support-groups", support_group_list, name="support_group_list"),
+    path(
+        "support-groups",
+        SupportGroupViewSet.as_view({"get": "list"}),
+        name="support_group_list",
+    ),
     # support_category missing?
     path(
         "support-item-groups",
-        support_item_group_list,
+        SupportItemGroupViewSet.as_view({"get": "list"}),
         name="support_item_group_list",
     ),
-    path("support-items", support_item_list, name="support_items_list"),
+    path(
+        "support-items",
+        SupportItemViewSet.as_view({"get": "list"}),
+        name="support_items_list",
+    ),
     path(
         "registration-groups",
-        registration_group_list,
+        RegistrationGroupViewSet.as_view({"get": "list"}),
         name="registration_group_list",
     ),
 ]

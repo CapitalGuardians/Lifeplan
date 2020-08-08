@@ -1,16 +1,17 @@
+from django.test import TestCase
+
 from budgeting.models import (
     Participant,
     Plan,
     PlanCategory,
-    PlanItemGroup,
     PlanItem,
+    PlanItemGroup,
     RegistrationGroup,
     SupportCategory,
     SupportGroup,
     SupportItem,
     SupportItemGroup,
 )
-from django.test import TestCase
 
 
 class ParticipantTest(TestCase):
@@ -149,13 +150,15 @@ class PlanItemGroupTest(TestCase):
     def create_PlanItemGroup(
         plan_category,
         support_item_group=SupportItemGroupTest.create_SupportItemGroup(),
-        name="itemGroup1"
+        name="itemGroup1",
     ):
         if PlanItemGroup.objects.filter(plan_category=plan_category).first():
             return PlanItemGroup.objects.first()
         else:
             return PlanItemGroup.objects.create(
-                plan_category=plan_category, support_item_group=support_item_group, name=name
+                plan_category=plan_category,
+                support_item_group=support_item_group,
+                name=name,
             )
 
 
@@ -167,7 +170,7 @@ class PlanItemTest(TestCase):
         price_actual=100.20,
         all_day=False,
         start_date="2018-06-01",
-        end_date="2019-06-01"
+        end_date="2019-06-01",
     ):
         return PlanItem.objects.create(
             plan_item_group=plan_item_group,
@@ -175,7 +178,7 @@ class PlanItemTest(TestCase):
             price_actual=price_actual,
             all_day=all_day,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
         )
 
 
@@ -194,7 +197,9 @@ class PlanTest(TestCase):
         self.categories = PlanContainsCategoriesTest.create_PlanContainsCategories(
             plan=obj
         )
-        self.item_groups = PlanItemGroupTest.create_PlanItemGroup(plan_category=self.categories)
+        self.item_groups = PlanItemGroupTest.create_PlanItemGroup(
+            plan_category=self.categories
+        )
         self.items = PlanItemTest.create_PlanItem(
             plan_item_group=self.item_groups
         )

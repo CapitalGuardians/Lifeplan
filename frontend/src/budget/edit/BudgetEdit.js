@@ -6,8 +6,8 @@ import FormPersonalDetails from "./BudgetForm";
 
 const useStyles = makeStyles({
   home: {
-    height: `calc(100vh - ${NAV_BAR_HEIGHT}px)`
-  }
+    height: `calc(100vh - ${NAV_BAR_HEIGHT}px)`,
+  },
 });
 
 export default function BudgetForm(props) {

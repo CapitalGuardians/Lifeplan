@@ -8,13 +8,13 @@ import { PLAN_ITEM_GROUP_EDIT_ALL } from "./SupportItemDialog";
 import { planItemGroupToEvents } from "./BudgetDashboard";
 import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   buttonContainer: {
-    bottom: 0
+    bottom: 0,
   },
   root: {
-    height: "100%"
-  }
+    height: "100%",
+  },
 }));
 
 const DELETE_ALL = true;
@@ -24,7 +24,7 @@ export default function PlanItemGroupCalendarView(props) {
     planItemGroup,
     onDeletePlanItem,
     onDeletePlanItemGroup,
-    onEditPlanItem
+    onEditPlanItem,
   } = props;
   const events = planItemGroupToEvents(planItemGroup);
   const [openPlanItemDialog, setOpenPlanItemDialog] = useState(false);
@@ -50,20 +50,20 @@ export default function PlanItemGroupCalendarView(props) {
     planItemGroup,
     selectedPlanItem,
     onDeletePlanItem,
-    onDeletePlanItemGroup
+    onDeletePlanItemGroup,
   ]);
 
   const handleEditAll = useCallback(() => {
     onEditPlanItem({
       editAll: PLAN_ITEM_GROUP_EDIT_ALL,
-      planItem: planItemGroup.planItems[0]
+      planItem: planItemGroup.planItems[0],
     });
   }, [planItemGroup, onEditPlanItem]);
 
   const handleEdit = useCallback(() => {
     onEditPlanItem({
       editAll: !PLAN_ITEM_GROUP_EDIT_ALL,
-      planItem: selectedPlanItem
+      planItem: selectedPlanItem,
     });
   }, [selectedPlanItem, onEditPlanItem]);
 

@@ -26,27 +26,27 @@ const styles = {
   paper: {
     marginLeft: "auto",
     marginRight: "auto",
-    padding: 16
+    padding: 16,
   },
   buttons: {
     display: "flex",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   number: {
     "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
-      margin: 0
-    }
+      margin: 0,
+    },
   },
   sectionTotalColor: {
-    color: "grey"
-  }
+    color: "grey",
+  },
 };
 
 //test
 function mapStateToProps(state) {
   return {
-    currentUser: state.auth.currentUser
+    currentUser: state.auth.currentUser,
   };
 }
 
@@ -85,15 +85,15 @@ class FormPersonalDetails extends React.Component {
     planCategories: {},
     showErrors: false,
     errors: {},
-    planId: null
+    planId: null,
   };
 
   componentDidMount() {
     api.SupportGroups.all()
-      .then(response => {
+      .then((response) => {
         this.loadState(response.data);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -106,7 +106,7 @@ class FormPersonalDetails extends React.Component {
     }
   }
 
-  loadState = async supportGroups => {
+  loadState = async (supportGroups) => {
     this.setState({ supportGroups: [...supportGroups] });
     let planCategories = {};
     let birthYear;
@@ -115,17 +115,17 @@ class FormPersonalDetails extends React.Component {
     let endDate;
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
-      await api.Participants.currentUser().then(response => {
+      await api.Participants.currentUser().then((response) => {
         birthYear = response.data.birthYear;
         postcode = response.data.postcode;
       });
       // TODO: refactor into reusable function
-      await api.Plans.list().then(response => {
+      await api.Plans.list().then((response) => {
         if (response.data.length === 0) {
-          _.map(supportGroups, supportGroup => {
-            _.map(supportGroup.supportCategories, supportCategory => {
+          _.map(supportGroups, (supportGroup) => {
+            _.map(supportGroup.supportCategories, (supportCategory) => {
               planCategories[supportCategory.id] = {
-                budget: 0
+                budget: 0,
               };
             });
           });
@@ -136,9 +136,9 @@ class FormPersonalDetails extends React.Component {
           this.setState({ planId: plan.id });
           startDate = new Date(plan.startDate);
           endDate = new Date(plan.endDate);
-          _.map(plan.planCategories, planCategory => {
+          _.map(plan.planCategories, (planCategory) => {
             planCategories[planCategory.supportCategory] = {
-              ...planCategory
+              ...planCategory,
             };
           });
         }
@@ -150,11 +150,11 @@ class FormPersonalDetails extends React.Component {
       const cachedStartDate = localStorage.getItem("startdate");
       const cachedEndDate = localStorage.getItem("endDate");
       if (cachedPlanCategories == null) {
-        _.map(supportGroups, supportGroup => {
-          _.map(supportGroup.supportCategories, supportCategory => {
+        _.map(supportGroups, (supportGroup) => {
+          _.map(supportGroup.supportCategories, (supportCategory) => {
             planCategories[supportCategory.id] = {
               budget: 0,
-              planItemGroups: []
+              planItemGroups: [],
             };
           });
         });
@@ -172,7 +172,7 @@ class FormPersonalDetails extends React.Component {
       birthYear,
       postcode,
       startDate,
-      endDate
+      endDate,
     });
   };
 
@@ -193,22 +193,22 @@ class FormPersonalDetails extends React.Component {
           ...planCategories,
           [supportCategoryId]: {
             ...planCategories[supportCategoryId],
-            budget: new_amount
-          }
-        }
+            budget: new_amount,
+          },
+        },
       });
     }
   };
 
   // handle postcode input by limiting it to 4 digits (also works for year)
-  handlePostCodeChange = input => e => {
+  handlePostCodeChange = (input) => (e) => {
     if (postcodeRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
     }
   };
 
   // handle date input
-  handleDateChange = input => date => {
+  handleDateChange = (input) => (date) => {
     this.setState({ [input]: date.toDate() });
   };
 
@@ -218,7 +218,7 @@ class FormPersonalDetails extends React.Component {
       if (this.props.currentUser != null) {
         const body = {
           startDate: dateToString(this.state.startDate),
-          endDate: dateToString(this.state.endDate)
+          endDate: dateToString(this.state.endDate),
         };
         const categories = _.map(
           this.state.planCategories,
@@ -226,7 +226,7 @@ class FormPersonalDetails extends React.Component {
             return {
               ...planCategory,
               supportCategory: supportCategory,
-              budget: planCategory.budget
+              budget: planCategory.budget,
             };
           }
         );
@@ -395,12 +395,14 @@ class FormPersonalDetails extends React.Component {
                     </Typography>
                     <ValidatedTextField
                       className={classes.number}
-                      onChange={event => this.handleChange(event, category.id)}
+                      onChange={(event) =>
+                        this.handleChange(event, category.id)
+                      }
                       value={planCategories[category.id].budget || ""}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">$</InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>

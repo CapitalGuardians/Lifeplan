@@ -1,25 +1,24 @@
-import {LOAD_USER} from "../actionTypes";
-
+import { LOAD_USER } from "../actionTypes";
 
 const defaultState = {
-  currentUser:null,
+  currentUser: null,
 };
 
 export default (state = defaultState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case LOAD_USER:
       return {
         ...state,
-        currentUser: action.payload.user
+        currentUser: action.payload.user,
       };
     default:
-      return state
-
+      return state;
   }
-}
+};
 
 export function loadUser(user) {
   return {
-    type: LOAD_USER, payload: {user: user}
-  }
+    type: LOAD_USER,
+    payload: { user: user },
+  };
 }

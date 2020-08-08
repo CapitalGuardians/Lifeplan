@@ -42,44 +42,44 @@ export const PLAN_ITEM_EDIT_VIEW = 5;
 
 export const PLAN_ITEM_GROUP_EDIT_ALL = true;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   dialogTitle: {
     backgroundColor: DARK_BLUE,
-    color: "white"
+    color: "white",
   },
   dialogContent: {
-    minHeight: 400
+    minHeight: 400,
   },
   buttonText: {
-    textTransform: "none"
+    textTransform: "none",
   },
   supportButtonLight: {
     backgroundColor: LIGHT_BLUE,
     color: "white",
     width: "100%",
     maxHeight: "72px",
-    minHeight: "72px"
+    minHeight: "72px",
   },
   supportButtonDark: {
     backgroundColor: DARK_BLUE,
     color: "white",
     width: "100%",
     maxHeight: "72px",
-    minHeight: "72px"
+    minHeight: "72px",
   },
   icon: {
-    height: "150"
+    height: "150",
   },
   list: {
-    padding: 8
+    padding: 8,
   },
   blackButton: {
     backgroundColor: "black",
-    color: "white"
+    color: "white",
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   main: {
     width: "auto",
@@ -89,19 +89,19 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
-      marginRight: "auto"
-    }
+      marginRight: "auto",
+    },
   },
   planItemText: {
-    textAlign: "left"
+    textAlign: "left",
   },
   title: {
     marginLeft: theme.spacing(2),
-    flex: 1
+    flex: 1,
   },
   appBar: {
-    position: "relative"
-  }
+    position: "relative",
+  },
 }));
 
 export default function SupportItemDialog(props) {
@@ -113,7 +113,7 @@ export default function SupportItemDialog(props) {
     onEditPlanItemGroups,
     registrationGroups,
     page,
-    setPage
+    setPage,
   } = props;
   console.log(supportCategory);
 
@@ -142,7 +142,7 @@ export default function SupportItemDialog(props) {
 
   const [editPlanItemGroupOptions, setEditPlanItemGroupOptions] = useState({
     editAll: false,
-    planItem: null
+    planItem: null,
   });
 
   // const currentUser = useSelector(state => state.auth.currentUser);
@@ -158,21 +158,21 @@ export default function SupportItemDialog(props) {
       const body = {
         birthYear: birthYear,
         postcode: postcode,
-        registrationGroupId
+        registrationGroupId,
       };
       Promise.all([
         api.SupportItemGroups.get({ ...body, supportCategoryID: 3 }),
         api.SupportItemGroups.get({ ...body, supportCategoryID: 4 }),
         api.SupportItemGroups.get({ ...body, supportCategoryID: 5 }),
-        api.SupportItemGroups.get({ ...body, supportCategoryID: 6 })
-      ]).then(responses => {
-        _.map(responses, response => {
+        api.SupportItemGroups.get({ ...body, supportCategoryID: 6 }),
+      ]).then((responses) => {
+        _.map(responses, (response) => {
           // console.log(response.data);
 
-          const newItems = response.data.map(supportItem => {
+          const newItems = response.data.map((supportItem) => {
             return {
               ...supportItem,
-              label: supportItem.name
+              label: supportItem.name,
             };
           });
           items = [...items, ...newItems];
@@ -186,13 +186,13 @@ export default function SupportItemDialog(props) {
         birthYear: birthYear,
         postcode: postcode,
         supportCategoryID: supportCategory.id,
-        registrationGroupId
-      }).then(response => {
+        registrationGroupId,
+      }).then((response) => {
         // console.log(response.data);
-        const items = response.data.map(supportItem => {
+        const items = response.data.map((supportItem) => {
           return {
             ...supportItem,
-            label: supportItem.name
+            label: supportItem.name,
           };
         });
 
@@ -206,7 +206,7 @@ export default function SupportItemDialog(props) {
     if (registrationGroupIdFilter !== "") {
       setSearchResults(
         _.filter(supportItems, {
-          registrationGroupId: registrationGroupIdFilter
+          registrationGroupId: registrationGroupIdFilter,
         })
       );
     } else {
@@ -216,7 +216,7 @@ export default function SupportItemDialog(props) {
 
   useEffect(() => {
     setSearchResults(
-      supportItems.filter(s =>
+      supportItems.filter((s) =>
         s.name.toLowerCase().includes(searchText.toLowerCase())
       )
     );
@@ -266,7 +266,7 @@ export default function SupportItemDialog(props) {
     //   });
     onEditPlanItemGroups(supportCategory.id, [
       planItemGroup,
-      ...planItemGroups
+      ...planItemGroups,
     ]);
   }
 
@@ -309,11 +309,11 @@ export default function SupportItemDialog(props) {
   function handleDeletePlanItem(planItem) {
     const editedPlanItemGroup = {
       ...selectedPlanItemGroup,
-      planItems: _.difference(selectedPlanItemGroup.planItems, [planItem])
+      planItems: _.difference(selectedPlanItemGroup.planItems, [planItem]),
     };
     onEditPlanItemGroups(
       supportCategory.id,
-      planCategory.planItemGroups.map(pIG => {
+      planCategory.planItemGroups.map((pIG) => {
         if (selectedPlanItemGroup === pIG) {
           return editedPlanItemGroup;
         } else {
@@ -334,7 +334,7 @@ export default function SupportItemDialog(props) {
       const endDate = new Date(planItem.endDate);
       editedPlanItemGroup = {
         ...selectedPlanItemGroup,
-        planItems: selectedPlanItemGroup.planItems.map(pI => {
+        planItems: selectedPlanItemGroup.planItems.map((pI) => {
           return {
             ...pI,
             name,
@@ -346,26 +346,26 @@ export default function SupportItemDialog(props) {
             endDate: setMinutes(
               setHours(pI.endDate, getHours(endDate)),
               getMinutes(endDate)
-            )
+            ),
           };
-        })
+        }),
       };
     } else {
       editedPlanItemGroup = {
         ...selectedPlanItemGroup,
-        planItems: selectedPlanItemGroup.planItems.map(pI => {
+        planItems: selectedPlanItemGroup.planItems.map((pI) => {
           if (pI === editPlanItemGroupOptions.planItem) {
             return planItem;
           } else {
             return pI;
           }
-        })
+        }),
       };
     }
 
     onEditPlanItemGroups(
       supportCategory.id,
-      planCategory.planItemGroups.map(pIG => {
+      planCategory.planItemGroups.map((pIG) => {
         if (selectedPlanItemGroup === pIG) {
           return editedPlanItemGroup;
         } else {
@@ -377,7 +377,7 @@ export default function SupportItemDialog(props) {
     goToPlanItemGroupCalendarView();
     setEditPlanItemGroupOptions({
       editAll: !PLAN_ITEM_GROUP_EDIT_ALL,
-      planItem: null
+      planItem: null,
     });
   }
 
@@ -385,11 +385,11 @@ export default function SupportItemDialog(props) {
     let supportItem;
 
     if (page === PLAN_ITEM_GROUPS_VIEW) {
-      supportItem = _.find(supportItems, supportItem => {
+      supportItem = _.find(supportItems, (supportItem) => {
         return supportItem.id === planItemGroup.supportItemGroup;
       });
     } else if (page === SUPPORTS_SELECTION) {
-      supportItem = _.find(supportItems, supportItem => {
+      supportItem = _.find(supportItems, (supportItem) => {
         return supportItem.id === planItemGroup.id;
       });
     }
@@ -502,7 +502,7 @@ export default function SupportItemDialog(props) {
                     <InputAdornment position="start">
                       <SearchIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -511,7 +511,7 @@ export default function SupportItemDialog(props) {
                 <InputLabel>Registration Group Filter</InputLabel>
                 <Select
                   value={registrationGroupIdFilter}
-                  onChange={event => {
+                  onChange={(event) => {
                     setRegistrationGroupIdFilter(event.target.value);
                   }}
                 >
@@ -526,7 +526,7 @@ export default function SupportItemDialog(props) {
                         >
                           {
                             _.find(registrationGroups, {
-                              id: registrationGroupId
+                              id: registrationGroupId,
                             }).name
                           }
                         </MenuItem>
@@ -597,7 +597,7 @@ export default function SupportItemDialog(props) {
               supportItemsGroupedByRegistrationGroup,
               (supportItems, key) => {
                 const registrationGroup = _.find(registrationGroups, {
-                  id: parseInt(key)
+                  id: parseInt(key),
                 });
                 return (
                   <Grid item xs={12} xl={6} key={registrationGroup.id}>

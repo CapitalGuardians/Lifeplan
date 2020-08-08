@@ -17,7 +17,7 @@ export default function PreviewCalendar(props) {
     "Sep",
     "Oct",
     "Nov",
-    "Dec"
+    "Dec",
   ];
 
   return (
@@ -50,7 +50,7 @@ export default function PreviewCalendar(props) {
 
 const renderWeekdays = () => {
   const weekdays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-  return weekdays.map(weekday => {
+  return weekdays.map((weekday) => {
     return (
       <td key={weekday} className={styles.weekday}>
         {weekday}
@@ -59,7 +59,7 @@ const renderWeekdays = () => {
   });
 };
 
-const renderDays = date => {
+const renderDays = (date) => {
   const startDay = getDay(startOfMonth(date));
   const days = [];
   const daysInMonth = getDaysInMonth(date);

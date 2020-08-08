@@ -18,17 +18,17 @@ import { LocalStorageKeys } from "../common/constants";
 import { loadUser } from "../redux/reducers/auth";
 import connect from "react-redux/es/connect/connect";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {};
 };
 
-const mapDispatchToProps = dispatch => ({
-  loadUser: user => {
+const mapDispatchToProps = (dispatch) => ({
+  loadUser: (user) => {
     dispatch(loadUser(user));
-  }
+  },
 });
 
-const styles = theme => ({
+const styles = (theme) => ({
   main: {
     width: "auto",
     display: "block",
@@ -37,40 +37,42 @@ const styles = theme => ({
     [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
-      marginRight: "auto"
-    }
+      marginRight: "auto",
+    },
   },
   paper: {
     marginTop: theme.spacing(10),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(
+      3
+    )}px`,
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   registerStl: {
     marginTop: theme.spacing(3),
     display: "flex",
-    flexDirection: "row-reverse"
+    flexDirection: "row-reverse",
   },
   registerBtn: {
-    marginTop: 0
+    marginTop: 0,
   },
   registerLabel: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submitBtn: {
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(3)
-  }
+    marginTop: theme.spacing(3),
+  },
 });
 
 class SignIn extends React.Component {
@@ -82,20 +84,20 @@ class SignIn extends React.Component {
     loggedIn: false,
     loggedInFailure: false,
     alertVariant: "",
-    displayMessage: ""
+    displayMessage: "",
   };
 
-  handleInput = event => {
+  handleInput = (event) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
 
     this.setState({
-      [name]: value
+      [name]: value,
     });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     this.setState({ submitted: true });
 
     event.preventDefault();
@@ -104,27 +106,28 @@ class SignIn extends React.Component {
 
     const logInfo = {
       email,
-      password
+      password,
     };
 
     Api.Auth.login(logInfo)
-      .then(response => {
+      .then((response) => {
         this.setState({
           loggedIn: true,
           displayMessage: "Login successful",
-          alertVariant: "success"
+          alertVariant: "success",
         });
         localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
         Api.setAccess(response.data.access);
         this.props.history.replace("/");
-        Api.Participants.currentUser()
-          .then((response) => {this.props.loadUser(response.data)})
+        Api.Participants.currentUser().then((response) => {
+          this.props.loadUser(response.data);
+        });
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({
           loggedInFailure: true,
           displayMessage: "Login Failed. Incorrect username or password",
-          alertVariant: "error"
+          alertVariant: "error",
         });
       });
 
@@ -168,7 +171,7 @@ class SignIn extends React.Component {
                 name={email}
                 autoComplete={email}
                 autoFocus
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControl margin={margin_size} required fullWidth>
@@ -180,7 +183,7 @@ class SignIn extends React.Component {
                 type={pwd}
                 id={pwd}
                 autoComplete="current-password"
-                onChange={e => this.handleInput(e)}
+                onChange={(e) => this.handleInput(e)}
               />
             </FormControl>
             <FormControlLabel
@@ -189,7 +192,7 @@ class SignIn extends React.Component {
                   value={this.state.remember}
                   color="primary"
                   name={remember}
-                  onChange={e => this.handleInput(e)}
+                  onChange={(e) => this.handleInput(e)}
                 />
               }
               label="Remember me"

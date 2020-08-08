@@ -51,7 +51,7 @@ export default function CustomTimePicker(props) {
 
   const convertedValue = `${getHours(value)},${getMinutes(value)}`;
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     const result = event.target.value.split(",");
     const hour = parseInt(result[0]);
     const minute = parseInt(result[1]);

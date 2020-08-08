@@ -10,7 +10,7 @@ export default function DoughnutBody(props) {
     <Doughnut
       legend={{
         position: "right",
-        onClick: () => {}
+        onClick: () => {},
       }}
       data={{
         labels: [`Allocated: $${allocated}`, `Available: $${available}`],
@@ -18,12 +18,12 @@ export default function DoughnutBody(props) {
           {
             data: available >= 0 ? [allocated, available] : [1, 0],
             backgroundColor:
-              available >= 0 ? [DARK_BLUE, LIGHT_BLUE] : ["red", LIGHT_BLUE]
-          }
-        ]
+              available >= 0 ? [DARK_BLUE, LIGHT_BLUE] : ["red", LIGHT_BLUE],
+          },
+        ],
       }}
       options={{
-        tooltips: { enabled: false }
+        tooltips: { enabled: false },
       }}
     />
   );

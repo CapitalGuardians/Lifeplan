@@ -1,4 +1,5 @@
-[{
+[
+  {
     "model": "budgeting.supportitemgroup",
     "pk": 1,
     "fields": {

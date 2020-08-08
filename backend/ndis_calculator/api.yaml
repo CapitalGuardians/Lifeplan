@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
-  title: ndis_calculator
-  version: 1.0.1
+  title: NDIS Financial Planner
+  version: 1.1.0
 servers:
   - url: http://localhost:8000/api/v1
     description: Development server (local)
@@ -12,11 +12,11 @@ paths:
       security:
         - JWT: []
       tags:
-        - plan
+        - Plan
       summary: Retrieve all plans of the request's participant
       responses:
         "200":
-          description: success
+          description: OK
           content:
             application/json:
               schema:
@@ -46,7 +46,7 @@ paths:
       security:
         - JWT: []
       tags:
-        - plan
+        - Plan
       summary: Create a plan
       description: Create a plan from start date, end date and a budgets array where each element is an array in the form of (supportCategoryId, budget)
       requestBody:
@@ -55,7 +55,7 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/Plan'
+                - $ref: "#/components/schemas/Plan"
                 - type: object
                   properties:
                     supportCategories:
@@ -67,10 +67,9 @@ paths:
                             type: integer
                           budget:
                             type: number
-
       responses:
         "201":
-          description: created
+          description: Created
           content:
             application/json:
               schema:
@@ -99,7 +98,7 @@ paths:
       security:
         - JWT: []
       tags:
-        - plan
+        - Plan
       summary: Update a single plan
       requestBody:
         required: true
@@ -107,7 +106,7 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/Plan'
+                - $ref: "#/components/schemas/Plan"
                 - type: object
                   properties:
                     planCategories:
@@ -123,7 +122,7 @@ paths:
         - $ref: "#/components/parameters/PlanId"
       responses:
         "200":
-          description: success
+          description: OK
           content:
             application/json:
               schema:
@@ -142,34 +141,258 @@ paths:
         "403":
           $ref: "#/components/responses/Unauthorised"
         "404":
-          $ref: '#/components/responses/NotFound'
+          $ref: "#/components/responses/NotFound"
 
-
-  /registration-groups:
+  /plans/{plan_id}/categories/{plan_category_id}/groups:
     get:
+      security:
+        - JWT: []
       tags:
-        - registration group
-      summary: Retrieves list of registration groups
-      description: Retrieves all registration groups
+        - Plan Item Group
+      summary: Retrieve all plan item groups from a plan category
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
       responses:
         "200":
-          description: success
+          description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RegistrationGroup"
+                allOf:
+                  - $ref: "#/components/schemas/PlanItemGroup"
+                properties:
+                  id:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item Group
+      summary: Create a plan item group in a plan category
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanItemGroup"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PlanItemGroup"
+                properties:
+                  id:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}:
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item Group
+      summary: Update a plan item group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example: "Something items"
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+        - $ref: "#/components/parameters/PlanItemGroupId"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item Group
+      summary: Delete a plan item group
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+        - $ref: "#/components/parameters/PlanItemGroupId"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  ? /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items
+  : get:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item
+      summary: Retrieve all plan items from a plan item group
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+        - $ref: "#/components/parameters/PlanItemGroupId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PlanItem"
+                properties:
+                  id:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item
+      summary: Create a plan item in a plan item group
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+        - $ref: "#/components/parameters/PlanItemGroupId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanItem"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PlanItem"
+                properties:
+                  id:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  ? /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items/{plan_item_id}
+  : patch:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item
+      summary: Update a plan item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example: wheelchair
+                priceActual:
+                  type: number
+                  example: 120.22
+                startDate:
+                  type: string
+                  example: 20/01/2019
+                endDate:
+                  type: string
+                  example: 10/02/2020
+                allDay:
+                  type: boolean
+                  example: false
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+        - $ref: "#/components/parameters/PlanItemGroupId"
+        - $ref: "#/components/parameters/PlanItemId"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      security:
+        - JWT: []
+      tags:
+        - Plan Item
+      summary: Delete a plan item
+      parameters:
+        - $ref: "#/components/parameters/PlanId"
+        - $ref: "#/components/parameters/PlanCategoryId"
+        - $ref: "#/components/parameters/PlanItemGroupId"
+        - $ref: "#/components/parameters/PlanItemId"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /support-groups:
     get:
       tags:
-        - support group
+        - Support Group
       summary: Retrieves list of support groups and their support categories
       description: Retrieves list of support groups and their support categories in database order
       responses:
         "200":
-          description: success
+          description: OK
           content:
             application/json:
               schema:
@@ -177,10 +400,37 @@ paths:
                 items:
                   $ref: "#/components/schemas/SupportGroup"
 
+  /support-item-groups:
+    get:
+      tags:
+        - Support Item Group
+      summary: Retrieves list of support item groups (more simple english, less clutter than support_item)
+      description: Retrieves list of support item groups based on filter, The backend will retrieve the default national price for simplicity
+      parameters:
+        - name: registration-group-id
+          in: query
+          schema:
+            type: integer
+          required: true
+        - name: support-category-id
+          in: query
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportItem"
+
   /support-items:
     get:
       tags:
-        - support item
+        - Support Item
       summary: Retrieves list of support items
       description: Retrieves list of support items based on filter. The backend will retrieve the appropriate price based on the postcode.
       parameters:
@@ -203,10 +453,9 @@ paths:
           required: true
           schema:
             type: integer
-
       responses:
         "200":
-          description: success
+          description: OK
           content:
             application/json:
               schema:
@@ -214,154 +463,78 @@ paths:
                 items:
                   $ref: "#/components/schemas/SupportItemGroup"
 
-  /support-item-groups:
+  /registration-groups:
     get:
       tags:
-        - support item group
-      summary: Retrieves list of support item groups (more simple english, less clutter than support_item)
-      description: Retrieves list of support item groups based on filter, The backend will retrieve the default national price for simplicity
-      parameters:
-        - name: registration-group-id
-          in: query
-          schema:
-            type: integer
-          required: true
-        - name: support-category-id
-          in: query
-          schema:
-            type: integer
-          required: true
+        - Registration Group
+      summary: Retrieves list of registration groups
+      description: Retrieves all registration groups
       responses:
         "200":
-          description: success
+          description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SupportItem"
-
-  /plan-categories/{plan_category_id}/plan-items:
-    get:
-      security:
-        - JWT: []
-      tags:
-        - plan item
-      summary: Retrieve all plan items from a plan category
-      parameters:
-        - $ref: "#/components/parameters/PlanCategoryId"
-      responses:
-        "201":
-          description: created
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/PlanItem"
-                properties:
-                  id:
-                    type: integer
-        "401":
-          $ref: "#/components/responses/Unauthenticated"
-        "403":
-          $ref: "#/components/responses/Unauthorised"
-        "404":
-          $ref: '#/components/responses/NotFound'
-
-    post:
-      security:
-        - JWT: []
-      tags:
-        - plan item
-      summary: Create a plan item in a plan category
-      parameters:
-        - $ref: "#/components/parameters/PlanCategoryId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PlanItem"
-      responses:
-        "201":
-          description: created
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/PlanItem"
-                properties:
-                  id:
-                    type: integer
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthenticated"
-        "403":
-          $ref: "#/components/responses/Unauthorised"
-        "404":
-          $ref: '#/components/responses/NotFound'
-
-  /plan-items/{plan_item_id}:
-    delete:
-      security:
-      - JWT: []
-      tags:
-        - plan item
-      summary: Delete a plan item
-      parameters:
-        - $ref: "#/components/parameters/PlanItemId"
-      responses:
-        "204":
-          $ref: '#/components/responses/NoContent'
-        "401":
-          $ref: "#/components/responses/Unauthenticated"
-        "403":
-          $ref: "#/components/responses/Unauthorised"
-        "404":
-          $ref: '#/components/responses/NotFound'
-    patch:
-      security:
-        - JWT: []
-      tags:
-        - plan item
-      summary: Update a plan item
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                quantity:
-                  type: number
-                  example: 10
-                priceActual:
-                  type: number
-                  example: 120.22
-                name:
-                  type: string
-                  example: wheelchair
-                frequencyPerYear:
-                  type: integer
-                  example: 52
-
-      parameters:
-        - $ref: "#/components/parameters/PlanItemId"
-      responses:
-        "204":
-          $ref: '#/components/responses/NoContent'
-        "401":
-          $ref: "#/components/responses/Unauthenticated"
-        "403":
-          $ref: "#/components/responses/Unauthorised"
-        "404":
-          $ref: '#/components/responses/NotFound'
-
-
-
+                  $ref: "#/components/schemas/RegistrationGroup"
 
 components:
   schemas:
+    Plan:
+      type: object
+      properties:
+        startDate:
+          type: string
+          example: 01/01/2019
+        endDate:
+          type: string
+          example: 02/01/2019
+
+    PlanCategory:
+      type: object
+      properties:
+        plan:
+          type: integer
+        supportCategory:
+          type: integer
+        budget:
+          type: number
+
+    PlanItemGroup:
+      type: object
+      properties:
+        planCategory:
+          type: integer
+          example: 24
+        supportItemGroup:
+          type: integer
+          example: 42
+        name:
+          type: string
+
+    PlanItem:
+      type: object
+      properties:
+        planitemGroup:
+          type: integer
+          example: 3117
+        name:
+          type: string
+          example: wheelchair
+        priceActual:
+          type: number
+          example: 120.22
+        startDate:
+          type: string
+          example: 20/01/2019
+        endDate:
+          type: string
+          example: 10/02/2020
+        allDay:
+          type: boolean
+          example: false
+
     SupportGroup:
       type: object
       properties:
@@ -386,15 +559,12 @@ components:
           type: string
           example: Improved life choices
 
-    SupportItem:
+    SupportItemGroup:
       type: object
       properties:
         id:
           type: integer
           example: 717
-        number:
-          type: string
-          example: "15_001_0118_1_3"
         name:
           type: string
           example: Capacity Building Supports For Early Childhood Interventions - Psychology
@@ -408,12 +578,15 @@ components:
           type: number
           example: 243.83
 
-    SupportItemGroup:
+    SupportItem:
       type: object
       properties:
         id:
           type: integer
           example: 717
+        number:
+          type: string
+          example: "15_001_0118_1_3"
         name:
           type: string
           example: Capacity Building Supports For Early Childhood Interventions - Psychology
@@ -437,44 +610,9 @@ components:
           type: string
           example: "Early Intervention Supports For Early Childhood"
 
-    Plan:
-      type: object
-      properties:
-        startDate:
-          type: string
-          example: 01/01/2019
-        endDate:
-          type: string
-          example: 02/01/2019
-
-    PlanCategory:
-      type: object
-      properties:
-        supportCategory:
-          type: integer
-        budget:
-          type: number
-
-    PlanItem:
-      type: object
-      properties:
-        supportItemGroup:
-          type: integer
-          example: 144
-        quantity:
-          type: number
-          example: 10
-        priceActual:
-          type: number
-          example: 120.22
-        name:
-          type: string
-          example: wheelchair
-        frequencyPerYear:
-          type: integer
-          example: 52
-
   responses:
+    NoContent:
+      description: No Content
     Unauthenticated:
       description: Unauthenticated
     Unauthorised:
@@ -483,8 +621,6 @@ components:
       description: Bad Request
     NotFound:
       description: Resource not found
-    NoContent:
-      description: No Content
 
   parameters:
     ParticipantId:
@@ -508,15 +644,22 @@ components:
       schema:
         type: integer
 
+    PlanItemGroupId:
+      name: plan_item_group_id
+      in: path
+      required: true
+      schema:
+        type: integer
+
     PlanItemId:
       name: plan_item_id
       in: path
       required: true
       schema:
         type: integer
+
   securitySchemes:
     JWT:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      
