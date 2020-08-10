@@ -3,7 +3,7 @@
     "model": "budgeting.participant",
     "pk": 1,
     "fields": {
-      "password": "pbkdf2_sha256$150000$c5nZQskKNAcc$MM3u/Fmq/6MDlvrkoxDDKIO+/8JKagato0ysxW5Pvjg=",
+      "password": "pbkdf2_sha256$150000$o7BRLGYulU1F$xBI0OvzniWtPWHrkYtj6XdENpbEKCiJSTjYyKcE5yZs=",
       "last_login": "2019-08-17T06:58:49.204Z",
       "is_superuser": true,
       "username": "admin",

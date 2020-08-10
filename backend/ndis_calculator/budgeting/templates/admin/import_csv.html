@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+  <p>
+    Upload a CSV file to update the Support Items.
+    <br>
+    <strong>The CSV header must not be present!</strong>
+    <br>
+    The file must have and must be in the following column order:
+      <ol>
+        <li>Registration Group Number</li>
+        <li>Registration Group Name</li>
+        <li>Support Category Number</li>
+        <li>Support Category Name</li>
+        <li>Support Item Number</li>
+        <li>Support Item Name</li>
+        <li>Unit</li>
+        <li>Quote</li>
+        <li>Price Limit: NT - SA TAS-WA (MMM 1-5)</li>
+        <li>Price Limit: ACT - NSW QLD - VIC (MMM 1-5)</li>
+        <li>Price Limit:  National Non-Remote (MMM 1-5)</li>
+        <li>Price Limit:  National Remote (MMM 6)</li>
+        <li>Price Limit:  National Very Remote (MMM 7)</li>
+      </ol>
+  </p>
+  <hr>
+  <br>
+  <form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for supportitem in supportitems %}
+        <input type="hidden" name="_selected_action" value="{{ supportitem.pk }}" />
+    {% endfor %}
+    <input type="hidden" name="action" value="import_csv" />
+    <label for="file1">Select a file:</label>
+    <input type="file" id="file1" name="file">
+    <input type="submit" name="upload" value="Upload File"/>
+  </form>
+{% endblock %}

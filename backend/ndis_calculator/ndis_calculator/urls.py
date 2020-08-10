@@ -30,6 +30,9 @@ from budgeting.views import (  # SupportCategoryViewSet,
     SupportItemViewSet,
 )
 
+admin.site.site_header = "NDIS Financial Planner - Capital Guardians"
+admin.site.site_title = "NDIS Financial Planner"
+
 api_patterns = [
     # Authentication
     path(
@@ -111,7 +114,7 @@ api_patterns = [
 
 urlpatterns = [
     # Django admin
-    path("admin", admin.site.urls),
+    path("admin/", admin.site.urls),
     # API
     path("api/v1/", include(api_patterns)),
     # Health Check
