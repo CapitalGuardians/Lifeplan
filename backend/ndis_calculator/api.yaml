@@ -255,8 +255,8 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items:
-    get:
+  ? /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items
+  : get:
       security:
         - JWT: []
       tags:
@@ -320,8 +320,8 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items/{plan_item_id}:
-    patch:
+  ? /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items/{plan_item_id}
+  : patch:
       security:
         - JWT: []
       tags:
@@ -484,6 +484,12 @@ components:
     Plan:
       type: object
       properties:
+        name:
+          type: string
+          example: "My first plan"
+        ndis_number:
+          type: integer
+          # example: 0123456789
         startDate:
           type: string
           example: 01/01/2019
