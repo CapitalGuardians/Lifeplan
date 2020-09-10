@@ -144,6 +144,8 @@ class Plan(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    name = models.CharField(max_length=255)
+    ndis_number = models.CharField(max_length=9)
     start_date = models.DateField()
     end_date = models.DateField()
     generated = models.BooleanField(default=False)

@@ -190,6 +190,8 @@ class PlanTest(TestCase):
 
     def create_Plan(self):
         obj = Plan.objects.create(
+            name="My first plan",
+            ndis_number="012345678",
             participant=ParticipantTest.create_Participant(),
             start_date="2018-06-01",
             end_date="2019-06-01",
