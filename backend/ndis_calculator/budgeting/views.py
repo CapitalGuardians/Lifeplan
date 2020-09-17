@@ -28,6 +28,7 @@ from .serializers import (
     PlanItemSerializer,
     PlanSerializer,
     RegistrationGroupSerializer,
+    SupportCategorySerializer,
     SupportGroupSerializer,
     SupportItemGroupSerializer,
     SupportItemSerializer,
@@ -97,6 +98,28 @@ class ParticipantView(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors)
+
+
+class ParticipantViewSet(viewsets.ModelViewSet):
+    """
+    This viewset provides `update`
+    action to manipulate the Participant model.
+    """
+
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request, participant_id):
+        participant = get_object_or_404(self.queryset, pk=participant_id)
+        request.data["username"] = request.data.get("email")
+        serializer = self.serializer_class(
+            participant, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PlanViewSet(viewsets.ModelViewSet):
@@ -220,7 +243,7 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         )
         return self.is_plan_category_owner(request, plan_category)
 
-    def list(self, request, plan_category_id):
+    def list(self, request, plan_id, plan_category_id):
         plan_category = get_object_or_404(
             PlanCategory.objects.all(), pk=plan_category_id
         )
@@ -313,7 +336,7 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         )
         return self.is_plan_item_group_owner(request, plan_item_group)
 
-    def list(self, request, plan_item_group_id):
+    def list(self, request, plan_id, plan_category_id, plan_item_group_id):
         plan_item_group = get_object_or_404(
             PlanItemGroup.objects.all(), pk=plan_item_group_id
         )
@@ -383,6 +406,15 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SupportGroup.objects.all()
     serializer_class = SupportGroupSerializer
+
+
+class SupportCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all support caegories
+    """
+
+    queryset = SupportCategory.objects.all()
+    serializer_class = SupportCategorySerializer
 
 
 class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):

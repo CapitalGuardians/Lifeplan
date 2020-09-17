@@ -118,8 +118,14 @@ class SignIn extends React.Component {
         });
         localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
         Api.setAccess(response.data.access);
-        this.props.history.replace("/");
         Api.Participants.currentUser().then((response) => {
+          Api.Plans.list().then((plans) => {
+            if (plans.data.length === 0) {
+              this.props.history.replace("/budget/edit");
+            } else {
+              this.props.history.replace("/budget/dashboard");
+            }
+          });
           this.props.loadUser(response.data);
         });
       })

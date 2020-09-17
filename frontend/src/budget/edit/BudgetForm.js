@@ -14,7 +14,7 @@ import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import { ChevronLeft, ChevronRight } from "@material-ui/icons";
 import api from "../../api";
 import Button from "@material-ui/core/Button/index";
-import _ from "lodash";
+import _, { isEmpty } from "lodash";
 import connect from "react-redux/es/connect/connect";
 import { LocalStorageKeys } from "../../common/constants";
 
@@ -54,6 +54,8 @@ const PLAN_CATEGORIES = "planCategories";
 
 let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let postcodeRegex = new RegExp(/^\d{0,4}$/);
+let nameRegex = new RegExp(/^[a-zA-Z ]+$/);
+let NDISNumberRegex = new RegExp(/^\d{0,9}$/);
 
 const today = new Date();
 
@@ -78,6 +80,8 @@ MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 class FormPersonalDetails extends React.Component {
   state = {
     supportGroups: [],
+    name: "",
+    ndisNumber: "",
     postcode: "",
     birthYear: "",
     startDate: null,
@@ -86,6 +90,7 @@ class FormPersonalDetails extends React.Component {
     showErrors: false,
     errors: {},
     planId: null,
+    allPlans: [],
   };
 
   componentDidMount() {
@@ -98,6 +103,8 @@ class FormPersonalDetails extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (
+      this.state.name !== prevState.name ||
+      this.state.ndisNumber !== prevState.ndisNumber ||
       this.state.postcode !== prevState.postcode ||
       this.state.birthYear !== prevState.birthYear
     ) {
@@ -109,8 +116,11 @@ class FormPersonalDetails extends React.Component {
   loadState = async (supportGroups) => {
     this.setState({ supportGroups: [...supportGroups] });
     let planCategories = {};
+    let allPlans = [];
     let birthYear;
     let postcode;
+    let name;
+    let ndisNumber;
     let startDate;
     let endDate;
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
@@ -118,6 +128,7 @@ class FormPersonalDetails extends React.Component {
       await api.Participants.currentUser().then((response) => {
         birthYear = response.data.birthYear;
         postcode = response.data.postcode;
+        name = response.data.firstName + " " + response.data.lastName;
       });
       // TODO: refactor into reusable function
       await api.Plans.list().then((response) => {
@@ -132,14 +143,20 @@ class FormPersonalDetails extends React.Component {
           startDate = today;
           endDate = getYearFromToday();
         } else {
-          const plan = response.data[0];
-          this.setState({ planId: plan.id });
-          startDate = new Date(plan.startDate);
-          endDate = new Date(plan.endDate);
-          _.map(plan.planCategories, (planCategory) => {
-            planCategories[planCategory.supportCategory] = {
-              ...planCategory,
+          const plans = response.data;
+          _.map(plans, (plan, index) => {
+            this.setState({ planId: plan.id });
+            ndisNumber = plan.ndisNumber;
+            startDate = new Date(plan.startDate);
+            endDate = new Date(plan.endDate);
+            allPlans[index] = {
+              ...plan,
             };
+            _.map(plan.planCategories, (planCategory) => {
+              planCategories[planCategory.supportCategory] = {
+                ...planCategory,
+              };
+            });
           });
         }
       });
@@ -147,6 +164,8 @@ class FormPersonalDetails extends React.Component {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
       const cachedBirthYear = localStorage.getItem("birthYear");
       const cachedPostcode = localStorage.getItem("postcode");
+      const cachedName = localStorage.getItem("name");
+      const cachedNDISNumber = localStorage.getItem("ndisNumber");
       const cachedStartDate = localStorage.getItem("startdate");
       const cachedEndDate = localStorage.getItem("endDate");
       if (cachedPlanCategories == null) {
@@ -163,6 +182,8 @@ class FormPersonalDetails extends React.Component {
       }
       birthYear = cachedBirthYear ? parseInt(cachedBirthYear) : "";
       postcode = cachedPostcode ? parseInt(cachedPostcode) : "";
+      name = cachedName ? cachedName : "";
+      ndisNumber = cachedNDISNumber ? parseInt(cachedNDISNumber) : "";
       startDate = cachedStartDate ? new Date(cachedStartDate) : today;
       endDate = cachedEndDate ? new Date(cachedEndDate) : getYearFromToday();
     }
@@ -171,8 +192,11 @@ class FormPersonalDetails extends React.Component {
       planCategories,
       birthYear,
       postcode,
+      name,
+      ndisNumber,
       startDate,
       endDate,
+      allPlans,
     });
   };
 
@@ -207,6 +231,27 @@ class FormPersonalDetails extends React.Component {
     }
   };
 
+  // handle name input
+  handleNameChange = (input) => (e) => {
+    if (nameRegex.test(e.target.value)) {
+      this.setState({ [input]: e.target.value });
+    }
+  };
+
+  // handle birth year input
+  handleBirthYearChange = (input) => (e) => {
+    // if (BirthYearRegex.test(e.target.value)) {
+    //   this.setState({ [input]: e.target.value });
+    // }
+  };
+
+  // handle NDIS number input by limiting it to 9 numeric value
+  handleNDISNumberChange = (input) => (e) => {
+    if (NDISNumberRegex.test(e.target.value)) {
+      this.setState({ [input]: e.target.value });
+    }
+  };
+
   // handle date input
   handleDateChange = (input) => (date) => {
     this.setState({ [input]: date.toDate() });
@@ -217,6 +262,8 @@ class FormPersonalDetails extends React.Component {
     if (Object.keys(errors).length === 0) {
       if (this.props.currentUser != null) {
         const body = {
+          name: dateToString(this.state.name),
+          ndisNumber: dateToString(this.state.ndisNumber),
           startDate: dateToString(this.state.startDate),
           endDate: dateToString(this.state.endDate),
         };
@@ -243,6 +290,8 @@ class FormPersonalDetails extends React.Component {
         }
       } else {
         localStorage.setItem("postcode", this.state.postcode);
+        localStorage.setItem("name", this.state.name);
+        localStorage.setItem("ndisNumber", this.state.ndisNumber);
         localStorage.setItem("birthYear", this.state.birthYear);
         localStorage.setItem("startDate", this.state.startDate);
         localStorage.setItem("endDate", this.state.endDate);
@@ -259,6 +308,10 @@ class FormPersonalDetails extends React.Component {
     }
   };
 
+  handleAddNew = () => {
+    this.props.history.push("/budget/add");
+  };
+
   validate = () => {
     let errors = {};
 
@@ -268,6 +321,17 @@ class FormPersonalDetails extends React.Component {
     ) {
       //this.log.console("postcode is not filled");
       errors.postcode = "Invalid Postcode";
+    }
+
+    if (this.state.name == null || isEmpty(this.state.name)) {
+      errors.name = "Please Input Name";
+    }
+
+    if (
+      this.state.ndisNumber == null ||
+      this.state.ndisNumber.toString().length !== 9
+    ) {
+      errors.ndisNumber = "Invalid NDIS Number";
     }
 
     if (
@@ -305,12 +369,37 @@ class FormPersonalDetails extends React.Component {
     const { classes } = this.props;
     const { errors, showErrors } = this.state;
     return (
-      <ExpansionPanel defaultExpanded>
+      <ExpansionPanel>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="h6">Personal Details</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <ValidatedTextField
+                className={classes.name}
+                required
+                label="Name"
+                onChange={this.handleNameChange("name")}
+                value={this.state.name}
+                type="text"
+                error={showErrors}
+                errortext={errors.name}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ValidatedTextField
+                className={classes.number}
+                required
+                label="NDIS #"
+                onChange={this.handleNDISNumberChange("ndisNumber")}
+                value={this.state.ndisNumber}
+                helperText={"Used to determine NDIS Number"}
+                type="number"
+                error={showErrors}
+                errortext={errors.ndisNumber}
+              />
+            </Grid>
             <Grid item xs={12}>
               <ValidatedTextField
                 className={classes.number}
@@ -329,9 +418,9 @@ class FormPersonalDetails extends React.Component {
                 className={classes.number}
                 required
                 label="Year of Birth"
-                onChange={this.handlePostCodeChange("birthYear")}
+                onChange={this.handleBirthYearChange("birthYear")}
                 value={this.state.birthYear}
-                helperText={"Used to determine appropriate support item prices"}
+                helperText={"Used to determine birth year"}
                 type="number"
                 error={showErrors}
                 errortext={errors.birthYear}
@@ -398,7 +487,7 @@ class FormPersonalDetails extends React.Component {
                       onChange={(event) =>
                         this.handleChange(event, category.id)
                       }
-                      value={planCategories[category.id].budget || ""}
+                      value={planCategories[category.id] || ""}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">$</InputAdornment>
@@ -415,27 +504,65 @@ class FormPersonalDetails extends React.Component {
     });
   };
 
+  renderAddNew = () => {
+    const { classes } = this.props;
+    return (
+      <Paper className={classes.paper}>
+        <Grid container justify="flex-start">
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={this.handleAddNew}
+          >
+            Add New +
+          </Button>
+        </Grid>
+      </Paper>
+    );
+  };
+
+  renderPlan() {
+    const { classes } = this.props;
+    return (
+      <Paper className={classes.paper}>
+        {this.renderPersonalDetailsForm()}
+        {this.renderPlanCategories()}
+        <Grid container justify="flex-end">
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={this.handleNext}
+          >
+            Next
+          </Button>
+        </Grid>
+      </Paper>
+    );
+  }
+
+  renderAllPlans() {
+    return this.state.allPlans.map((plan, index) => {
+      return (
+        <ExpansionPanel key={index}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">{plan.name}</Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>{this.renderPlan()}</ExpansionPanelDetails>
+        </ExpansionPanel>
+      );
+    });
+  }
+
   // render page
   render() {
     const { classes } = this.props;
-    const { planCategories } = this.state;
     return (
-      Object.keys(planCategories).length !== 0 && (
-        <Paper className={classes.paper}>
-          {this.renderPersonalDetailsForm()}
-          {this.renderPlanCategories()}
-          <Grid container justify="flex-end">
-            <Button
-              className={classes.button}
-              color="primary"
-              variant="contained"
-              onClick={this.handleNext}
-            >
-              Next
-            </Button>
-          </Grid>
-        </Paper>
-      )
+      <Paper className={classes.paper}>
+        {this.renderAllPlans()}
+        {this.renderAddNew()}
+      </Paper>
     );
   }
 }

@@ -25,6 +25,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
             "password",
             "first_name",
             "last_name",
+            "date_joined",
+            "is_active",
             "birth_year",
             "postcode",
         )
