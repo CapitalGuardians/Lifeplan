@@ -236,39 +236,41 @@ class ParticipantApiTests(APITestCase):
 
         self.assertEqual(participant_data, json.loads(response.content))
 
-    # def test_participant_update(self):
-    #     """
-    #     Ensure we can update the current participant's details.
-    #     """
-    #     data = {
-    #         "username": STUB_PARTICIPANT_DATA["email"],
-    #         "password": STUB_PARTICIPANT_DATA["password"],
-    #     }
-    #     response = self.client.post(URL_AUTH_LOGIN, data, format="json")
-    #     print(response.data)
-    #     self.client.credentials(
-    #         HTTP_AUTHORIZATION="Bearer " + response.data["tokens"]["access"]
-    #     )
-    #     participant_data = {
-    #         "id": response.data["id"],
-    #         **self.STUB_PARTICIPANT_DATA_UPDATE,
-    #     }
-    #
-    #     URL_PARTICIPANT_UPDATE = reverse(
-    #         "participant_update", kwargs={"pk": response.data["id"]}
-    #     )
-    #     response = self.client.post(
-    #         URL_PARTICIPANT_UPDATE,
-    #         self.STUB_PARTICIPANT_DATA_UPDATE,
-    #         format="json",
-    #     )
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #
-    #     # render to camelCase JSON for easier comparison
-    #     response.render()
-    #
-    #     self.assertEqual(participant_data, json.loads(response.content))
+    def test_participant_update(self):
+        """
+        Ensure we can update the current participant's details.
+        """
+        data = {
+            "first_name": STUB_PARTICIPANT_DATA["firstName"],
+            "last_name": STUB_PARTICIPANT_DATA["lastName"],
+            "username": STUB_PARTICIPANT_DATA["email"],
+            "email": STUB_PARTICIPANT_DATA["email"],
+        }
+        response = self.client.post(URL_AUTH_LOGIN, data, format="json")
+        # print(response.data)
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + response.data["tokens"]["access"]
+        )
+        participant_data = {
+            "id": response.data["id"],
+            **self.STUB_PARTICIPANT_DATA_UPDATE,
+        }
+
+        URL_PARTICIPANT_UPDATE = reverse(
+            "participant_update", kwargs={"pk": response.data["id"]}
+        )
+        response = self.client.post(
+            URL_PARTICIPANT_UPDATE,
+            self.STUB_PARTICIPANT_DATA_UPDATE,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # render to camelCase JSON for easier comparison
+        response.render()
+
+        self.assertEqual(participant_data, json.loads(response.content))
 
 
 class SupportGroupApiTests(APITestCase):

@@ -7,6 +7,145 @@ servers:
     description: Development server (local)
 
 paths:
+  /auth/register:
+    post:
+      tags:
+        - Participant
+      summary: User Register
+      description: User can register from email, password, first name, last name, post code, and year of birth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                postcode:
+                  type: string
+                birthYear:
+                  type: string
+
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                      tokens:
+                        type: object
+                        properties:
+                          access:
+                            type: string
+                          refresh:
+                            type: string
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+
+  /auth/login:
+    post:
+      tags:
+        - Participant
+      summary: User Login
+      description: User can login using email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      access:
+                        type: string
+                      refresh:
+                        type: string
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+
+  /participant/{participant_id}:
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Participant
+      summary: Update a participant details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+
+      parameters:
+        - $ref: "#/components/parameters/ParticipantId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  birthYear:
+                    type: integer
+                  dateJoined:
+                    type: string
+                  email:
+                    type: string
+                  firstName:
+                    type: string
+                  isActive:
+                    type: boolean
+                  lastName:
+                    type: string
+                  postcode:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /plans:
     get:
       security:
@@ -481,6 +620,14 @@ paths:
 
 components:
   schemas:
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
     Plan:
       type: object
       properties:
@@ -629,6 +776,48 @@ components:
       description: Resource not found
 
   parameters:
+    Email:
+      name: email
+      in: query
+      required: true
+      schema:
+        type: string
+
+    Password:
+      name: password
+      in: query
+      required: true
+      schema:
+        type: string
+
+    FirstName:
+      name: firstname
+      in: query
+      required: true
+      schema:
+        type: string
+
+    LastName:
+      name: lastname
+      in: query
+      required: true
+      schema:
+        type: string
+
+    PostCode:
+      name: postcode
+      in: query
+      required: true
+      schema:
+        type: string
+
+    BirthYear:
+      name: birthyear
+      in: query
+      required: true
+      schema:
+        type: string
+
     ParticipantId:
       name: participant_id
       in: path
