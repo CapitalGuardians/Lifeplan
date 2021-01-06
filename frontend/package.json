@@ -19,7 +19,7 @@
     "is-promise": "^2.1.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "nodemon": "^2.0.6",
+    "nodemon": "^2.0.7",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-calendar": "^3.3.0",
