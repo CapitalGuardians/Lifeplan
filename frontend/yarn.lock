@@ -9441,10 +9441,10 @@ react-app-polyfill@^1.0.6:
     regenerator-runtime "^0.13.3"
     whatwg-fetch "^3.0.0"
 
-react-calendar@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/react-calendar/-/react-calendar-3.3.0.tgz#5d5700172ce676d6f32f5de9f0def5ab8c88ba55"
-  integrity sha512-Mdzchiidfch0Bfqg+7oQ938PRrHJKK9aMCDdfDmJ5+0qhmvonvaMn1mDHq9ppCpjdrqYXmnUW+7C6PhrhJ14ZQ==
+react-calendar@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/react-calendar/-/react-calendar-3.3.1.tgz#da691a5d59c88f178695fd8b33909a71d698021f"
+  integrity sha512-iDIrhE0ABz3mChAIvA+5d2UtQGEb5oaUpLiEbrRdWHBYb45MhsbO59pG9HIy2uTdHkBF/nvzRV2JBmMfdg/0Qg==
   dependencies:
     "@wojtekmaj/date-utils" "^1.0.2"
     get-user-locale "^1.2.0"
