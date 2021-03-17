@@ -685,7 +685,10 @@ class BudgetDashboard extends React.Component {
                   </div>
                 ) : (
                   <Grid item>
-                    <DoughnutBody allocated={allocated} total={total} />
+                    <DoughnutBody
+                      allocated={parseFloat(allocated.toFixed(2))}
+                      total={total}
+                    />
                   </Grid>
                 )}
               </Grid>

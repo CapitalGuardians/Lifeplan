@@ -221,8 +221,10 @@ export default function SupportItemDialog(props) {
 
   useEffect(() => {
     setSearchResults(
-      supportItems.filter((s) =>
-        s.name.toLowerCase().includes(searchText.toLowerCase())
+      supportItems.filter(
+        (s) =>
+          s.name.toLowerCase().includes(searchText.toLowerCase()) &&
+          s.registrationGroupId === registrationGroupIdFilter
       )
     );
   }, [searchText, supportItems]);

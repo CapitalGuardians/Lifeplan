@@ -972,6 +972,9 @@ export default function PlanAddEditor(props) {
           Back
         </Button>
         <Button
+          disabled={
+            parseFloat(calculateCost().replace(/,/g, "")) > 0 ? false : true
+          }
           variant={"text"}
           onClick={() => onClickSave(values, supportItem.id, newEvents())}
         >
