@@ -126,6 +126,7 @@ export default function SupportItemDialog(props) {
     registrationGroups,
     page,
     setPage,
+    addSupports,
   } = props;
 
   // React Hooks
@@ -221,8 +222,10 @@ export default function SupportItemDialog(props) {
 
   useEffect(() => {
     setSearchResults(
-      supportItems.filter((s) =>
-        s.name.toLowerCase().includes(searchText.toLowerCase())
+      supportItems.filter(
+        (s) =>
+          s.name.toLowerCase().includes(searchText.toLowerCase()) &&
+          s.registrationGroupId === registrationGroupIdFilter
       )
     );
   }, [searchText, supportItems]);
@@ -278,13 +281,14 @@ export default function SupportItemDialog(props) {
         (response) => {
           let planItemGroupId = response.data.id;
           for (let i = 0; i < planItemGroup.planItems.length; i++) {
+            const allDay = planItemGroup.planItems[i].allDay;
             const planItemData = {
               planitemGroup: planItemGroupId,
               name: planItemGroup.name,
               priceActual: planItemGroup.planItems[i].priceActual,
               startDate: dateToString(planItemGroup.planItems[i].startDate),
               endDate: dateToString(planItemGroup.planItems[i].endDate),
-              allDay: planItemGroup.planItems[i].allDay,
+              allDay: allDay !== undefined ? allDay : false,
             };
 
             api.PlanItems.create(
@@ -337,12 +341,31 @@ export default function SupportItemDialog(props) {
     setSearchText(e.target.value);
   }
 
-  function handleDeletePlanItemGroup(planItemGroup) {
-    goToSupportsList();
+  async function handleDeletePlanItemGroup(planItemGroup) {
     onEditPlanItemGroups(
       supportCategory.id,
       _.difference(planCategory.planItemGroups, [planItemGroup])
     );
+
+    _.map(planItemGroup.planItems, async (planItem) => {
+      await api.PlanItems.delete(
+        0,
+        selectedPlanItemGroup.planCategory,
+        planItemGroup.id,
+        planItem.id
+      ).then((response) => {
+        // console.log(response);
+      });
+    });
+
+    await api.PlanItemGroups.delete(
+      0,
+      planItemGroup.planCategory,
+      planItemGroup.id
+    ).then((response) => {
+      // console.log(response);
+    });
+    goToSupportsList();
   }
 
   function handleDeletePlanItem(planItem) {
@@ -361,6 +384,14 @@ export default function SupportItemDialog(props) {
       })
     );
     setSelectedPlanItemGroup(editedPlanItemGroup);
+    api.PlanItems.delete(
+      0,
+      selectedPlanItemGroup.planCategory,
+      planItem.planItemGroup,
+      planItem.id
+    ).then((response) => {
+      // console.log(response);
+    });
   }
 
   function handleEditPlanItem(planItem) {
@@ -487,13 +518,29 @@ export default function SupportItemDialog(props) {
       <Grid container>
         <Grid container item xs={12} md={8} lg={7} alignItems="flex-start">
           {list.length === 0 ? (
-            <div> Press Add New to add a support </div>
-          ) : (
-            list.map((planItemGroup, index) => (
-              <Grid item key={index} xs={12} className={classes.list}>
-                {renderPlanItemGroup(planItemGroup)}
+            <>
+              <Grid item xs={12} md={12} lg={12} xl={12}>
+                <div> Press Add New to add a support </div>
+                <Button onClick={addSupports}>Add New</Button>
               </Grid>
-            ))
+            </>
+          ) : (
+            <>
+              <Grid item xs={12} md={12} lg={12} xl={12}>
+                <Button onClick={addSupports}>Add New</Button>
+              </Grid>
+              <Grid item xs={12} md={12} lg={12} xl={12}>
+                <div> {renderRegistrationGroupSelection(1)} </div>
+              </Grid>
+              <Grid item xs={12} md={12} lg={12} xl={12}>
+                <div> Please select a Support Items </div>
+                {list.map((planItemGroup, index) => (
+                  <Grid item key={index} xs={12} className={classes.list}>
+                    {renderPlanItemGroup(planItemGroup)}
+                  </Grid>
+                ))}
+              </Grid>
+            </>
           )}
         </Grid>
 
@@ -515,7 +562,7 @@ export default function SupportItemDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
-          <Button onClick={goToSupportSelection}>Add New</Button>
+          {/* <Button onClick={goToSupportSelection}>Add New</Button> */}
         </DialogActions>
       </>
     );
@@ -627,7 +674,7 @@ export default function SupportItemDialog(props) {
     );
   }
 
-  function renderRegistrationGroupSelection() {
+  function renderRegistrationGroupSelection(check = null) {
     return (
       <>
         <DialogContent>
@@ -643,7 +690,7 @@ export default function SupportItemDialog(props) {
                   id: parseInt(key),
                 });
                 return (
-                  <Grid item xs={12} xl={6} key={registrationGroup.id}>
+                  <Grid item xs={12} lg={12} xl={6} key={registrationGroup.id}>
                     <Button
                       size="large"
                       variant="contained"
@@ -661,9 +708,11 @@ export default function SupportItemDialog(props) {
             )}
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-        </DialogActions>
+        {check !== 1 && (
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+          </DialogActions>
+        )}
       </>
     );
   }

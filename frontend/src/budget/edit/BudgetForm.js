@@ -405,7 +405,7 @@ class FormPersonalDetails extends React.Component {
             postcode: this.state.postcode,
             birthYear: this.state.birthYear,
           };
-          console.log("...id...");
+          console.log(".....id.....");
           api.Participants.update(this.state.participantId, participantBody)
             .then(() => {
               body.planCategories = categories;
@@ -731,7 +731,7 @@ class FormPersonalDetails extends React.Component {
     // const { allPlans } = this.state;
     return this.state.allPlans.map((plan, index) => {
       return (
-        <ExpansionPanel key={index}>
+        <ExpansionPanel key={index} defaultExpanded={index === 0}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6">{plan.name}</Typography>
           </ExpansionPanelSummary>

@@ -181,8 +181,10 @@ const PlanItems = {
       }
     );
   },
-  delete: (planItemId) => {
-    return axios.delete(`/plan-items/${planItemId}`);
+  delete: (planId, planCategoryId, planItemGroupId, planItemId) => {
+    return axios.delete(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items/${planItemId}`
+    );
   },
   update: (
     planId,
@@ -225,6 +227,11 @@ const PlanItemGroups = {
       {
         name,
       }
+    );
+  },
+  delete: (planId, planCategoryId, planItemGroupId) => {
+    return axios.delete(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}`
     );
   },
 };

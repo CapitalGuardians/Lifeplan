@@ -487,6 +487,15 @@ export default function PlanAddEditor(props) {
     return result;
   };
 
+  const getDifferenceInHours = (end, start) => {
+    const result =
+      end.getHours() +
+      end.getMinutes() / 60 -
+      (start.getHours() + start.getMinutes() / 60);
+
+    return result < 0 ? 0 : result;
+  };
+
   const handleDayYearlyDateChange = (date) => {
     const newItemStartDates = _.xorWith(
       [startOfDay(date)],
@@ -951,9 +960,10 @@ export default function PlanAddEditor(props) {
                       ? `Total: $${values.priceActual} x ${
                           newEvents().length
                         } day(s) x 
-                    ${
-                      differenceInMinutes(itemTimes.end, itemTimes.start) / 60
-                    } hour(s) = $${calculateCost()}`
+                    ${getDifferenceInHours(
+                      itemTimes.end,
+                      itemTimes.start
+                    )} hour(s) = $${calculateCost()}`
                       : `Total: $${values.priceActual} x ${
                           newEvents().length
                         } ${enumResult.unit}(s)  = $${calculateCost()}`}

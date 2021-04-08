@@ -90,6 +90,29 @@ export default function PlanItemGroupCalendarView(props) {
     });
   }, [selectedPlanItem, onEditPlanItem]);
 
+  const getDifferenceInHours = (end, start) => {
+    const result =
+      end.getHours() +
+      end.getMinutes() / 60 -
+      (start.getHours() + start.getMinutes() / 60);
+
+    return result < 0 ? 0 : result;
+  };
+
+  const getActualPrice = () => {
+    let result = 0;
+    if (
+      getDifferenceInHours(editedPlanItem.endDate, editedPlanItem.startDate) !==
+      1
+    ) {
+      result =
+        editedPlanItem.priceActual *
+        getDifferenceInHours(editedPlanItem.endDate, editedPlanItem.startDate);
+    }
+
+    return result === 0 ? editedPlanItem.priceActual : result;
+  };
+
   function handleCloseDialog() {
     setSelectedPlanItem(null);
     setDeleteMode(-1);
@@ -117,7 +140,18 @@ export default function PlanItemGroupCalendarView(props) {
   function handleSave() {
     onSave({
       ...editedPlanItem,
-      priceActual: parseFloat(editedPlanItem.priceActual),
+      priceActual: parseFloat(
+        editedPlanItem.priceActual *
+          (getDifferenceInHours(
+            editedPlanItem.endDate,
+            editedPlanItem.startDate
+          ) === 0
+            ? 1
+            : getDifferenceInHours(
+                editedPlanItem.endDate,
+                editedPlanItem.startDate
+              ))
+      ),
     });
     props.back();
   }
@@ -211,7 +245,7 @@ export default function PlanItemGroupCalendarView(props) {
               <InputLabel>Amount</InputLabel>
               <Input
                 id="plan-item-unit-cost"
-                value={editedPlanItem.priceActual}
+                value={getActualPrice()}
                 name={"priceActual"}
                 onChange={handleChange}
                 startAdornment={

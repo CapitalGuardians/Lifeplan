@@ -119,6 +119,7 @@ class BudgetDashboard extends React.Component {
     birthYear: 1990,
     postcode: 3000,
     planId: null,
+    planExpandId: null,
     registrationGroups: [],
     dialogPage: PLAN_ITEM_GROUPS_VIEW,
     showMonthView: false,
@@ -398,6 +399,15 @@ class BudgetDashboard extends React.Component {
     return result;
   };
 
+  editPlanPage = async (planId) => {
+    let planExpandId = planId;
+    await this.setState({ planExpandId: planId });
+    this.props.history.push({
+      pathname: "/budget/edit",
+      state: planExpandId, // your data array of objects
+    });
+  };
+
   handleOpenSupports = (supportCategoryId) => {
     this.setState(
       { activeCategory: supportCategoryId, dialogPage: PLAN_ITEM_GROUPS_VIEW },
@@ -452,31 +462,33 @@ class BudgetDashboard extends React.Component {
           // };
           // api.PlanItemGroups.update(planId, planCategoryId, planItemGroupId, data).then((response) => {
           // let planItemGroupId = response.data.id;
-          if (
-            planItemGroups[i].planItems.length !== 0 ||
-            planItemGroups[i].planItems.length !== undefined
-          ) {
-            for (let j = 0; j < planItemGroups[i].planItems.length; j++) {
-              let planItemId = planItemGroups[i].planItems[j].id;
-              const planItemData = {
-                name: planItemGroups[i].planItems[j].name,
-                priceActual: planItemGroups[i].planItems[j].priceActual,
-                startDate: dateToString(
-                  planItemGroups[i].planItems[j].startDate
-                ),
-                endDate: dateToString(planItemGroups[i].planItems[j].endDate),
-                allDay: planItemGroups[i].planItems[j].allDay,
-              };
+          if (planItemGroups[i].planItems !== undefined) {
+            if (
+              planItemGroups[i].planItems.length !== 0 ||
+              planItemGroups[i].planItems.length !== undefined
+            ) {
+              for (let j = 0; j < planItemGroups[i].planItems.length; j++) {
+                let planItemId = planItemGroups[i].planItems[j].id;
+                const planItemData = {
+                  name: planItemGroups[i].planItems[j].name,
+                  priceActual: planItemGroups[i].planItems[j].priceActual,
+                  startDate: dateToString(
+                    planItemGroups[i].planItems[j].startDate
+                  ),
+                  endDate: dateToString(planItemGroups[i].planItems[j].endDate),
+                  allDay: planItemGroups[i].planItems[j].allDay,
+                };
 
-              api.PlanItems.update(
-                planId,
-                planCategoryId,
-                planItemGroupId,
-                planItemId,
-                planItemData
-              ).then((response) => {
-                // onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
-              });
+                api.PlanItems.update(
+                  planId,
+                  planCategoryId,
+                  planItemGroupId,
+                  planItemId,
+                  planItemData
+                ).then((response) => {
+                  // onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
+                });
+              }
             }
           }
           // });
@@ -487,13 +499,16 @@ class BudgetDashboard extends React.Component {
 
   handleDeletePlanItem = () => {
     const planItem = this.state.selectedPlanItem;
+    let planCategory = 0;
     let editedPlanItemGroups;
     let supportCategory;
     for (const [key, value] of Object.entries(this.state.planCategories)) {
       for (let i = 0; i < value.planItemGroups.length; i++) {
         if (value.planItemGroups[i].planItems.includes(planItem)) {
           const planItemGroup = value.planItemGroups[i];
-
+          if (planItemGroup.id === planItem.planItemGroup) {
+            planCategory = planItemGroup.planCategory;
+          }
           const editedPlanItemGroup = {
             ...planItemGroup,
             planItems: _.difference(planItemGroup.planItems, [planItem]),
@@ -511,6 +526,15 @@ class BudgetDashboard extends React.Component {
         break;
       }
     }
+
+    api.PlanItems.delete(
+      0,
+      planCategory,
+      planItem.planItemGroup,
+      planItem.id
+    ).then((response) => {
+      console.log(response);
+    });
 
     this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
   };
@@ -644,6 +668,7 @@ class BudgetDashboard extends React.Component {
                 <PlanItemEditView
                   planItem={this.state.selectedPlanItem}
                   onSave={this.handleEditPlanItem}
+                  back={this.handleCloseDialog}
                 />
               </Dialog>
             )))}
@@ -698,7 +723,11 @@ class BudgetDashboard extends React.Component {
             <Grid container justify="flex-end">
               <Grid item>
                 <Button
-                  onClick={() => (window.location.href = "/budget/edit")}
+                  onClick={(e) =>
+                    this.props.location.state === undefined
+                      ? this.editPlanPage(this.state.planId)
+                      : this.editPlanPage(this.props.location.state)
+                  }
                   size="small"
                 >
                   <EditIcon />
@@ -796,9 +825,9 @@ class BudgetDashboard extends React.Component {
                       openSupports={() =>
                         this.handleOpenSupports(supportCategory.id)
                       }
-                      addSupports={() =>
-                        this.handleAddSupports(supportCategory.id)
-                      }
+                      // addSupports={() =>
+                      //   this.handleAddSupports(supportCategory.id)
+                      // }
                     />
                   </Grid>
                 );
@@ -867,6 +896,9 @@ class BudgetDashboard extends React.Component {
                 registrationGroups={this.state.registrationGroups}
                 page={this.state.dialogPage}
                 setPage={(page) => this.setState({ dialogPage: page })}
+                addSupports={() =>
+                  this.handleAddSupports(this.state.activeCategory)
+                }
               />
             )}
           </Grid>

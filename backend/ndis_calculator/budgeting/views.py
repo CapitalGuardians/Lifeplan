@@ -399,15 +399,15 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         # else:
         #     return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def destroy(self, request, plan_item_group_id):
+    def destroy(self, request, plan_id, plan_category_id, plan_item_group_id):
         plan_item_group = get_object_or_404(
             self.queryset, pk=plan_item_group_id
         )
-        if self.is_plan_item_owner(request, plan_item_group):
-            plan_item_group.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        # if self.is_plan_item_owner(request, plan_item_group):
+        plan_item_group.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        # else:
+        # return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class PlanItemViewSet(viewsets.ModelViewSet):
@@ -497,7 +497,14 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def destroy(self, request, plan_item_id):
+    def destroy(
+        self,
+        request,
+        plan_id,
+        plan_category_id,
+        plan_item_group_id,
+        plan_item_id,
+    ):
         plan_item = get_object_or_404(self.queryset, pk=plan_item_id)
         if self.is_plan_item_owner(request, plan_item):
             plan_item.delete()
