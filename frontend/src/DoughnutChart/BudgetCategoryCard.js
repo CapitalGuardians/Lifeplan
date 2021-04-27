@@ -31,11 +31,11 @@ class BudgetCategoryCard extends Component {
         </CardContent>
         <CardActions disableSpacing className={classes.noVerticalPadding}>
           <Grid container justify="flex-end">
-            {/* <Grid item>
+            <Grid item>
               <Button onClick={() => this.props.addSupports()} size="small">
                 Add
               </Button>
-            </Grid> */}
+            </Grid>
             <Grid item>
               <Button onClick={() => this.props.openSupports()} size="small">
                 Edit

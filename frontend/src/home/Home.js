@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
 import classNames from "classnames";
+import FormPersonalDetails from "../budget/edit/BudgetForm";
 
 const useStyles = makeStyles((theme) => ({
   home: {
@@ -26,24 +27,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function Home(props) {
   const classes = useStyles();
   return (
     <Grid container alignItems="center" className={classes.home}>
       <Grid item xs={12}>
         <Grid container justify="center">
           <Grid item xs={11}>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} justify="center">
+              <Grid item xs={11} sm={8} md={6} lg={5}>
+                <FormPersonalDetails history={props.history} />
+              </Grid>
               {/* welcome text */}
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Typography variant="h5" align="center">
                   Welcome to NDIS Financial Planner.
                   <br />I want to:
                 </Typography>
-              </Grid>
+              </Grid> */}
 
               {/*page navigation buttons */}
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Grid container justify="space-evenly">
                   <Grid item>
                     <Card
@@ -95,7 +99,7 @@ export default function Home() {
                     </Card>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Grid>
