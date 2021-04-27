@@ -234,6 +234,14 @@ const PlanItemGroups = {
       `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}`
     );
   },
+  update: (planId, planCategoryId, planItemGroupId, { name }) => {
+    return axios.patch(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}`,
+      {
+        name,
+      }
+    );
+  },
 };
 
 const RegistrationGroups = {
