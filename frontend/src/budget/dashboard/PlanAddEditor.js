@@ -55,7 +55,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CustomWeekPicker from "./CustomWeekPicker";
 import CustomTimePicker from "./CustomTimePicker";
 
-export const DAY_UNITS = ["H", "D", "EA"];
+export const DAY_UNITS = ["H", "D", "EA", "E", "W"];
 const DAY_DAILY = "Every day";
 const DAY_WEEKLY = "Once or more per week recurringly";
 const DAY_MONTHLY = "Once or more per month recurringly";
@@ -280,7 +280,7 @@ export default function PlanAddEditor(props) {
   } = checkedMonths;
 
   const newEvents = () => {
-    if (["D", "EA", "H"].includes(supportItem.unit)) {
+    if (["D", "EA", "H", "E", "W"].includes(supportItem.unit)) {
       const createEvent = ({ title, date }) => {
         return {
           title,
@@ -485,6 +485,15 @@ export default function PlanAddEditor(props) {
       : Math.round(cost * 100) / 100
     ).toLocaleString(undefined, { minimumFractionDigits: 2 });
     return result;
+  };
+
+  const getDifferenceInHours = (end, start) => {
+    const result =
+      end.getHours() +
+      end.getMinutes() / 60 -
+      (start.getHours() + start.getMinutes() / 60);
+
+    return result < 0 ? 0 : result;
   };
 
   const handleDayYearlyDateChange = (date) => {
@@ -951,9 +960,10 @@ export default function PlanAddEditor(props) {
                       ? `Total: $${values.priceActual} x ${
                           newEvents().length
                         } day(s) x 
-                    ${
-                      differenceInMinutes(itemTimes.end, itemTimes.start) / 60
-                    } hour(s) = $${calculateCost()}`
+                    ${getDifferenceInHours(
+                      itemTimes.end,
+                      itemTimes.start
+                    )} hour(s) = $${calculateCost()}`
                       : `Total: $${values.priceActual} x ${
                           newEvents().length
                         } ${enumResult.unit}(s)  = $${calculateCost()}`}
@@ -972,6 +982,9 @@ export default function PlanAddEditor(props) {
           Back
         </Button>
         <Button
+          disabled={
+            parseFloat(calculateCost().replace(/,/g, "")) > 0 ? false : true
+          }
           variant={"text"}
           onClick={() => onClickSave(values, supportItem.id, newEvents())}
         >

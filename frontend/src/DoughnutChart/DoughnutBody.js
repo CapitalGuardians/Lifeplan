@@ -13,7 +13,14 @@ export default function DoughnutBody(props) {
         onClick: () => {},
       }}
       data={{
-        labels: [`Allocated: $${allocated}`, `Available: $${available}`],
+        labels: [
+          `Allocated: $${allocated.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+          })}`,
+          `Available: $${available.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+          })}`,
+        ],
         datasets: [
           {
             data: available >= 0 ? [allocated, available] : [1, 0],

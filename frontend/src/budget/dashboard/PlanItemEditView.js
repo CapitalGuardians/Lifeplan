@@ -14,7 +14,7 @@ import CustomTimePicker from "./CustomTimePicker";
 import { addHours, endOfDay, getHours, getMinutes, startOfDay } from "date-fns";
 
 export default function PlanItemEditView(props) {
-  const { planItem, onSave } = props;
+  const { planItem, onSave, back } = props;
   const [editedPlanItem, setEditedPlanItem] = useState({
     ...planItem,
     startDate: new Date(planItem.startDate),
@@ -37,7 +37,7 @@ export default function PlanItemEditView(props) {
       ...editedPlanItem,
       priceActual: parseFloat(editedPlanItem.priceActual),
     });
-    props.back();
+    back();
   }
 
   useEffect(() => {

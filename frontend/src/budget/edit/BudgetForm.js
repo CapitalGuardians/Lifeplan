@@ -700,7 +700,7 @@ class FormPersonalDetails extends React.Component {
             variant="contained"
             onClick={this.handleAddNew}
           >
-            Add New +
+            Add New Budget +
           </Button>
         </Grid>
       </div>
@@ -720,7 +720,7 @@ class FormPersonalDetails extends React.Component {
             variant="contained"
             onClick={(event) => this.handleNext(event, planId, index)}
           >
-            View
+            Submit
           </Button>
         </Grid>
       </Paper>
@@ -731,9 +731,18 @@ class FormPersonalDetails extends React.Component {
     // const { allPlans } = this.state;
     return this.state.allPlans.map((plan, index) => {
       return (
-        <ExpansionPanel key={index}>
+        <ExpansionPanel key={index} defaultExpanded={index === 0}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6">{plan.name}</Typography>
+            <Grid container justify="flex-end">
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={(event) => this.handleNext(event, plan.id, index)}
+              >
+                View
+              </Button>
+            </Grid>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             {this.renderPlan(plan.id, index)}
@@ -904,7 +913,7 @@ class FormPersonalDetails extends React.Component {
               variant="contained"
               onClick={this.handleNextOffline}
             >
-              View
+              Submit
             </Button>
           </Grid>
         </Paper>
