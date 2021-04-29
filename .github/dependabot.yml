@@ -1,0 +1,111 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/frontend"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 99
+  target-branch: develop
+  ignore:
+  - dependency-name: "@date-io/date-fns"
+    versions:
+    - "> 1.3.13"
+  - dependency-name: "@date-io/date-fns"
+    versions:
+    - "> 2.2.0, < 3"
+  - dependency-name: "@date-io/moment"
+    versions:
+    - "> 1.3.13"
+  - dependency-name: "@date-io/moment"
+    versions:
+    - "> 2.2.0, < 3"
+  - dependency-name: date-fns
+    versions:
+    - 2.19.0
+    - 2.20.0
+    - 2.20.1
+    - 2.20.2
+    - 2.20.3
+  - dependency-name: eslint
+    versions:
+    - 7.18.0
+    - 7.19.0
+    - 7.20.0
+    - 7.21.0
+    - 7.22.0
+    - 7.23.0
+    - 7.24.0
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
+    - 4.0.2
+  - dependency-name: classnames
+    versions:
+    - 2.3.0
+  - dependency-name: react-redux
+    versions:
+    - 7.2.3
+  - dependency-name: husky
+    versions:
+    - 5.0.9
+    - 5.1.0
+    - 5.1.1
+    - 5.1.2
+    - 5.1.3
+    - 5.2.0
+  - dependency-name: typescript
+    versions:
+    - 4.1.3
+    - 4.1.4
+    - 4.1.5
+    - 4.2.2
+    - 4.2.3
+  - dependency-name: react-dom
+    versions:
+    - 17.0.1
+  - dependency-name: react-scripts
+    versions:
+    - 4.0.1
+    - 4.0.2
+  - dependency-name: "@fullcalendar/react"
+    versions:
+    - 5.5.0
+  - dependency-name: "@fullcalendar/daygrid"
+    versions:
+    - 5.5.0
+- package-ecosystem: pip
+  directory: "/backend/ndis_calculator"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 99
+  target-branch: develop
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+  ignore:
+  - dependency-name: django
+    versions:
+    - ">= 3.a, < 4"
+  - dependency-name: python-dotenv
+    versions:
+    - 0.15.0
+    - 0.16.0
+  - dependency-name: django
+    versions:
+    - 2.2.17
+    - 2.2.18
+  - dependency-name: coverage
+    versions:
+    - "5.4"
+  - dependency-name: pyjwt
+    versions:
+    - 2.0.1
+  - dependency-name: pytz
+    versions:
+    - "2020.5"
+  - dependency-name: djangorestframework
+    versions:
+    - 3.12.2
+  - dependency-name: markdown
+    versions:
+    - 3.3.3
