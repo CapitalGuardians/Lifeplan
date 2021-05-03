@@ -733,7 +733,9 @@ class FormPersonalDetails extends React.Component {
       return (
         <ExpansionPanel key={index} defaultExpanded={index === 0}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">{plan.name}</Typography>
+            <Typography variant="h6" style={{ width: "100%" }}>
+              {plan.name}
+            </Typography>
             <Grid container justify="flex-end">
               <Button
                 color="primary"

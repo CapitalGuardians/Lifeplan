@@ -514,7 +514,7 @@ export default function SupportItemDialog(props) {
   function renderSupportItemList(list) {
     return (
       <Grid container>
-        <Grid container item xs={12} md={8} lg={7} alignItems="flex-start">
+        <Grid container item xs={12} md={12} lg={12} alignItems="flex-start">
           {list.length === 0 ? (
             <>
               <Grid item xs={12} md={12} lg={12} xl={12}>
@@ -524,13 +524,13 @@ export default function SupportItemDialog(props) {
             </>
           ) : (
             <>
-              <Grid item xs={12} md={12} lg={12} xl={12}>
+              {/* <Grid item xs={12} md={12} lg={12} xl={12}>
                 <Button onClick={addSupports}>Add New</Button>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} md={12} lg={12} xl={12}>
                 <div> {renderRegistrationGroupSelection(1)} </div>
               </Grid>
-              <Grid item xs={12} md={12} lg={12} xl={12}>
+              <Grid item xs={12} md={6} lg={6} xl={6}>
                 <div> Please select a Support Items </div>
                 {list.map((planItemGroup, index) => (
                   <Grid item key={index} xs={12} className={classes.list}>
@@ -538,15 +538,14 @@ export default function SupportItemDialog(props) {
                   </Grid>
                 ))}
               </Grid>
+              <Grid item xs={12} md={6} lg={6} xl={6}>
+                <DoughnutBody
+                  allocated={calculateAllocated(planCategory.planItemGroups)}
+                  total={parseFloat(planCategory.budget)}
+                />
+              </Grid>
             </>
           )}
-        </Grid>
-
-        <Grid item md={4} lg={5}>
-          <DoughnutBody
-            allocated={calculateAllocated(planCategory.planItemGroups)}
-            total={parseFloat(planCategory.budget)}
-          />
         </Grid>
       </Grid>
     );
