@@ -548,7 +548,7 @@ class FormPersonalDetails extends React.Component {
                     label="NDIS #"
                     onChange={this.handleNDISNumberChange("ndisNumber", index)}
                     value={this.state.updatePlans[index].ndisNumber}
-                    helperText={"Used to determine NDIS Number"}
+                    // helperText={"Used to determine NDIS Number"}
                     type="number"
                     error={showErrors}
                     errortext={errors.ndisNumber}
@@ -561,7 +561,7 @@ class FormPersonalDetails extends React.Component {
                     label="Postcode"
                     onChange={this.handlePostCodeChange("postcode")}
                     value={this.state.postcode}
-                    helperText={"Used to determine postcode"}
+                    // helperText={"Used to determine postcode"}
                     type="number"
                     error={showErrors}
                     errortext={errors.postcode}
@@ -574,7 +574,7 @@ class FormPersonalDetails extends React.Component {
                     label="Year of Birth"
                     onChange={this.handleBirthYearChange("birthYear")}
                     value={this.state.birthYear}
-                    helperText={"Used to determine birth year"}
+                    // helperText={"Used to determine birth year"}
                     type="number"
                     error={showErrors}
                     errortext={errors.birthYear}
@@ -783,7 +783,7 @@ class FormPersonalDetails extends React.Component {
                 label="NDIS #"
                 onChange={this.handleOfflineNDISNumberChange("ndisNumber")}
                 value={this.state.ndisNumber}
-                helperText={"Used to determine NDIS Number"}
+                // helperText={"Used to determine NDIS Number"}
                 type="number"
                 error={showErrors}
                 errortext={errors.ndisNumber}
@@ -796,7 +796,7 @@ class FormPersonalDetails extends React.Component {
                 label="Postcode"
                 onChange={this.handlePostCodeChange("postcode")}
                 value={this.state.postcode}
-                helperText={"Used to determine appropriate support item prices"}
+                // helperText={"Used to determine appropriate support item prices"}
                 type="number"
                 error={showErrors}
                 errortext={errors.postcode}
@@ -809,7 +809,7 @@ class FormPersonalDetails extends React.Component {
                 label="Year of Birth"
                 onChange={this.handleOfflineBirthYearChange("birthYear")}
                 value={this.state.birthYear}
-                helperText={"Used to determine birth year"}
+                // helperText={"Used to determine birth year"}
                 type="number"
                 error={showErrors}
                 errortext={errors.birthYear}
