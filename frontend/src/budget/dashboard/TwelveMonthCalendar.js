@@ -15,7 +15,13 @@ import { calculatePlanItemCost } from "./BudgetDashboard";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 export default function TwelveMonthCalendar(props) {
-  const { onClick, planDates, planCategories, supportGroups } = props;
+  const {
+    onClick,
+    planDates,
+    planItemDates,
+    planCategories,
+    supportGroups,
+  } = props;
   const [year, setYear] = useState(getYear(new Date()));
   const [showPreview, setShowPreview] = useState(false);
   // each array in costs represents a month,
@@ -123,7 +129,14 @@ export default function TwelveMonthCalendar(props) {
               <Typography display="inline">Show Budgets</Typography>
             </Grid>
             <Grid container item justify="center">
-              {renderCalendars(costs, year, showPreview, onClick, planDates)}
+              {renderCalendars(
+                costs,
+                year,
+                showPreview,
+                onClick,
+                planDates,
+                planItemDates
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -132,7 +145,14 @@ export default function TwelveMonthCalendar(props) {
   );
 }
 
-function renderCalendars(costs, year, showPreview, onClick, planDates) {
+function renderCalendars(
+  costs,
+  year,
+  showPreview,
+  onClick,
+  planDates,
+  planItemDates
+) {
   const calendars = [];
   const currentMonth = getMonth(new Date());
 
@@ -175,6 +195,7 @@ function renderCalendars(costs, year, showPreview, onClick, planDates) {
           startDate={date}
           costs={costs[j]}
           planDates={planDates}
+          planItemDates={planItemDates}
         />
       </Grid>
     );

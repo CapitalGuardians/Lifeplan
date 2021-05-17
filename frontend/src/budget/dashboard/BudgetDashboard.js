@@ -127,6 +127,7 @@ class BudgetDashboard extends React.Component {
     planItemDialogPage: -1,
     selectedPlanItem: null,
     flag: false,
+    planItemDates: [],
   };
 
   async componentDidMount() {
@@ -165,6 +166,7 @@ class BudgetDashboard extends React.Component {
     let birthYear = null;
     let postcode = null;
     let flag = false;
+    let planItemDates = [];
 
     // TODO: update for planItemGroups
     if (localStorage.getItem(LocalStorageKeys.ACCESS) != null) {
@@ -213,6 +215,7 @@ class BudgetDashboard extends React.Component {
                                   if (
                                     planItemGroup.id === planItem.planItemGroup
                                   ) {
+                                    planItemDates.push(planItem.startDate);
                                     planItems[index] = {
                                       ...planItem,
                                     };
@@ -290,6 +293,7 @@ class BudgetDashboard extends React.Component {
                                         planItemGroup.id ===
                                         planItem.planItemGroup
                                       ) {
+                                        planItemDates.push(planItem.startDate);
                                         planItems[index] = {
                                           ...planItem,
                                         };
@@ -342,6 +346,7 @@ class BudgetDashboard extends React.Component {
         birthYear,
         postcode,
         flag,
+        planItemDates,
       });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -859,6 +864,7 @@ class BudgetDashboard extends React.Component {
       birthYear,
       postcode,
       flag,
+      planItemDates,
     } = this.state;
     return (
       <div className="root">
@@ -876,6 +882,7 @@ class BudgetDashboard extends React.Component {
                     supportGroups={supportGroups}
                     planCategories={planCategories}
                     planDates={planDates}
+                    planItemDates={planItemDates}
                     onClick={this.handleSetMonthView}
                   />
                 </Grid>

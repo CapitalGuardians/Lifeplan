@@ -15,6 +15,13 @@
   width: 26px;
 }
 
+.bookShading {
+  text-align: center;
+  width: 26px;
+  color: white;
+  background-color: #285078bf;
+}
+
 .weekday {
   text-align: center;
   width: 26px;

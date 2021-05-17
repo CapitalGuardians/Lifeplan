@@ -729,9 +729,10 @@ class FormPersonalDetails extends React.Component {
 
   renderAllPlans() {
     // const { allPlans } = this.state;
+    const defExpand = window.location.pathname === "/" ? null : 0;
     return this.state.allPlans.map((plan, index) => {
       return (
-        <ExpansionPanel key={index} defaultExpanded={index === 0}>
+        <ExpansionPanel key={index} defaultExpanded={index === defExpand}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6" style={{ width: "100%" }}>
               {plan.name}
