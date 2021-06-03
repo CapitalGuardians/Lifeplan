@@ -104,7 +104,11 @@ const renderDays = (date, planDates, planItemDates) => {
     const DMY = currentYear + "-" + (currentMonth + 1) + "-" + i;
     let DMYS = "";
     if (currentMonth + 1 <= 9) {
-      DMYS = currentYear + "-0" + (currentMonth + 1) + "-" + i;
+      if (i >= 10) {
+        DMYS = currentYear + "-0" + (currentMonth + 1) + "-" + i;
+      } else {
+        DMYS = currentYear + "-0" + (currentMonth + 1) + "-0" + i;
+      }
     } else {
       DMYS = currentYear + "-" + (currentMonth + 1) + "-" + i;
     }

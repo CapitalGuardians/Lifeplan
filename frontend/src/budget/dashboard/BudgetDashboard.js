@@ -93,7 +93,7 @@ export function planItemGroupToEvents(planItemGroup) {
         planItem,
       };
     });
-  return events;
+  return events === undefined ? [] : events;
 }
 
 const PLAN_ITEM_DIALOG_PAGES = {

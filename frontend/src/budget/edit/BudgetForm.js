@@ -405,7 +405,7 @@ class FormPersonalDetails extends React.Component {
             postcode: this.state.postcode,
             birthYear: this.state.birthYear,
           };
-          console.log("...id...");
+          console.log(".....id.....");
           api.Participants.update(this.state.participantId, participantBody)
             .then(() => {
               body.planCategories = categories;
@@ -713,7 +713,7 @@ class FormPersonalDetails extends React.Component {
       <Paper className={classes.paper}>
         {this.renderPersonalDetailsForm(planId)}
         {this.renderPlanCategories(planId)}
-        <Grid container justify="flex-end" className={classes.buttonMargin}>
+        {/* <Grid container justify="flex-end" className={classes.buttonMargin}>
           <Button
             className={classes.button}
             color="primary"
@@ -722,7 +722,7 @@ class FormPersonalDetails extends React.Component {
           >
             Submit
           </Button>
-        </Grid>
+        </Grid> */}
       </Paper>
     );
   }
@@ -916,7 +916,7 @@ class FormPersonalDetails extends React.Component {
               variant="contained"
               onClick={this.handleNextOffline}
             >
-              Submit
+              View
             </Button>
           </Grid>
         </Paper>
