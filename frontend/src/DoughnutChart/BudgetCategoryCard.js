@@ -38,7 +38,7 @@ class BudgetCategoryCard extends Component {
             </Grid> */}
             <Grid item>
               <Button onClick={() => this.props.openSupports()} size="small">
-                Edit
+                Allocate
               </Button>
             </Grid>
           </Grid>

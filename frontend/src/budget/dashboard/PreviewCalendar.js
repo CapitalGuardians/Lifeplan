@@ -110,7 +110,11 @@ const renderDays = (date, planDates, planItemDates) => {
         DMYS = currentYear + "-0" + (currentMonth + 1) + "-0" + i;
       }
     } else {
-      DMYS = currentYear + "-" + (currentMonth + 1) + "-" + i;
+      if (i >= 10) {
+        DMYS = currentYear + "-" + (currentMonth + 1) + "-" + i;
+      } else {
+        DMYS = currentYear + "-" + (currentMonth + 1) + "-0" + i;
+      }
     }
 
     if (isInArray(arrayPlanDates, DMY)) {

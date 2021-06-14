@@ -948,6 +948,8 @@ export default function PlanAddEditor(props) {
                       name={itemPrice}
                       autoComplete={itemPrice}
                       autoFocus
+                      type="number"
+                      step="0.1"
                       value={values.priceActual}
                       onChange={(e) => handleChange(e)}
                       startAdornment={
@@ -977,8 +979,12 @@ export default function PlanAddEditor(props) {
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button variant={"text"} onClick={onClickBack}>
+      <DialogActions style={{ display: "block" }}>
+        <Button
+          variant={"text"}
+          onClick={onClickBack}
+          style={{ backgroundColor: "#97c7ef" }}
+        >
           Back
         </Button>
         <Button
@@ -987,6 +993,7 @@ export default function PlanAddEditor(props) {
           }
           variant={"text"}
           onClick={() => onClickSave(values, supportItem.id, newEvents())}
+          style={{ backgroundColor: "#97c7ef" }}
         >
           Save
         </Button>
